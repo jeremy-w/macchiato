@@ -24,9 +24,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         splitViewController?.delegate = self
         streamViewController?.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-        masterViewController?.streams = [Stream.global]
-        masterViewController?.services = services
+        configureMasterViewController()
         return true
+    }
+
+    func configureMasterViewController() {
+        guard let master = masterViewController else { return }
+
+        master.services = services
+        master.streams = [
+            Stream.View.global,
+            Stream.View.home,
+            Stream.View.interactions,
+            Stream.View.mentions,
+            Stream.View.pinned,
+            Stream.View.starters,
+            ].map { Stream(view: $0) }
     }
 
     var splitViewController: UISplitViewController? {
