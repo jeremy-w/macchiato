@@ -4,6 +4,12 @@ protocol PostRepository {
     func find(stream: Stream, since: Post?, completion: @escaping (Result<[Post]>) -> Void)
 }
 
+class FakePostRepository: PostRepository {
+    func find(stream: Stream, since: Post?, completion: @escaping (Result<[Post]>) -> Void) {
+        completion(.success((0 ..< 10).map { _ in Post.makeFake() }))
+    }
+}
+
 enum TenCenturiesError: Error {
     case notHTTP(url: URL)
     case badResponse(url: URL, data: Data?, comment: String)
