@@ -9,14 +9,14 @@
 import UIKit
 
 class MasterViewController: UITableViewController {
-    var objects = [Any]()
+    var streams = [Stream]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    var detailViewController: DetailViewController? {
-        return (splitViewController?.viewControllers.last as? UINavigationController)?.topViewController as? DetailViewController
+    var streamViewController: StreamViewController? {
+        return (splitViewController?.viewControllers.last as? UINavigationController)?.topViewController as? StreamViewController
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -34,12 +34,12 @@ class MasterViewController: UITableViewController {
                 return print("\(#function): DEBUG: no selection")
             }
 
-            guard let object = objects[indexPath.row] as? NSDate
-                , let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController else {
+            guard let controller = (segue.destination as? UINavigationController)?.topViewController as? StreamViewController else {
                     return print("failed out with template goop")
             }
 
-            controller.detailItem = object
+            let stream = streams[indexPath.row]
+            controller.configure(stream: stream)
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -52,13 +52,12 @@ class MasterViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return objects.count
+        return streams.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-
-        cell.textLabel?.text = String(describing: objects[indexPath.row])
+        cell.textLabel?.text = streams[indexPath.row].name
         return cell
     }
 }

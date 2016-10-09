@@ -13,18 +13,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        guard let window = window else {
-            preconditionFailure("failed to connect or load window")
-        }
-        // Override point for customization after application launch.
-        guard let splitViewController = window.rootViewController as? UISplitViewController
-        , let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1]
-            as? UINavigationController else {
-            preconditionFailure("expected to find a navigation controller in my splitview")
-        }
-        navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
-        splitViewController.delegate = self
+        splitViewController?.delegate = self
+        streamViewController?.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+        masterViewController?.streams = [Stream.global]
         return true
+    }
+
+    var splitViewController: UISplitViewController? {
+        return window?.rootViewController as? UISplitViewController
+    }
+
+    var streamViewController: StreamViewController? {
+        guard let navcon = splitViewController?.viewControllers.last as? UINavigationController else { return nil }
+        return navcon.topViewController as? StreamViewController
+    }
+
+    var masterViewController: MasterViewController? {
+        guard let navcon = splitViewController?.viewControllers.first as? UINavigationController else { return nil }
+        return navcon.viewControllers.first as? MasterViewController
     }
 
 
@@ -36,8 +42,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         ) -> Bool
     {
         guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
-        guard let topAsDetailController = secondaryAsNavController.topViewController as? DetailViewController else { return false }
-        if topAsDetailController.detailItem == nil {
+        guard let topAsDetailController = secondaryAsNavController.topViewController as? StreamViewController else { return false }
+        if topAsDetailController.stream == nil {
             // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
             return true
         }
