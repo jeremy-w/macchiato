@@ -49,6 +49,10 @@ class MasterViewController: UITableViewController {
         }
     }
 
+    @IBAction func unwindToMaster(_ segue: UIStoryboardSegue) {
+        return
+    }
+
 
     // MARK: - Table View
     override func numberOfSections(in tableView: UITableView) -> Int {
