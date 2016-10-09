@@ -9,7 +9,6 @@
 import UIKit
 
 class MasterViewController: UITableViewController {
-
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
 
@@ -43,8 +42,8 @@ class MasterViewController: UITableViewController {
         self.tableView.insertRows(at: [indexPath], with: .automatic)
     }
 
-    // MARK: - Segues
 
+    // MARK: - Segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
@@ -61,8 +60,8 @@ class MasterViewController: UITableViewController {
         }
     }
 
-    // MARK: - Table View
 
+    // MARK: - Table View
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -93,4 +92,3 @@ class MasterViewController: UITableViewController {
         }
     }
 }
-
