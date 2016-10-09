@@ -18,6 +18,9 @@
 		3F2E292F1DA9E19000519C9E /* Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E292E1DA9E19000519C9E /* Stream.swift */; };
 		3F2E29311DA9E9D700519C9E /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29301DA9E9D700519C9E /* Random.swift */; };
 		3F2E29331DA9EA1800519C9E /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29321DA9EA1800519C9E /* Post.swift */; };
+		3F2E29351DA9EB1900519C9E /* PostRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29341DA9EB1900519C9E /* PostRepository.swift */; };
+		3F2E29371DA9EB6E00519C9E /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29361DA9EB6E00519C9E /* Result.swift */; };
+		3F2E29391DA9ED0200519C9E /* ServicePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29381DA9ED0200519C9E /* ServicePack.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +49,9 @@
 		3F2E292E1DA9E19000519C9E /* Stream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stream.swift; sourceTree = "<group>"; };
 		3F2E29301DA9E9D700519C9E /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
 		3F2E29321DA9EA1800519C9E /* Post.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		3F2E29341DA9EB1900519C9E /* PostRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostRepository.swift; sourceTree = "<group>"; };
+		3F2E29361DA9EB6E00519C9E /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		3F2E29381DA9ED0200519C9E /* ServicePack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServicePack.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,12 +94,15 @@
 			isa = PBXGroup;
 			children = (
 				3F2E29011DA9B9F200519C9E /* AppDelegate.swift */,
+				3F2E29381DA9ED0200519C9E /* ServicePack.swift */,
 				3F2E290A1DA9B9F200519C9E /* Assets.xcassets */,
 				3F2E290F1DA9B9F200519C9E /* Info.plist */,
 				3F2E290C1DA9B9F200519C9E /* LaunchScreen.storyboard */,
 				3F2E29071DA9B9F200519C9E /* Main.storyboard */,
 				3F2E29031DA9B9F200519C9E /* MasterViewController.swift */,
 				3F2E292A1DA9DC9900519C9E /* StreamViewController.swift */,
+				3F2E29341DA9EB1900519C9E /* PostRepository.swift */,
+				3F2E29361DA9EB6E00519C9E /* Result.swift */,
 				3F2E292E1DA9E19000519C9E /* Stream.swift */,
 				3F2E29321DA9EA1800519C9E /* Post.swift */,
 				3F2E292C1DA9DCF200519C9E /* PostCell.swift */,
@@ -235,11 +244,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F2E29371DA9EB6E00519C9E /* Result.swift in Sources */,
 				3F2E29041DA9B9F200519C9E /* MasterViewController.swift in Sources */,
+				3F2E29391DA9ED0200519C9E /* ServicePack.swift in Sources */,
 				3F2E29021DA9B9F200519C9E /* AppDelegate.swift in Sources */,
 				3F2E29311DA9E9D700519C9E /* Random.swift in Sources */,
 				3F2E292B1DA9DC9900519C9E /* StreamViewController.swift in Sources */,
 				3F2E292D1DA9DCF200519C9E /* PostCell.swift in Sources */,
+				3F2E29351DA9EB1900519C9E /* PostRepository.swift in Sources */,
 				3F2E29331DA9EA1800519C9E /* Post.swift in Sources */,
 				3F2E292F1DA9E19000519C9E /* Stream.swift in Sources */,
 			);
