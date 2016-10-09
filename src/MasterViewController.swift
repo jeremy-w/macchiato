@@ -10,6 +10,7 @@ import UIKit
 
 class MasterViewController: UITableViewController {
     var streams = [Stream]()
+    var services: ServicePack?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,8 +39,10 @@ class MasterViewController: UITableViewController {
                     return print("failed out with template goop")
             }
 
+            guard let services = self.services else { return }
+
             let stream = streams[indexPath.row]
-            controller.configure(stream: stream)
+            controller.configure(stream: stream, postRepository: services.postRepository)
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
         }

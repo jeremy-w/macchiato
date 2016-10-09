@@ -11,11 +11,21 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
     var window: UIWindow?
+    var services: ServicePack
+    var session: URLSession
+
+    override init() {
+        session = URLSession(configuration: URLSessionConfiguration.default)
+        services = ServicePack(
+            postRepository: TenCenturiesPostRepository(session: session))
+        super.init()
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         splitViewController?.delegate = self
         streamViewController?.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         masterViewController?.streams = [Stream.global]
+        masterViewController?.services = services
         return true
     }
 
