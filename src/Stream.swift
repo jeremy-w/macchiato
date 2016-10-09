@@ -1,6 +1,6 @@
 class Stream {
     let name: String
-    let posts: [Post]
+    var posts: [Post]
     init(name: String, posts: [Post]) {
         self.name = name
         self.posts = posts
