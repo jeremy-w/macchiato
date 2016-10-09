@@ -117,7 +117,7 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" textAlignment="justified" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tqt-qo-Z8s">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tqt-qo-Z8s">
                                             <string key="text">Pellentesque lacinia blandit magna, at scelerisque mauris aliquet placerat. Aliquam at quam commodo, volutpat massa non, feugiat nibh. Ut lobortis luctus consequat. Donec ultricies rutrum vestibulum. Aenean eget eros semper, molestie lectus sed, convallis sem. Sed eu lectus bibendum, bibendum justo id, ornare nulla. Mauris sollicitudin mauris eu neque dignissim molestie. Ut a leo justo.</string>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                             <nil key="textColor"/>
