@@ -12,28 +12,33 @@ class MasterViewController: UITableViewController {
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        self.navigationItem.leftBarButtonItem = self.editButtonItem
-
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-        self.navigationItem.rightBarButtonItem = addButton
+        installEditButton()
+        installAddButton()
         if let split = self.splitViewController {
             let controllers = split.viewControllers
             self.detailViewController = (controllers[controllers.count-1] as? UINavigationController)?.topViewController as? DetailViewController
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        self.clearsSelectionOnViewWillAppear = self.splitViewController!.isCollapsed
-        super.viewWillAppear(animated)
+    func installEditButton() {
+        navigationItem.leftBarButtonItem = self.editButtonItem
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func installAddButton() {
+        navigationItem.rightBarButtonItem = makeAddButton()
+    }
+
+    func makeAddButton() -> UIBarButtonItem {
+        return UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let isCollapsed = self.splitViewController?.isCollapsed {
+            self.clearsSelectionOnViewWillAppear = isCollapsed
+        }
     }
 
     func insertNewObject(_ sender: Any) {
@@ -46,17 +51,18 @@ class MasterViewController: UITableViewController {
     // MARK: - Segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
-            if let indexPath = self.tableView.indexPathForSelectedRow {
-                guard let object = objects[indexPath.row] as? NSDate
-                , let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController
-                else {
-                        return print("failed out with template goop")
-                }
-
-                controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-                controller.navigationItem.leftItemsSupplementBackButton = true
+            guard let indexPath = self.tableView.indexPathForSelectedRow else {
+                return print("\(#function): DEBUG: no selection")
             }
+
+            guard let object = objects[indexPath.row] as? NSDate
+                , let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController else {
+                    return print("failed out with template goop")
+            }
+
+            controller.detailItem = object
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+            controller.navigationItem.leftItemsSupplementBackButton = true
         }
     }
 
@@ -73,22 +79,25 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row] as? NSDate
-        cell.textLabel?.text = object?.description
+        cell.textLabel?.text = String(describing: objects[indexPath.row])
         return cell
     }
 
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
         return true
     }
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
+        switch editingStyle {
+        case .delete:
             objects.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+
+        case .insert:
+            break
+
+        case .none:
+            break
         }
     }
 }
