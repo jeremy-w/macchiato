@@ -19,7 +19,7 @@ class PostCell: UITableViewCell {
         super.init(style: .default, reuseIdentifier: PostCell.identifier)
     }
 
-    required init?(coder coder: NSCoder) {
+    required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
 }

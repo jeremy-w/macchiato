@@ -27,12 +27,3 @@ struct Post {
             content: Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " "))
     }
 }
-
-
-func pick<T>(_ array: [T]) -> T {
-    return array[randomNumber(in: 0 ..< array.count)]
-}
-
-func randomNumber(in range: Range<Int>) -> Int {
-    return range.lowerBound + Int(arc4random_uniform(UInt32(range.count)))
-}
