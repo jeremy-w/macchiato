@@ -11,7 +11,7 @@ class PostCell: UITableViewCell {
         self.post = post
 
         author?.text = post.author
-        date?.text = String(describing: post.date)
+        date?.text = PostCell.dateFormatter.string(from: post.date)
         content?.text = post.content
     }
 
@@ -22,4 +22,13 @@ class PostCell: UITableViewCell {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
+
+    @nonobjc static var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .short  // long adds timezone
+        formatter.timeZone = TimeZone.autoupdatingCurrent
+        formatter.doesRelativeDateFormatting = true
+        return formatter
+    }()
 }
