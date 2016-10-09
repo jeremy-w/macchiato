@@ -49,15 +49,28 @@ class TenCenturiesPostRepository: PostRepository {
                 else {
                     throw TenCenturiesError.badResponse(url: url, data: data, comment: "bogus object in body")
                 }
+
                 return try body.map { post in
-                    // (@jeremy-w/2016-10-08)FIXME: How to display edited_unix, too?
                     let accounts = try unpack(post, "account") as [JDict]
                     let account = accounts.first ?? ["username": "«unknown»"]
+
+                    let thread: (root: String, replyTo: String)?
+                    do {
+                        let info: JDict = try unpack(post, "thread")
+                        thread = try (root: unpack(info, "thread_id"), replyTo: unpack(info, "reply_to"))
+                    } catch {
+                        thread = nil
+                    }
+
                     return Post(
                         id: String(describing: try unpack(post, "id") as Any),
                         author: try unpack(account, "username"),
                         date: Date(timeIntervalSince1970: try unpack(post, "created_unix")),
-                        content: try unpack(unpack(post, "content"), "text"))
+                        content: try unpack(unpack(post, "content"), "text"),
+                        privacy: try unpack(post, "privacy"),
+                        thread: thread,
+                        client: try unpack(unpack(post, "client"), "name"),
+                        updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")))
                 }
             }}
             print("API: DEBUG: \(url): Result: \(result)")
