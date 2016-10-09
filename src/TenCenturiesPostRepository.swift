@@ -111,8 +111,11 @@ class TenCenturiesPostRepository: PostRepository {
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
     func find(stream: Stream, since: Post?, completion: @escaping (Result<[Post]>) -> Void) {
         let url = URL(string: stream.view.path, relativeTo: TenCenturiesPostRepository.baseURL)!
-        print("API: INFO: BEGIN \(url)")
-        let task = session.dataTask(with: url) { (data, response, error) in
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        components.queryItems = stream.view.queryItems
+        let request = URLRequest(url: components.url!)
+        print("API: INFO: BEGIN \(request.url)")
+        let task = session.dataTask(with: request) { (data, response, error) in
             let result = Result.of { () throws -> [Post] in do {
                 guard let response = response as? HTTPURLResponse else {
                     throw TenCenturiesError.notHTTP(url: url)
@@ -124,12 +127,9 @@ class TenCenturiesPostRepository: PostRepository {
                  X-RateLimit-Remaining: 490
                  X-RateLimit-Reset: 2866
                  */
-                let headers = response.allHeaderFields
-                let rateHeaders = headers.filter({ (item: (key: AnyHashable, value: Any)) -> Bool in
-                    guard let header = item.key as? String else { return false }
-                    return header.hasPrefix("X-RateLimit")
-                })
-                print("API: INFO: END \(url): \(response.statusCode): \(data) \(error) - RATELIMIT: \(rateHeaders)")
+                let limits = RateLimit(headers: response.allHeaderFields)
+                print("API: INFO: END \(url): \(response.statusCode): \(data) \(error) "
+                    + "- RATELIMIT: \(limits.map { String(reflecting: $0) } ?? "(headers not found)")")
 
                 guard let data = data else {
                     throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
@@ -171,7 +171,7 @@ class TenCenturiesPostRepository: PostRepository {
                         updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")))
                 }
             }}
-            print("API: DEBUG: \(url): Result: \(result)")
+            print("API: DEBUG: \(request.url): Result: \(result)")
             completion(result)
         }
         task.resume()
