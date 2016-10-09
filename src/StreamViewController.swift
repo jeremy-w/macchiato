@@ -29,8 +29,10 @@ class StreamViewController: UITableViewController {
         refreshControl?.beginRefreshing()
         postRepository.find(stream: stream, since: stream.posts.first) {
             [weak self] (result: Result<[Post]>) -> Void in
-            self?.refreshControl?.endRefreshing()
-            self?.didReceivePosts(result: result)
+            DispatchQueue.main.async {
+                self?.refreshControl?.endRefreshing()
+                self?.didReceivePosts(result: result)
+            }
         }
     }
 
