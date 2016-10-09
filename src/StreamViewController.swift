@@ -42,6 +42,11 @@ class StreamViewController: UITableViewController {
             tableView?.reloadData()
         } catch {
             print("\(self): ERROR: \(error)")
+            if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
+                let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: nil, style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+            }
         }
     }
 
