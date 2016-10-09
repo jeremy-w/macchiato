@@ -6,6 +6,7 @@ class StreamViewController: UITableViewController {
     func configure(stream: Stream, postRepository: PostRepository) {
         self.stream = stream
         self.postRepository = postRepository
+        title = stream.name
         tableView?.reloadData()
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 44

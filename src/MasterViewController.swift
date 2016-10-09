@@ -14,6 +14,7 @@ class MasterViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = NSLocalizedString("Streams", comment: "view title")
     }
 
     var streamViewController: StreamViewController? {
