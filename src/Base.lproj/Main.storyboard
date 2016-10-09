@@ -128,7 +128,7 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="7DO-y4-hqa"/>
+                                        <stackView opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="7DO-y4-hqa"/>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="7DO-y4-hqa" firstAttribute="top" secondItem="tqt-qo-Z8s" secondAttribute="bottom" constant="8" id="55Y-a8-Hd2"/>

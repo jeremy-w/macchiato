@@ -14,6 +14,8 @@ class PostCell: UITableViewCell {
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
         content?.text = post.content
+
+        stackUpAdditionalInfo()
     }
 
     init() {
@@ -32,4 +34,50 @@ class PostCell: UITableViewCell {
         formatter.doesRelativeDateFormatting = true
         return formatter
     }()
+
+
+    // MARK: - Tacks additional info at the end of the cell
+    func stackUpAdditionalInfo() {
+        guard let post = self.post, let stack = verticalStack else { return }
+
+        let rows = info(from: post)
+
+        var next = 0
+        let count = rows.count
+        var toRemove = [UILabel]()
+        for view in stack.arrangedSubviews {
+            guard let label = view as? UILabel else { continue }
+            if next < count {
+                label.text = rows[next]
+                next += 1
+            } else {
+                toRemove.append(label)
+            }
+        }
+        for i in next ..< count {
+            stack.addArrangedSubview(makeAdditionalInfoLabel(text: rows[i]))
+        }
+    }
+
+    func makeAdditionalInfoLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.adjustsFontForContentSizeCategory = true
+        label.font = UIFont.preferredFont(forTextStyle: .footnote)
+        return label
+    }
+
+    func info(from post: Post) -> [String] {
+        var info = [String]()
+        if post.updated != post.date {
+            info.append("updated: \(PostCell.dateFormatter.string(from: post.updated))")
+        }
+        info.append("client: \(post.client)")
+        info.append("id: \(post.id)")
+        if let thread = post.thread {
+            info.append("reply to: \(thread.replyTo)")
+            info.append("in thread: \(thread.root)")
+        }
+        return info
+    }
 }
