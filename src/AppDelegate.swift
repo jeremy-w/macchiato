@@ -17,7 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     override init() {
         session = URLSession(configuration: URLSessionConfiguration.default)
         services = ServicePack(
-            postRepository: TenCenturiesPostRepository(session: session))
+//            postRepository: FakePostRepository()
+            postRepository: TenCenturiesPostRepository(session: session)
+        )
         super.init()
     }
 
