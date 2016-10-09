@@ -17,6 +17,7 @@
 		3F2E292D1DA9DCF200519C9E /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E292C1DA9DCF200519C9E /* PostCell.swift */; };
 		3F2E292F1DA9E19000519C9E /* Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E292E1DA9E19000519C9E /* Stream.swift */; };
 		3F2E29311DA9E9D700519C9E /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29301DA9E9D700519C9E /* Random.swift */; };
+		3F2E29331DA9EA1800519C9E /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29321DA9EA1800519C9E /* Post.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		3F2E292C1DA9DCF200519C9E /* PostCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
 		3F2E292E1DA9E19000519C9E /* Stream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stream.swift; sourceTree = "<group>"; };
 		3F2E29301DA9E9D700519C9E /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
+		3F2E29321DA9EA1800519C9E /* Post.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				3F2E29031DA9B9F200519C9E /* MasterViewController.swift */,
 				3F2E292A1DA9DC9900519C9E /* StreamViewController.swift */,
 				3F2E292E1DA9E19000519C9E /* Stream.swift */,
+				3F2E29321DA9EA1800519C9E /* Post.swift */,
 				3F2E292C1DA9DCF200519C9E /* PostCell.swift */,
 				3F2E29301DA9E9D700519C9E /* Random.swift */,
 			);
@@ -237,6 +240,7 @@
 				3F2E29311DA9E9D700519C9E /* Random.swift in Sources */,
 				3F2E292B1DA9DC9900519C9E /* StreamViewController.swift in Sources */,
 				3F2E292D1DA9DCF200519C9E /* PostCell.swift in Sources */,
+				3F2E29331DA9EA1800519C9E /* Post.swift in Sources */,
 				3F2E292F1DA9E19000519C9E /* Stream.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
