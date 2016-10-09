@@ -11,6 +11,10 @@ disabled_rules:
     # When we violate it, it's because we very much meant to.
     - comma
 
+    # We do this right anyway, except when we're fighting Xcode on wrapping
+    # tons o' arguments (thanks, UIKit!).
+    - opening_brace
+
     # This obnoxiously expects you to write a doc comment for every blessed
     # parameter. This is a recipe for useless docs that just say the variable
     # name repeatedly.
