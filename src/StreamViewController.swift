@@ -11,6 +11,37 @@ class StreamViewController: UITableViewController {
         tableView.estimatedRowHeight = 44
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        refreshControl = makeRefreshControl()
+    }
+
+    func makeRefreshControl() -> UIRefreshControl {
+        let control = UIRefreshControl()
+        control.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
+        return control
+    }
+
+    @IBAction func refreshAction() {
+        guard let stream = stream, let postRepository = postRepository else { return }
+
+        refreshControl?.beginRefreshing()
+        postRepository.find(stream: stream, since: stream.posts.first) {
+            [weak self] (result: Result<[Post]>) -> Void in
+            self?.refreshControl?.endRefreshing()
+            self?.didReceivePosts(result: result)
+        }
+    }
+
+    func didReceivePosts(result: Result<[Post]>) {
+        do {
+            stream?.posts = try result.unwrap()
+            tableView?.reloadData()
+        } catch {
+            print("\(self): ERROR: \(error)")
+        }
+    }
+
     // MARK: - Vends posts to a table view
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
