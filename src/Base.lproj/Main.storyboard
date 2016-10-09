@@ -128,22 +128,27 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="7DO-y4-hqa"/>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="7DO-y4-hqa" firstAttribute="top" secondItem="tqt-qo-Z8s" secondAttribute="bottom" constant="8" id="55Y-a8-Hd2"/>
                                         <constraint firstAttribute="topMargin" secondItem="CjN-sX-xmO" secondAttribute="top" id="5wC-Ac-PAa"/>
                                         <constraint firstItem="xC9-6S-Dc5" firstAttribute="baseline" secondItem="CjN-sX-xmO" secondAttribute="baseline" id="98p-l9-wgn"/>
+                                        <constraint firstItem="7DO-y4-hqa" firstAttribute="trailing" secondItem="nYg-wG-Sv5" secondAttribute="trailingMargin" id="Cdd-hl-x62"/>
                                         <constraint firstItem="CjN-sX-xmO" firstAttribute="leading" secondItem="nYg-wG-Sv5" secondAttribute="leadingMargin" id="T1g-Iq-ksZ"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="tqt-qo-Z8s" secondAttribute="bottom" id="T4r-gI-HOe"/>
+                                        <constraint firstItem="7DO-y4-hqa" firstAttribute="bottom" secondItem="nYg-wG-Sv5" secondAttribute="bottomMargin" id="Tgv-L6-d7V"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="tqt-qo-Z8s" secondAttribute="trailing" id="Wq3-PA-4hY"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="xC9-6S-Dc5" secondAttribute="trailing" id="YHE-xd-uah"/>
                                         <constraint firstItem="tqt-qo-Z8s" firstAttribute="top" secondItem="CjN-sX-xmO" secondAttribute="bottom" id="jVE-wU-glO"/>
                                         <constraint firstItem="tqt-qo-Z8s" firstAttribute="leading" secondItem="nYg-wG-Sv5" secondAttribute="leadingMargin" id="mHf-eS-jLt"/>
+                                        <constraint firstItem="7DO-y4-hqa" firstAttribute="leading" secondItem="nYg-wG-Sv5" secondAttribute="leadingMargin" id="sRE-8j-ivP"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="author" destination="CjN-sX-xmO" id="WwV-xY-XYZ"/>
                                     <outlet property="content" destination="tqt-qo-Z8s" id="bOg-B9-wuz"/>
                                     <outlet property="date" destination="xC9-6S-Dc5" id="OPh-sK-kz1"/>
+                                    <outlet property="verticalStack" destination="7DO-y4-hqa" id="eW3-B7-Lau"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>

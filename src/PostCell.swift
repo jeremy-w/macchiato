@@ -5,6 +5,7 @@ class PostCell: UITableViewCell {
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
     @IBOutlet var content: UILabel?
+    @IBOutlet var verticalStack: UIStackView?
 
     private var post: Post?
     func configure(post: Post) {
