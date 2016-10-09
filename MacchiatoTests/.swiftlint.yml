@@ -1,0 +1,47 @@
+# Relax length rules in light of tests serving as documentation.
+# Verbose names can be helpful.
+disabled_rules:
+    - type_name
+    - variable_name
+
+    ## COPIED DOWN FROM ../.swiftlint.yml ##
+    # TODO notations are very handy.
+    # We have a custom rule to force them to fit a specific format.
+    - todo
+
+    # This gripes about needlessly repeating `let` in if/guard, but that
+    # is actually a requirement of Future Swift, so we *want* to do that.
+    - conditional_binding_cascade
+
+    # This is pretty baked-in to how we write code (and English prose!).
+    # When we violate it, it's because we very much meant to.
+    - comma
+
+    # This obnoxiously expects you to write a doc comment for every blessed
+    # parameter. This is a recipe for useless docs that just say the variable
+    # name repeatedly.
+    #
+    # Plus, the warning is useless - it just gripes "Documented declarations
+    # should be valid" without a hint about what "valid" means, or how your
+    # current comment is invalid.
+    #
+    # See: https://github.com/realm/SwiftLint/issues/450
+    - valid_docs
+    ## END COPY ##
+
+line_length:
+    warning: 250
+    error: 500
+
+## COPIED DOWN FROM ../.swiftlint.yml ##
+custom_rules:
+    todo_format:
+        match_kinds: comment
+        message: >
+            Prefix TODO/FIXME/etc with author and date,
+            so if you're @example, then you'd write:
+            // (@example/2016-07-28)TODO: Document custom rule
+        # This isn't a perfect check, but it should guide folks the right
+        # direction for common cases.
+        regex: "[^)](TODO|FIXME|XXX|HACK|!{3}|[?]{3}):"
+## END COPY ##
