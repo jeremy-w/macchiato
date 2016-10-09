@@ -61,8 +61,8 @@
 		3F2E28F51DA9B9F200519C9E = {
 			isa = PBXGroup;
 			children = (
-				3F2E29001DA9B9F200519C9E /* Macchiato */,
 				3F2E29171DA9B9F200519C9E /* MacchiatoTests */,
+				3F2E29001DA9B9F200519C9E /* Macchiato */,
 				3F2E28FF1DA9B9F200519C9E /* Products */,
 			);
 			sourceTree = "<group>";
