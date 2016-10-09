@@ -16,22 +16,65 @@ func unpack<T>(_ obj: JDict, _ field: String) throws -> T {
     return cast
 }
 
+extension Stream.View {
+    var path: String {
+        switch self {
+        case .global:
+            return "/content/blurbs/global"
+
+        case .home:
+            return "/content/blurbs/home"
+
+        case .pinned:
+            return "/content/blurbs/pins"
+
+        case .mentions:
+            return "/content/blurbs/mentions"
+
+        case .interactions:
+            return "/content/blurbs/interactions"
+
+        case .starters:
+            return "/content/blurbs/starters"
+
+        case .thread:
+            // Requires -d post_id=post.thread.root
+            // Alternatively, hit /content/social/thread with -d thread_id=post.thread.root.
+            return "/content/blurbs/thread"
+        }
+    }
+}
+
 class TenCenturiesPostRepository: PostRepository {
     let session: URLSession
     init(session: URLSession) {
         self.session = session
     }
 
+    static let baseURL = URL(string: "https://api.10centuries.org")!
+
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
     func find(stream: Stream, since: Post?, completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: "https://api.10centuries.org/content/blurbs/global")!
+        let url = URL(string: stream.view.path, relativeTo: TenCenturiesPostRepository.baseURL)!
         print("API: INFO: BEGIN \(url)")
         let task = session.dataTask(with: url) { (data, response, error) in
             let result = Result.of { () throws -> [Post] in do {
                 guard let response = response as? HTTPURLResponse else {
                     throw TenCenturiesError.notHTTP(url: url)
                 }
-                print("API: INFO: END \(url): \(response.statusCode): \(data) \(error)")
+                /*
+                 Rate limit headers look like:
+
+                 X-RateLimit-Limit: 500
+                 X-RateLimit-Remaining: 490
+                 X-RateLimit-Reset: 2866
+                 */
+                let headers = response.allHeaderFields
+                let rateHeaders = headers.filter({ (item: (key: AnyHashable, value: Any)) -> Bool in
+                    guard let header = item.key as? String else { return false }
+                    return header.hasPrefix("X-RateLimit")
+                })
+                print("API: INFO: END \(url): \(response.statusCode): \(data) \(error) - RATELIMIT: \(rateHeaders)")
 
                 guard let data = data else {
                     throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
