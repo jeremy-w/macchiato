@@ -9,29 +9,14 @@
 import UIKit
 
 class MasterViewController: UITableViewController {
-    var detailViewController: DetailViewController? = nil
     var objects = [Any]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        installEditButton()
-        installAddButton()
-        if let split = self.splitViewController {
-            let controllers = split.viewControllers
-            self.detailViewController = (controllers[controllers.count-1] as? UINavigationController)?.topViewController as? DetailViewController
-        }
     }
 
-    func installEditButton() {
-        navigationItem.leftBarButtonItem = self.editButtonItem
-    }
-
-    func installAddButton() {
-        navigationItem.rightBarButtonItem = makeAddButton()
-    }
-
-    func makeAddButton() -> UIBarButtonItem {
-        return UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
+    var detailViewController: DetailViewController? {
+        return (splitViewController?.viewControllers.last as? UINavigationController)?.topViewController as? DetailViewController
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -39,12 +24,6 @@ class MasterViewController: UITableViewController {
         if let isCollapsed = self.splitViewController?.isCollapsed {
             self.clearsSelectionOnViewWillAppear = isCollapsed
         }
-    }
-
-    func insertNewObject(_ sender: Any) {
-        objects.insert(NSDate(), at: 0)
-        let indexPath = IndexPath(row: 0, section: 0)
-        self.tableView.insertRows(at: [indexPath], with: .automatic)
     }
 
 
@@ -81,23 +60,5 @@ class MasterViewController: UITableViewController {
 
         cell.textLabel?.text = String(describing: objects[indexPath.row])
         return cell
-    }
-
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        switch editingStyle {
-        case .delete:
-            objects.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-
-        case .insert:
-            break
-
-        case .none:
-            break
-        }
     }
 }
