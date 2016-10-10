@@ -77,7 +77,6 @@ struct RateLimit {
             guard let key = header.key as? String
                 , let value = header.value as? String
                 , let number = Int(value) else {
-                print("expected string key and int-convertible value, found: \(header)")
                 continue
             }
 
