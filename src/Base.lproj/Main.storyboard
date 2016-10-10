@@ -89,21 +89,62 @@
         <!--Settings-->
         <scene sceneID="20D-3y-6mK">
             <objects>
-                <tableViewController id="3gt-5G-zkL" sceneMemberID="viewController">
+                <tableViewController id="3gt-5G-zkL" customClass="SettingsViewController" customModule="Macchiato" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="tUa-eJ-kr5">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="LAQ-2a-GTW">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="KeyValueCell" textLabel="73q-di-sS9" detailTextLabel="NIN-sj-Sxu" style="IBUITableViewCellStyleValue1" id="LAQ-2a-GTW">
                                 <rect key="frame" x="0.0" y="92" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LAQ-2a-GTW" id="0ks-Ur-fVz">
                                     <frame key="frameInset" width="375" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="73q-di-sS9">
+                                            <frame key="frameInset" minX="15" minY="11" width="34" height="21"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="NIN-sj-Sxu">
+                                            <frame key="frameInset" minX="316" minY="11" width="44" height="21"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ButtonCell" id="fKa-Ws-rxS" customClass="ButtonCell" customModule="Macchiato" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="136" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fKa-Ws-rxS" id="rAD-pT-yum">
+                                    <frame key="frameInset" width="375" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fcs-Xx-z3s">
+                                            <frame key="frameInset" minX="166" minY="11" width="42" height="21"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                            <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="fcs-Xx-z3s" firstAttribute="centerY" secondItem="rAD-pT-yum" secondAttribute="centerY" id="GaW-JY-UDj"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="fcs-Xx-z3s" secondAttribute="trailing" id="QDb-B2-7ap"/>
+                                        <constraint firstItem="fcs-Xx-z3s" firstAttribute="leading" secondItem="rAD-pT-yum" secondAttribute="leadingMargin" id="cbY-LV-nwT"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="label" destination="fcs-Xx-z3s" id="Dvy-gb-MWP"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
+                        <sections/>
                         <connections>
                             <outlet property="dataSource" destination="3gt-5G-zkL" id="vsv-g0-P00"/>
                             <outlet property="delegate" destination="3gt-5G-zkL" id="bHu-5s-9TW"/>
@@ -116,11 +157,92 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="OCM-Km-qml" kind="show" identifier="LogIn" id="A4U-I3-1yb"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mf7-cu-SgJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="fSZ-KC-7xK" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2676" y="-630"/>
+        </scene>
+        <!--Log Into 10 Centuries-->
+        <scene sceneID="IZO-AX-g6n">
+            <objects>
+                <viewController title="Log Into 10 Centuries" id="OCM-Km-qml" customClass="LogInViewController" customModule="Macchiato" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jqq-sx-b9l"/>
+                        <viewControllerLayoutGuide type="bottom" id="yQT-sc-M9P"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="da2-yr-cKU">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Wmn-U6-AeJ">
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="SDx-dj-rW7">
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6J-ky-5oA">
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="me@example.com" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nXJ-sb-GxF">
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="OCM-Km-qml" id="Rzh-hi-FO6"/>
+                                                </connections>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="MuY-Ng-km6">
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XZr-IK-hZS">
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nhn-bg-wHw">
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <textInputTraits key="textInputTraits" returnKeyType="done" secureTextEntry="YES"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="OCM-Km-qml" id="DiM-Gz-aXP"/>
+                                                </connections>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v4h-Ov-heQ">
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                        <state key="normal" title="Log In"/>
+                                        <connections>
+                                            <action selector="logInAction" destination="OCM-Km-qml" eventType="touchUpInside" id="VAa-Fu-sNa"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="XZr-IK-hZS" firstAttribute="width" secondItem="k6J-ky-5oA" secondAttribute="width" id="fpw-ac-f7J"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Wmn-U6-AeJ" firstAttribute="leading" secondItem="da2-yr-cKU" secondAttribute="leadingMargin" id="73s-PB-jNG"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Wmn-U6-AeJ" secondAttribute="trailing" id="BDl-fw-bJL"/>
+                            <constraint firstItem="Wmn-U6-AeJ" firstAttribute="top" secondItem="jqq-sx-b9l" secondAttribute="bottom" constant="8" id="c8u-xL-Ppj"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="account" destination="nXJ-sb-GxF" id="CZu-0o-ee3"/>
+                        <outlet property="logIn" destination="v4h-Ov-heQ" id="4pU-oq-jxu"/>
+                        <outlet property="password" destination="nhn-bg-wHw" id="HKt-49-Rxa"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="18g-wf-neZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3431" y="-630"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="oDg-Hk-Z1J">
