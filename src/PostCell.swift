@@ -57,6 +57,12 @@ class PostCell: UITableViewCell {
         for i in next ..< count {
             stack.addArrangedSubview(makeAdditionalInfoLabel(text: rows[i]))
         }
+        for view in toRemove {
+            stack.removeArrangedSubview(view)
+            view.removeFromSuperview()
+        }
+        assert(stack.arrangedSubviews.count == rows.count,
+               "stack view should have one view per info row, but \(stack.arrangedSubviews.count) in stack vs \(rows.count) expected")
     }
 
     func makeAdditionalInfoLabel(text: String) -> UILabel {
