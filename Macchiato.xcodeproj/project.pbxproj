@@ -98,8 +98,8 @@
 			isa = PBXGroup;
 			children = (
 				3F2E28FF1DA9B9F200519C9E /* Products */,
-				3F2E29001DA9B9F200519C9E /* src */,
 				3F2E29171DA9B9F200519C9E /* tests */,
+				3F2E29001DA9B9F200519C9E /* src */,
 			);
 			sourceTree = "<group>";
 		};
