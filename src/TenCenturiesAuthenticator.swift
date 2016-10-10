@@ -1,4 +1,5 @@
 import Foundation
+import Security
 
 class TenCenturiesAuthenticator {
     let session: URLSession
@@ -12,22 +13,63 @@ class TenCenturiesAuthenticator {
 
     func save(user: User) {
         TenCenturiesAuthenticator.updateLastAccount(user.account)
-        // (@jeremy-w/2016-10-09)TODO: Finish implementing auth.
+        let dict: NSDictionary = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrAccount: user.account,
+            kSecAttrService: "10Centuries",
+            kSecAttrGeneric: client.uuidString.data(using: .utf8),
+            kSecValueData: user.token.data(using: .utf8),
+        ]
+        let status = SecItemAdd(dict, nil)
+        guard status == errSecSuccess else {
+            print("AUTH: ERROR: Failed to add token to keychain: error \(status) - input \(dict)")
+            return
+        }
+        print("AUTH: INFO: Saved token for \(user.account)")
     }
 
     /// Nil account means "use the last one we used".
     static func load(account: String?, client: UUID) -> User? {
-        // (@jeremy-w/2016-10-09)TODO: Finish implementing auth.
-        return nil
+        guard let account = account ?? lastAccount else {
+            print("AUTH: ERROR: No account to look up token for")
+            return nil
+        }
+
+        let query: NSDictionary = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrAccount: account,
+            kSecAttrService: "10Centuries",
+            kSecAttrGeneric: client.uuidString.data(using: .utf8),
+            kSecReturnData: true,
+        ]
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query, &result)
+        guard status == errSecSuccess else {
+            print("AUTH: ERROR: Failed to fetch token from keychain: error \(status) - query \(query)")
+            return nil
+        }
+        guard let value = result else {
+            print("AUTH: ERROR: Success, but got nil!")
+            return nil
+        }
+        guard let data = value as? Data else {
+            print("AUTH: ERROR: Failed understanding returned value of type \(type(of: result))")
+            return nil
+        }
+        guard let token = String(data: data, encoding: .utf8) else {
+            print("AUTH: ERROR: Failed decoding user access token string from data")
+            return nil
+        }
+        return User(account: account, token: token)
     }
 
     static var lastAccount: String? {
-        // (@jeremy-w/2016-10-09)TODO: Finish implementing auth.
-        return "me@jeremywsherman.com"
+        return UserDefaults.standard.string(forKey: "lastAccount")
     }
 
     static func updateLastAccount(_ name: String) {
-        // (@jeremy-w/2016-10-09)TODO: Finish implementing auth.
+        print("AUTH: INFO: Last used account updated to: \(name)")
+        UserDefaults.standard.set(lastAccount, forKey: "lastAccount")
     }
 
     struct User {
