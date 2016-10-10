@@ -36,6 +36,24 @@ class TenCenturiesAuthenticator {
     }
 }
 
+extension URLRequest {
+    mutating func attachURLEncodedFormData(_ queryItems: [URLQueryItem]) {
+        setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        // If we have to do this ourselves, or we get into multipart soonish, see:
+        // https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4
+        var components = URLComponents()
+        components.queryItems = queryItems
+        let query = components.percentEncodedQuery
+        httpBody = query?.data(using: .utf8)
+    }
+}
+
+extension UUID {
+    var simpleString: String {
+        return uuidString.lowercased().components(separatedBy: "-").joined()
+    }
+}
+
 extension TenCenturiesAuthenticator: Authenticator {
     var loggedInAccountName: String? {
         return nil
@@ -50,6 +68,11 @@ extension TenCenturiesAuthenticator: Authenticator {
     func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void) {
         var request = URLRequest(url: URL(string: "/auth/login", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
+        request.attachURLEncodedFormData([
+            URLQueryItem(name: "client_guid", value: client.simpleString),
+            URLQueryItem(name: "acctname", value: account),
+            URLQueryItem(name: "acctpass", value: password)
+            ])
         let _ = send(request: request) { (result) in
             let result = Result.of { () -> Bool in
                 let data = try result.unwrap()
