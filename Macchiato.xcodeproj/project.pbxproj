@@ -28,6 +28,8 @@
 		3F2E29461DAB12BB00519C9E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29451DAB12BB00519C9E /* SettingsViewController.swift */; };
 		3F2E29481DAB20AB00519C9E /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29471DAB20AB00519C9E /* LogInViewController.swift */; };
 		3F2E294A1DAB249100519C9E /* Authenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29491DAB249100519C9E /* Authenticator.swift */; };
+		3F2E29521DAB29CF00519C9E /* ToastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29501DAB29CF00519C9E /* ToastViewController.swift */; };
+		3F2E29531DAB29CF00519C9E /* ToastViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F2E29511DAB29CF00519C9E /* ToastViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +68,8 @@
 		3F2E29451DAB12BB00519C9E /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		3F2E29471DAB20AB00519C9E /* LogInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		3F2E29491DAB249100519C9E /* Authenticator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authenticator.swift; sourceTree = "<group>"; };
+		3F2E29501DAB29CF00519C9E /* ToastViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToastViewController.swift; sourceTree = "<group>"; };
+		3F2E29511DAB29CF00519C9E /* ToastViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ToastViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +171,8 @@
 				3F2E290C1DA9B9F200519C9E /* LaunchScreen.storyboard */,
 				3F2E290A1DA9B9F200519C9E /* Assets.xcassets */,
 				3F2E290F1DA9B9F200519C9E /* Info.plist */,
+				3F2E29501DAB29CF00519C9E /* ToastViewController.swift */,
+				3F2E29511DAB29CF00519C9E /* ToastViewController.xib */,
 			);
 			name = Plumbing;
 			sourceTree = "<group>";
@@ -269,6 +275,7 @@
 			files = (
 				3F2E290E1DA9B9F200519C9E /* LaunchScreen.storyboard in Resources */,
 				3F2E290B1DA9B9F200519C9E /* Assets.xcassets in Resources */,
+				3F2E29531DAB29CF00519C9E /* ToastViewController.xib in Resources */,
 				3F2E29091DA9B9F200519C9E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -309,6 +316,7 @@
 				3F2E29371DA9EB6E00519C9E /* Result.swift in Sources */,
 				3F2E29041DA9B9F200519C9E /* MasterViewController.swift in Sources */,
 				3F2E29391DA9ED0200519C9E /* ServicePack.swift in Sources */,
+				3F2E29521DAB29CF00519C9E /* ToastViewController.swift in Sources */,
 				3F2E29021DA9B9F200519C9E /* AppDelegate.swift in Sources */,
 				3F2E29401DAACF2100519C9E /* TenCenturiesError.swift in Sources */,
 				3F2E29421DAACF4B00519C9E /* TenCenturiesPostRepository.swift in Sources */,

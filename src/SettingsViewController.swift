@@ -62,4 +62,41 @@ class SettingsViewController: UITableViewController {
     func logIn() {
         performSegue(withIdentifier: "LogIn", sender: self)
     }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+
+        guard segue.identifier == "LogIn" else { return }
+        guard let target = segue.destination as? LogInViewController else {
+            preconditionFailure("expected destinatino to be LogInViewController, found: \(segue.destination)")
+        }
+
+        target.configure { [weak self] (item) in
+            self?.logInWithCredentials(account: item.0, password: item.1)
+        }
+    }
+
+    func logInWithCredentials(account: String, password: String) {
+        guard let authenticator = authenticator else {
+            assertionFailure("\(self) was not configured with authenticator: cannot log in")
+            return
+        }
+
+        toast(title: NSLocalizedString("Logging In…", comment: "toast"))
+        authenticator.logIn(account: account, password: password, completion: { (result) in
+            do {
+                let didLogIn = try result.unwrap()
+                if didLogIn {
+                    let format = NSLocalizedString("Logged In As: %@", comment: "toast")
+                    toast(title: String(format: format, account))
+                } else {
+                    toast(title: NSLocalizedString("Log In Failed!", comment: "toast"))
+                }
+            } catch {
+                let format = NSLocalizedString("Log In Failed: %@", comment: "toast")
+                let body = error.localizedDescription.isEmpty ? String(describing: error) : error.localizedDescription
+                toast(title: String(format: format, body))
+            }
+        })
+    }
 }
