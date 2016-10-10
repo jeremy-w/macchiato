@@ -11,6 +11,11 @@ class TenCenturiesAuthenticator {
         self.user = TenCenturiesAuthenticator.load(account: user, client: client)
     }
 
+    struct User {
+        let account: String
+        let token: String
+    }
+
     func save(user: User) {
         TenCenturiesAuthenticator.updateLastAccount(user.account)
         let dict: NSDictionary = [
@@ -70,11 +75,6 @@ class TenCenturiesAuthenticator {
     static func updateLastAccount(_ name: String) {
         print("AUTH: INFO: Last used account updated to: \(name)")
         UserDefaults.standard.set(lastAccount, forKey: "lastAccount")
-    }
-
-    struct User {
-        let account: String
-        let token: String
     }
 }
 
