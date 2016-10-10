@@ -160,6 +160,13 @@ class TenCenturiesPostRepository: PostRepository {
                         thread = nil
                     }
 
+                    let parentID: String?
+                    do {
+                        parentID = try unpack(post, "parent_id") as String
+                    } catch {
+                        parentID = nil
+                    }
+
                     return Post(
                         id: String(describing: try unpack(post, "id") as Any),
                         author: try unpack(account, "username"),
@@ -167,6 +174,7 @@ class TenCenturiesPostRepository: PostRepository {
                         content: try unpack(unpack(post, "content"), "text"),
                         privacy: try unpack(post, "privacy"),
                         thread: thread,
+                        parentID: parentID,
                         client: try unpack(unpack(post, "client"), "name"),
                         updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")))
                 }

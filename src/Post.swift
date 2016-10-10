@@ -15,12 +15,14 @@ struct Post {
             content: Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " "),
             privacy: "visibility.public",
             thread: nil,
+            parentID: nil,
             client: "Magicat",
             updated: now)
     }
 
     let privacy: String
     let thread: (root: String, replyTo: String)?
+    let parentID: String?
     let client: String
 
     /// If the same as `date`, then the post has not been edited.

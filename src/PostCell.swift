@@ -78,6 +78,9 @@ class PostCell: UITableViewCell {
             info.append("reply to: \(thread.replyTo)")
             info.append("in thread: \(thread.root)")
         }
+        if let parentID = post.parentID {
+            info.append("parent: \(parentID)")
+        }
         return info
     }
 }
