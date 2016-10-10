@@ -1,12 +1,5 @@
 import UIKit
 
-protocol Authenticator {
-    var loggedInAccountName: String? { get }
-
-    func logOut()
-    func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void)
-}
-
 class SettingsViewController: UITableViewController {
     var authenticator: Authenticator?
     func configure(authenticator: Authenticator) {
