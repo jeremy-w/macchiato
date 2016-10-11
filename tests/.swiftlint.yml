@@ -1,0 +1,74 @@
+disabled_rules:
+    - force_cast
+    - force_try
+    - line_length
+
+    # TODO notations are very handy.
+    # We have a custom rule to force them to fit a specific format.
+    - todo
+
+    # This gripes about needlessly repeating `let` in if/guard, but that
+    # is actually a requirement of Future Swift, so we *want* to do that.
+    - conditional_binding_cascade
+
+    # This is pretty baked-in to how we write code (and English prose!).
+    # When we violate it, it's because we very much meant to.
+    - comma
+
+    # We do this right anyway, except when we're fighting Xcode on wrapping
+    # tons o' arguments (thanks, UIKit!).
+    - opening_brace
+
+    # This obnoxiously expects you to write a doc comment for every blessed
+    # parameter. This is a recipe for useless docs that just say the variable
+    # name repeatedly.
+    #
+    # Plus, the warning is useless - it just gripes "Documented declarations
+    # should be valid" without a hint about what "valid" means, or how your
+    # current comment is invalid.
+    #
+    # See: https://github.com/realm/SwiftLint/issues/450
+    - valid_docs
+
+excluded:
+    # Experiments are quick and dirty proofs of concept or "how do I?" demos.
+    # They should not be linted.
+    - experiments/
+
+## Configuration for Inbuilt Rules ##
+file_length:
+    warning: 200
+    error: 500
+
+function_body_length:
+    warning: 10
+    error: 100
+
+line_length:
+    # This is to accommodate the UITableViewDataSource et al.'s long method names
+    warning: 150
+    error: 250
+
+variable_name:
+    excluded:
+        - id
+
+custom_rules:
+    todo_format:
+        match_kinds: comment
+        message: >
+            Prefix TODO/FIXME/etc with author and date,
+            so if you're @example, then you'd write:
+            // (@example/2016-07-28)TODO: Document custom rule
+        # This isn't a perfect check, but it should guide folks the right
+        # direction for common cases.
+        regex: "[^)](TODO|FIXME|XXX|HACK|!{3}|[?]{3}):"
+    enum_case:
+        severity: error
+        message: >
+            Enum cases should have lowercase names, like `case foo`,
+            **not** ~~`case Foo`~~.
+        # Really want to match only in enum decls, otherwise, we risk
+        # switch foo { case Bar.blah: break } tripping.
+        # The "no dots" bit at the end filters that out.
+        regex: "case [A-Z][^.]*"

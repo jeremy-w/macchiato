@@ -122,47 +122,45 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let _ = send(request: request) { result in
             let result = Result.of { () -> [Post] in
                 let data = try result.unwrap()
-                let posts = try self.parse(data, from: url)
+                let posts = try self.parsePosts(from: data, source: url)
                 return posts
             }
             completion(result)
         }
     }
 
-    func parse(_ data: Any, from url: URL) throws -> [Post] {
+    func parsePosts(from data: Any, source url: URL) throws -> [Post] {
         guard let body = data as? [[String: Any]] else {
             throw TenCenturiesError.badFieldType(field: "data", expected: [[String: Any]].self, found: data, in: [:])
         }
 
-        return try body.map { post in
-            let accounts = try unpack(post, "account") as [JDict]
-            let account = accounts.first ?? ["username": "«unknown»"]
+        return try body.map { post in try parsePost(from: post) }
+    }
 
-            let thread: (root: String, replyTo: String)?
-            do {
-                let info: JDict = try unpack(post, "thread")
-                thread = try (root: unpack(info, "thread_id"), replyTo: unpack(info, "reply_to"))
-            } catch {
-                thread = nil
-            }
+    func parsePost(from post: [String: Any]) throws -> Post {
+        let accounts = try unpack(post, "account") as [JDict]
+        let account = accounts.first ?? ["username": "«unknown»"]
 
-            let parentID: String?
-            do {
-                parentID = try unpack(post, "parent_id") as String
-            } catch {
-                parentID = nil
-            }
-
-            return Post(
-                id: String(describing: try unpack(post, "id") as Any),
-                author: try unpack(account, "username"),
-                date: Date(timeIntervalSince1970: try unpack(post, "created_unix")),
-                content: try unpack(unpack(post, "content"), "text"),
-                privacy: try unpack(post, "privacy"),
-                thread: thread,
-                parentID: parentID,
-                client: try unpack(unpack(post, "client"), "name"),
-                updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")))
+        let thread: (root: String, replyTo: String)?
+        do {
+            let info: JDict = try unpack(post, "thread")
+            print("got thread info: \(info)")
+            thread = try (root: String(UInt64(unpack(info, "thread_id") as Double)), replyTo: String(UInt64(unpack(info, "reply_to") as Double)))
+        } catch {
+            print("error with thread: \(error)")
+            thread = nil
         }
+
+        let parentID = try? unpack(post, "parent_id") as String
+        return Post(
+            id: String(describing: try unpack(post, "id") as Any),
+            author: try unpack(account, "username"),
+            date: Date(timeIntervalSince1970: try unpack(post, "created_unix")),
+            content: try unpack(unpack(post, "content"), "text"),
+            privacy: try unpack(post, "privacy"),
+            thread: thread,
+            parentID: parentID,
+            client: try unpack(unpack(post, "client"), "name"),
+            updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")))
     }
 }
