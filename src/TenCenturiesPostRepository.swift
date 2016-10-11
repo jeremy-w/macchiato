@@ -141,13 +141,16 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let accounts = try unpack(post, "account") as [JDict]
         let account = accounts.first ?? ["username": "«unknown»"]
 
+        // Doing try? "thread" then try? wrapper.map leads to a doubly-optional (String, String)??
+        // as the Optional.map and try? gang-up on things. Yuck. Could flatMap at the end, but pretty unreadable by that point.
         let thread: (root: String, replyTo: String)?
         do {
-            let info: JDict = try unpack(post, "thread")
-            print("got thread info: \(info)")
-            thread = try (root: String(UInt64(unpack(info, "thread_id") as Double)), replyTo: String(UInt64(unpack(info, "reply_to") as Double)))
+            let wrapper: JDict = try unpack(post, "thread")
+            func cast(_ value: Double) -> String {
+                return String(UInt64(value))
+            }
+            thread = try (root: cast(unpack(wrapper, "thread_id")), replyTo: cast(unpack(wrapper, "reply_to")))
         } catch {
-            print("error with thread: \(error)")
             thread = nil
         }
 
