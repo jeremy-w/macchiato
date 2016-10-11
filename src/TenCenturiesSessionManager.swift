@@ -15,7 +15,11 @@ class TenCenturiesSessionManager {
         let account: String
         let token: String
     }
+}
 
+
+// MARK: - Persists session info to keychain
+extension TenCenturiesSessionManager {
     func save(user: User) {
         TenCenturiesSessionManager.updateLastAccount(user.account)
         let dict: NSDictionary = [
@@ -96,6 +100,8 @@ extension UUID {
     }
 }
 
+
+// MARK: - Handle log in/out actions
 extension TenCenturiesSessionManager: SessionManager {
     var loggedInAccountName: String? {
         return nil
