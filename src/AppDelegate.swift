@@ -17,10 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     override init() {
         session = URLSession(configuration: URLSessionConfiguration.default)
         // (@jeremy-w/2016-10-10)FIXME: We need to provide the actual ClientGUID. And it needs to come from passwordness.
-        let authenticator = TenCenturiesAuthenticator(session: session, client: UUID())
+        let sessionManager = TenCenturiesSessionManager(session: session, client: UUID())
         services = ServicePack(
 //            postRepository: FakePostRepository()
-            postRepository: TenCenturiesPostRepository(session: session, authenticator: authenticator)
+            postRepository: TenCenturiesPostRepository(session: session, sessionManager: sessionManager)
         )
         super.init()
     }

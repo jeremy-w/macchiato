@@ -1,12 +1,12 @@
 import UIKit
 
 class SettingsViewController: UITableViewController {
-    var authenticator: Authenticator?
-    func configure(authenticator: Authenticator) {
-        self.authenticator = authenticator
+    var sessionManager: SessionManager?
+    func configure(sessionManager: SessionManager) {
+        self.sessionManager = sessionManager
     }
 
-    var account: String? { return authenticator?.loggedInAccountName }
+    var account: String? { return sessionManager?.loggedInAccountName }
 
     // MARK: - Populates a Table View
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -53,7 +53,7 @@ class SettingsViewController: UITableViewController {
     func confirmLogOut() {
         let alert = UIAlertController(title: NSLocalizedString("Log Out", comment: "title"), message: nil, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("Log Out!", comment: "button"), style: .destructive, handler: { [weak self] _ in
-            self?.authenticator?.logOut()
+            self?.sessionManager?.logOut()
         }))
         alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "button"), style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
@@ -77,13 +77,13 @@ class SettingsViewController: UITableViewController {
     }
 
     func logInWithCredentials(account: String, password: String) {
-        guard let authenticator = authenticator else {
-            assertionFailure("\(self) was not configured with authenticator: cannot log in")
+        guard let sessionManager = sessionManager else {
+            assertionFailure("\(self) was not configured with sessionManager: cannot log in")
             return
         }
 
         toast(title: NSLocalizedString("Logging In…", comment: "toast"))
-        authenticator.logIn(account: account, password: password, completion: { (result) in
+        sessionManager.logIn(account: account, password: password, completion: { (result) in
             do {
                 let didLogIn = try result.unwrap()
                 if didLogIn {

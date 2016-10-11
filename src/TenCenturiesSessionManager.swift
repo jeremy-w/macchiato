@@ -1,14 +1,14 @@
 import Foundation
 import Security
 
-class TenCenturiesAuthenticator {
+class TenCenturiesSessionManager {
     let session: URLSession
     let client: UUID
     let user: User?
     init(session: URLSession, client: UUID, user: String? = nil) {
         self.session = session
         self.client = client
-        self.user = TenCenturiesAuthenticator.load(account: user, client: client)
+        self.user = TenCenturiesSessionManager.load(account: user, client: client)
     }
 
     struct User {
@@ -17,7 +17,7 @@ class TenCenturiesAuthenticator {
     }
 
     func save(user: User) {
-        TenCenturiesAuthenticator.updateLastAccount(user.account)
+        TenCenturiesSessionManager.updateLastAccount(user.account)
         let dict: NSDictionary = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: user.account,
@@ -96,7 +96,7 @@ extension UUID {
     }
 }
 
-extension TenCenturiesAuthenticator: Authenticator {
+extension TenCenturiesSessionManager: SessionManager {
     var loggedInAccountName: String? {
         return nil
     }
@@ -129,5 +129,5 @@ extension TenCenturiesAuthenticator: Authenticator {
     }
 }
 
-extension TenCenturiesAuthenticator: TenCenturiesService {
+extension TenCenturiesSessionManager: TenCenturiesService {
 }

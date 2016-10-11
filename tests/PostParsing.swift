@@ -2,7 +2,7 @@ import XCTest
 @testable import Macchiato
 
 class PostParsing: XCTestCase {
-    let subject = TenCenturiesPostRepository(session: anySession, authenticator: TenCenturiesAuthenticator(session: anySession, client: UUID()))
+    let subject = TenCenturiesPostRepository(session: anySession, sessionManager: TenCenturiesSessionManager(session: anySession, client: UUID()))
 
     func testParsingThreadInfoForAThreadedPost() throws {
         let post = try subject.parsePost(from: capturedPostWithThreadInfo)

@@ -101,10 +101,10 @@ struct RateLimit {
 
 class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     let session: URLSession
-    let authenticator: TenCenturiesAuthenticator
-    init(session: URLSession, authenticator: TenCenturiesAuthenticator) {
+    let sessionManager: TenCenturiesSessionManager
+    init(session: URLSession, sessionManager: TenCenturiesSessionManager) {
         self.session = session
-        self.authenticator = authenticator
+        self.sessionManager = sessionManager
     }
 
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
@@ -114,7 +114,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         components.queryItems = stream.view.queryItems
         var request = URLRequest(url: components.url!)
         var authenticated = false
-        if let token = authenticator.user?.token {
+        if let token = sessionManager.user?.token {
             request.addValue(token, forHTTPHeaderField: "Authorization")
             authenticated = true
         }

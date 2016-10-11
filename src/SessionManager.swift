@@ -1,4 +1,4 @@
-protocol Authenticator {
+protocol SessionManager {
     var loggedInAccountName: String? { get }
 
     func logOut()
