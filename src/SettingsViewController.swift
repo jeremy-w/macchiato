@@ -83,20 +83,36 @@ class SettingsViewController: UITableViewController {
         }
 
         toast(title: NSLocalizedString("Logging In…", comment: "toast"))
-        sessionManager.logIn(account: account, password: password, completion: { (result) in
-            do {
-                let didLogIn = try result.unwrap()
-                if didLogIn {
-                    let format = NSLocalizedString("Logged In As: %@", comment: "toast")
-                    toast(title: String(format: format, account))
-                } else {
-                    toast(title: NSLocalizedString("Log In Failed!", comment: "toast"))
-                }
-            } catch {
-                let format = NSLocalizedString("Log In Failed: %@", comment: "toast")
-                let body = error.localizedDescription.isEmpty ? String(describing: error) : error.localizedDescription
-                toast(title: String(format: format, body))
+        sessionManager.logIn(account: account, password: password) { [weak self] (result) in
+            self?.didLogIn(as: account, result: result)
+        }
+    }
+
+    func didLogIn(as account: String, result: Result<Bool>) {
+        do {
+            let success = try result.unwrap()
+            if success {
+                toastSuccessfulLogin(as: account)
+            } else {
+                toastFailedLogin(error: nil)
             }
-        })
+        } catch {
+            toastFailedLogin(error: error)
+        }
+    }
+
+    private func toastSuccessfulLogin(as account: String) {
+        let format = NSLocalizedString("Logged In As: %@", comment: "toast")
+        toast(title: String(format: format, account))
+    }
+
+    private func toastFailedLogin(error: Error?) {
+        guard let error = error else {
+            return toast(title: NSLocalizedString("Log In Failed!", comment: "toast"))
+        }
+
+        let format = NSLocalizedString("Log In Failed: %@", comment: "toast")
+        let body = error.localizedDescription.isEmpty ? String(describing: error) : error.localizedDescription
+        toast(title: String(format: format, body))
     }
 }
