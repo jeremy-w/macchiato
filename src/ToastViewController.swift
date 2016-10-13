@@ -10,27 +10,11 @@ import UIKit
 
 func toast(title: String) {
     print("TOAST: INFO: \(title)")
-
-    // Could give https://github.com/KrauseFx/TSMessages a go later.
     DispatchQueue.main.async {
         let toaster = ToastViewController(title: title)
+        let window = toaster.hostWindow(for: UIScreen.main, statusBarHeight: UIApplication.shared.statusBarFrame.maxY)
 
-        var frame = UIScreen.main.bounds
-        frame.size.height = CGFloat.infinity
-
-        let window = UIWindow(frame:
-            CGRect(
-                origin: CGPoint(
-                    x: 0,
-                    y: UIApplication.shared.statusBarFrame.maxY),
-                size: CGSize(
-                    width: frame.size.width,
-                    height: toaster.view.sizeThatFits(frame.size).height)))
-        window.rootViewController = toaster
-        window.windowLevel = UIWindowLevelAlert
-        window.screen = UIScreen.main
         window.isHidden = false
-
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(5)) {
             toaster.dismiss()
             window.isHidden = true
@@ -69,5 +53,20 @@ class ToastViewController: UIViewController {
         guard let window = viewIfLoaded?.window else { return }
 
         window.isHidden = true
+    }
+}
+
+
+extension ToastViewController {
+    func hostWindow(for screen: UIScreen, statusBarHeight: CGFloat) -> UIWindow {
+        var screenBounds = screen.bounds
+        screenBounds.size.height = CGFloat.infinity
+
+        let fittingSize = CGSize(width: screenBounds.size.width, height: view.sizeThatFits(screenBounds.size).height)
+        let window = UIWindow(frame: CGRect(origin: CGPoint(x: 0, y: statusBarHeight), size: fittingSize))
+        window.rootViewController = self
+        window.windowLevel = UIWindowLevelAlert
+        window.screen = screen
+        return window
     }
 }
