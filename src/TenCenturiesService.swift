@@ -6,13 +6,16 @@ enum TenCenturies {
 
 protocol TenCenturiesService {
     var session: URLSession { get }
+    var authenticator: RequestAuthenticator { get }
     func send(request: URLRequest, completion: @escaping (Result<Any>) -> Void) -> URLSessionTask
 }
 
 extension TenCenturiesService {
-    func send(request: URLRequest, completion: @escaping (Result<Any>) -> Void) -> URLSessionTask {
-        precondition(request.url != nil, "request without URL: \(String(reflecting: request))")
+    func send(request unauthenticated: URLRequest, completion: @escaping (Result<Any>) -> Void) -> URLSessionTask {
+        precondition(unauthenticated.url != nil, "request without URL: \(String(reflecting: unauthenticated))")
+        let request = authenticator.authenticate(request: unauthenticated)
         let url = request.url!  // swiftlint:disable:this
+        print("API: INFO: BEGIN \(request.url)")
         let task = session.dataTask(with: request) { (data, response, error) in
             let result = Result.of { () throws -> Any in
                 do {

@@ -18,6 +18,18 @@ class TenCenturiesSessionManager {
 }
 
 
+// MARK: - Authenticates requests
+extension TenCenturiesSessionManager: RequestAuthenticator {
+    func authenticate(request unauthenticated: URLRequest) -> URLRequest {
+        guard let token = user?.token else { return unauthenticated }
+
+        var authenticated = unauthenticated
+        authenticated.addValue(token, forHTTPHeaderField: "Authorization")
+        return authenticated
+    }
+}
+
+
 // MARK: - Persists session info to keychain
 extension TenCenturiesSessionManager {
     func save(user: User) {
@@ -102,10 +114,12 @@ extension UUID {
 
 
 // MARK: - Handle log in/out actions
-extension TenCenturiesSessionManager: SessionManager {
+extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     var loggedInAccountName: String? {
         return nil
     }
+
+    var authenticator: RequestAuthenticator { return self }
 
     func logOut() {
         var request = URLRequest(url: URL(string: "/auth/logout", relativeTo: TenCenturies.baseURL)!)
@@ -133,7 +147,4 @@ extension TenCenturiesSessionManager: SessionManager {
             completion(result)
         }
     }
-}
-
-extension TenCenturiesSessionManager: TenCenturiesService {
 }

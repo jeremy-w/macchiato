@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let sessionManager = TenCenturiesSessionManager(session: session, client: UUID())
         services = ServicePack(
 //            postRepository: FakePostRepository()
-            postRepository: TenCenturiesPostRepository(session: session, sessionManager: sessionManager)
+            postRepository: TenCenturiesPostRepository(session: session, authenticator: sessionManager)
         )
         super.init()
     }

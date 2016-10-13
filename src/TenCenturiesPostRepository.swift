@@ -101,10 +101,10 @@ struct RateLimit {
 
 class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     let session: URLSession
-    let sessionManager: TenCenturiesSessionManager
-    init(session: URLSession, sessionManager: TenCenturiesSessionManager) {
+    let authenticator: RequestAuthenticator
+    init(session: URLSession, authenticator: RequestAuthenticator) {
         self.session = session
-        self.sessionManager = sessionManager
+        self.authenticator = authenticator
     }
 
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
@@ -112,13 +112,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let url = URL(string: stream.view.path, relativeTo: TenCenturies.baseURL)!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         components.queryItems = stream.view.queryItems
-        var request = URLRequest(url: components.url!)
-        var authenticated = false
-        if let token = sessionManager.user?.token {
-            request.addValue(token, forHTTPHeaderField: "Authorization")
-            authenticated = true
-        }
-        print("API: INFO: BEGIN \(authenticated ? "AUTHENTICATED" : "anonymous") \(request.url)")
+        let request = URLRequest(url: components.url!)
+
         let _ = send(request: request) { result in
             let result = Result.of { () -> [Post] in
                 let data = try result.unwrap()
