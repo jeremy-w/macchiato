@@ -77,7 +77,7 @@
                     <navigationItem key="navigationItem" title="Streams" id="Zdf-7t-Un8">
                         <barButtonItem key="rightBarButtonItem" title="Settings" id="Elv-FR-8zo">
                             <connections>
-                                <segue destination="WA1-m7-6fC" kind="presentation" id="RKq-ow-h5z"/>
+                                <segue destination="WA1-m7-6fC" kind="presentation" identifier="ShowSettings" id="RKq-ow-h5z"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

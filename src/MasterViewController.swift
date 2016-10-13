@@ -31,22 +31,46 @@ class MasterViewController: UITableViewController {
 
     // MARK: - Segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showDetail" {
-            guard let indexPath = self.tableView.indexPathForSelectedRow else {
-                return print("\(#function): DEBUG: no selection")
-            }
+        if prepareForShowDetail(segue: segue) { return }
+        if prepareForShowSettings(segue: segue) { return }
+        super.prepare(for: segue, sender: sender)
+    }
 
-            guard let controller = (segue.destination as? UINavigationController)?.topViewController as? StreamViewController else {
-                    return print("failed out with template goop")
-            }
+    func prepareForShowDetail(segue: UIStoryboardSegue) -> Bool {
+        guard segue.identifier == "showDetail" else { return false }
 
-            guard let services = self.services else { return }
-
-            let stream = streams[indexPath.row]
-            controller.configure(stream: stream, postRepository: services.postRepository)
-            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-            controller.navigationItem.leftItemsSupplementBackButton = true
+        guard let indexPath = self.tableView.indexPathForSelectedRow else {
+            print("\(#function): DEBUG: no selection")
+            return true
         }
+
+        guard let controller = (segue.destination as? UINavigationController)?.topViewController as? StreamViewController else {
+            print("failed out with template goop")
+            return true
+        }
+
+        guard let services = self.services else { return true }
+
+        let stream = streams[indexPath.row]
+        controller.configure(stream: stream, postRepository: services.postRepository)
+        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+        controller.navigationItem.leftItemsSupplementBackButton = true
+        return true
+    }
+
+    func prepareForShowSettings(segue: UIStoryboardSegue) -> Bool {
+        guard segue.identifier == "ShowSettings" else { return false }
+        guard let settings = (segue.destination as? UINavigationController)?.topViewController as? SettingsViewController else {
+            print("destination not as expected: \(segue.destination)")
+            return true
+        }
+        guard let services = self.services else {
+            print("no services: not configured!")
+            return true
+        }
+
+        settings.configure(sessionManager: services.sessionManager)
+        return true
     }
 
     @IBAction func unwindToMaster(_ segue: UIStoryboardSegue) {
