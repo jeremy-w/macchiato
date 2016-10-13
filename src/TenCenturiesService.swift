@@ -4,6 +4,12 @@ enum TenCenturies {
     static let baseURL = URL(string: "https://api.10centuries.org")!
 }
 
+/**
+ The basic protocol used to communicate with any 10Centuries service.
+ 
+ Generic HTTP request issuing and response parsing functionality is provided
+ through protocol extension methods.
+ */
 protocol TenCenturiesService {
     var session: URLSession { get }
     var authenticator: RequestAuthenticator { get }
@@ -11,6 +17,12 @@ protocol TenCenturiesService {
 }
 
 extension TenCenturiesService {
+    /**
+     Sends a request. The request will automatically be authenticated using `authenticator` prior to transmission.
+     
+     - parameter completion: Called with the contents of the `data` element
+       of the response's top-level JSON dictionary, or an error, whether HTTP or 10C.
+     */
     func send(request unauthenticated: URLRequest, completion: @escaping (Result<Any>) -> Void) -> URLSessionTask {
         precondition(unauthenticated.url != nil, "request without URL: \(String(reflecting: unauthenticated))")
         let request = authenticator.authenticate(request: unauthenticated)

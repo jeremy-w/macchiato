@@ -147,15 +147,15 @@
 				3F2E29381DA9ED0200519C9E /* ServicePack.swift */,
 				3F2E29491DAB249100519C9E /* SessionManager.swift */,
 				3F2E295B1DAD351C00519C9E /* RequestAuthenticator.swift */,
-				3F2E29541DAB332500519C9E /* TenCenturiesSessionManager.swift */,
-				3F2E29A21DAFC6DD00519C9E /* URLRequest+FormEncoding.swift */,
-				3F2E29A41DAFC75C00519C9E /* UUID+StringEncoding.swift */,
+				3F2E29A61DAFC7AA00519C9E /* RateLimit.swift */,
 				3F2E29341DA9EB1900519C9E /* PostRepository.swift */,
 				3F2E293D1DAACF0400519C9E /* FakePostRepository.swift */,
+				3F2E29A21DAFC6DD00519C9E /* URLRequest+FormEncoding.swift */,
+				3F2E29A41DAFC75C00519C9E /* UUID+StringEncoding.swift */,
 				3F2E29561DAB385E00519C9E /* TenCenturiesService.swift */,
-				3F2E29411DAACF4B00519C9E /* TenCenturiesPostRepository.swift */,
-				3F2E29A61DAFC7AA00519C9E /* RateLimit.swift */,
 				3F2E293F1DAACF2100519C9E /* TenCenturiesError.swift */,
+				3F2E29541DAB332500519C9E /* TenCenturiesSessionManager.swift */,
+				3F2E29411DAACF4B00519C9E /* TenCenturiesPostRepository.swift */,
 			);
 			name = "Accessing Outside Content";
 			sourceTree = "<group>";
