@@ -13,7 +13,7 @@ enum TenCenturies {
 protocol TenCenturiesService {
     var session: URLSession { get }
     var authenticator: RequestAuthenticator { get }
-    func send(request: URLRequest, completion: @escaping (Result<JDict>) -> Void) -> URLSessionTask
+    func send(request: URLRequest, completion: @escaping (Result<JSONDictionary>) -> Void) -> URLSessionTask
 }
 
 extension TenCenturiesService {
@@ -22,13 +22,13 @@ extension TenCenturiesService {
 
      - parameter completion: Called with the response's JSON dictionary, or an error, whether HTTP or 10C.
      */
-    func send(request unauthenticated: URLRequest, completion: @escaping (Result<JDict>) -> Void) -> URLSessionTask {
+    func send(request unauthenticated: URLRequest, completion: @escaping (Result<JSONDictionary>) -> Void) -> URLSessionTask {
         precondition(unauthenticated.url != nil, "request without URL: \(String(reflecting: unauthenticated))")
         let request = authenticator.authenticate(request: unauthenticated)
         let url = request.url!  // swiftlint:disable:this
         print("API: INFO: BEGIN \(request.url)")
         let task = session.dataTask(with: request) { (data, response, error) in
-            let result = Result.of { () throws -> JDict in
+            let result = Result.of { () throws -> JSONDictionary in
                 do {
                     guard let response = response as? HTTPURLResponse else {
                         throw TenCenturiesError.notHTTP(url: url)
@@ -55,8 +55,8 @@ extension TenCenturiesService {
                     let object = try JSONSerialization.jsonObject(with: data, options: [])
                     //                print("API: VDEBUG: \(url): \(String(reflecting: object))")
 
-                    guard let dict = object as? JDict
-                        , let meta = dict["meta"] as? JDict
+                    guard let dict = object as? JSONDictionary
+                        , let meta = dict["meta"] as? JSONDictionary
                         else {
                             throw TenCenturiesError.badResponse(url: url, data: data, comment: "bogus object in body")
                     }

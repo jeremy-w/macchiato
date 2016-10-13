@@ -1,10 +1,10 @@
 import Foundation
 
-typealias JDict = [String: Any]
+typealias JSONDictionary = [String: Any]
 
 let notYetImplemented = NSError(domain: "notyetimplemented", code: -1, userInfo: [NSLocalizedDescriptionKey: "Not Yet Implemented"])
 
-func unpack<T>(_ obj: JDict, _ field: String) throws -> T {
+func unpack<T>(_ obj: JSONDictionary, _ field: String) throws -> T {
     guard let value = obj[field] else {
         throw TenCenturiesError.missingField(field: field, object: obj)
     }
@@ -74,7 +74,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let _ = send(request: request) { result in
             let result = Result.of { () -> [Post] in
                 let parent = try result.unwrap()
-                let data: [JDict] = try unpack(parent, "data")
+                let data: [JSONDictionary] = try unpack(parent, "data")
                 let posts = try self.parsePosts(from: data, source: url)
                 return posts
             }
@@ -82,19 +82,19 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
     }
 
-    func parsePosts(from posts: [JDict], source url: URL) throws -> [Post] {
+    func parsePosts(from posts: [JSONDictionary], source url: URL) throws -> [Post] {
         return try posts.map { post in try parsePost(from: post) }
     }
 
-    func parsePost(from post: JDict) throws -> Post {
-        let accounts = try unpack(post, "account") as [JDict]
+    func parsePost(from post: JSONDictionary) throws -> Post {
+        let accounts = try unpack(post, "account") as [JSONDictionary]
         let account = accounts.first ?? ["username": "«unknown»"]
 
         // Doing try? "thread" then try? wrapper.map leads to a doubly-optional (String, String)??
         // as the Optional.map and try? gang-up on things. Yuck. Could flatMap at the end, but pretty unreadable by that point.
         let thread: (root: String, replyTo: String)?
         do {
-            let wrapper: JDict = try unpack(post, "thread")
+            let wrapper: JSONDictionary = try unpack(post, "thread")
             func cast(_ value: Double) -> String {
                 return String(UInt64(value))
             }
