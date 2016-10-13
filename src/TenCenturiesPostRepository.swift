@@ -73,7 +73,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
         let _ = send(request: request) { result in
             let result = Result.of { () -> [Post] in
-                let data = try result.unwrap()
+                let parent = try result.unwrap()
+                let data: [JDict] = try unpack(parent, "data")
                 let posts = try self.parsePosts(from: data, source: url)
                 return posts
             }
@@ -81,15 +82,11 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
     }
 
-    func parsePosts(from data: Any, source url: URL) throws -> [Post] {
-        guard let body = data as? [[String: Any]] else {
-            throw TenCenturiesError.badFieldType(field: "data", expected: [[String: Any]].self, found: data, in: [:])
-        }
-
-        return try body.map { post in try parsePost(from: post) }
+    func parsePosts(from posts: [JDict], source url: URL) throws -> [Post] {
+        return try posts.map { post in try parsePost(from: post) }
     }
 
-    func parsePost(from post: [String: Any]) throws -> Post {
+    func parsePost(from post: JDict) throws -> Post {
         let accounts = try unpack(post, "account") as [JDict]
         let account = accounts.first ?? ["username": "«unknown»"]
 

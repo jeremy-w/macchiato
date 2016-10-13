@@ -119,8 +119,7 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
             ])
         let _ = send(request: request) { (result) in
             let result = Result.of { () -> Bool in
-                let data = try result.unwrap()
-                let parent = ["data": data]
+                let parent = try result.unwrap()
                 let body: [String: Any] = try unpack(parent, "data")
                 let token: String = try unpack(body, "token")
                 self.save(user: User(account: account, token: token))
