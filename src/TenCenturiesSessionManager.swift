@@ -3,12 +3,15 @@ import Security
 
 class TenCenturiesSessionManager {
     let session: URLSession
-    let client: UUID
+    let clientGUID: String
     let user: User?
-    init(session: URLSession, client: UUID, user: String? = nil) {
+    // You will need to define a `static var appClientGUID: String` in the ignored file: TenCenturiesSessionManager+AppClientGUID.swift
+    // to provide your client secret to the app.
+    // You can find your client secret, or create one, at: https://admin.10centuries.org/apps/
+    init(session: URLSession, clientGUID: String = TenCenturiesSessionManager.appClientGUID, user: String? = nil) {
         self.session = session
-        self.client = client
-        self.user = TenCenturiesSessionManager.load(account: user, client: client)
+        self.clientGUID = clientGUID
+        self.user = TenCenturiesSessionManager.load(account: user, clientGUID: clientGUID)
     }
 
     struct User {
@@ -38,7 +41,7 @@ extension TenCenturiesSessionManager {
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: user.account,
             kSecAttrService: "10Centuries",
-            kSecAttrGeneric: client.uuidString.data(using: .utf8),
+            kSecAttrGeneric: clientGUID.data(using: .utf8),
             kSecValueData: user.token.data(using: .utf8),
         ]
         let status = SecItemAdd(dict, nil)
@@ -50,7 +53,7 @@ extension TenCenturiesSessionManager {
     }
 
     /// Nil account means "use the last one we used".
-    static func load(account: String?, client: UUID) -> User? {
+    static func load(account: String?, clientGUID: String) -> User? {
         guard let account = account ?? lastAccount else {
             print("AUTH: ERROR: No account to look up token for")
             return nil
@@ -60,7 +63,7 @@ extension TenCenturiesSessionManager {
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,
             kSecAttrService: "10Centuries",
-            kSecAttrGeneric: client.uuidString.data(using: .utf8),
+            kSecAttrGeneric: clientGUID.data(using: .utf8),
             kSecReturnData: true,
         ]
         var result: CFTypeRef?
@@ -113,7 +116,7 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
         var request = URLRequest(url: URL(string: "/auth/login", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
         request.attachURLEncodedFormData([
-            URLQueryItem(name: "client_guid", value: client.lowercaseHexString),
+            URLQueryItem(name: "client_guid", value: clientGUID),
             URLQueryItem(name: "acctname", value: account),
             URLQueryItem(name: "acctpass", value: password)
             ])

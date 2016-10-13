@@ -36,6 +36,7 @@
 		3F2E29A31DAFC6DD00519C9E /* URLRequest+FormEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29A21DAFC6DD00519C9E /* URLRequest+FormEncoding.swift */; };
 		3F2E29A51DAFC75C00519C9E /* UUID+StringEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29A41DAFC75C00519C9E /* UUID+StringEncoding.swift */; };
 		3F2E29A71DAFC7AA00519C9E /* RateLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29A61DAFC7AA00519C9E /* RateLimit.swift */; };
+		3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29A81DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		3F2E29A21DAFC6DD00519C9E /* URLRequest+FormEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLRequest+FormEncoding.swift"; sourceTree = "<group>"; };
 		3F2E29A41DAFC75C00519C9E /* UUID+StringEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UUID+StringEncoding.swift"; sourceTree = "<group>"; };
 		3F2E29A61DAFC7AA00519C9E /* RateLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RateLimit.swift; sourceTree = "<group>"; };
+		3F2E29A81DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TenCenturiesSessionManager+AppClientGUID.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +157,7 @@
 				3F2E29561DAB385E00519C9E /* TenCenturiesService.swift */,
 				3F2E293F1DAACF2100519C9E /* TenCenturiesError.swift */,
 				3F2E29541DAB332500519C9E /* TenCenturiesSessionManager.swift */,
+				3F2E29A81DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift */,
 				3F2E29411DAACF4B00519C9E /* TenCenturiesPostRepository.swift */,
 			);
 			name = "Accessing Outside Content";
@@ -341,6 +344,7 @@
 				3F2E29401DAACF2100519C9E /* TenCenturiesError.swift in Sources */,
 				3F2E29A51DAFC75C00519C9E /* UUID+StringEncoding.swift in Sources */,
 				3F2E29421DAACF4B00519C9E /* TenCenturiesPostRepository.swift in Sources */,
+				3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */,
 				3F2E29311DA9E9D700519C9E /* Random.swift in Sources */,
 				3F2E29461DAB12BB00519C9E /* SettingsViewController.swift in Sources */,
 				3F2E29A31DAFC6DD00519C9E /* URLRequest+FormEncoding.swift in Sources */,
