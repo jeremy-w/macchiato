@@ -44,22 +44,18 @@ class PostCell: UITableViewCell {
 
         var next = 0
         let count = rows.count
-        var toRemove = [UILabel]()
         for view in stack.arrangedSubviews {
             guard let label = view as? UILabel else { continue }
             if next < count {
                 label.text = rows[next]
                 next += 1
             } else {
-                toRemove.append(label)
+                stack.removeArrangedSubview(view)
+                view.removeFromSuperview()
             }
         }
         for i in next ..< count {
             stack.addArrangedSubview(makeAdditionalInfoLabel(text: rows[i]))
-        }
-        for view in toRemove {
-            stack.removeArrangedSubview(view)
-            view.removeFromSuperview()
         }
         assert(stack.arrangedSubviews.count == rows.count,
                "stack view should have one view per info row, but \(stack.arrangedSubviews.count) in stack vs \(rows.count) expected")

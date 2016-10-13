@@ -7,6 +7,7 @@ struct Post {
     let content: String
 
     static func makeFake() -> Post {
+        // swiftlint:disable:previous function_body_length
         let now = Date()
         return Post(
             id: UUID().uuidString,
