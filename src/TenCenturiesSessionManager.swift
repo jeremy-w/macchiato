@@ -95,7 +95,7 @@ extension TenCenturiesSessionManager {
 }
 
 extension UUID {
-    var simpleString: String {
+    var lowercaseHexString: String {
         return uuidString.lowercased().components(separatedBy: "-").joined()
     }
 }
@@ -119,7 +119,7 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
         var request = URLRequest(url: URL(string: "/auth/login", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
         request.attachURLEncodedFormData([
-            URLQueryItem(name: "client_guid", value: client.simpleString),
+            URLQueryItem(name: "client_guid", value: client.lowercaseHexString),
             URLQueryItem(name: "acctname", value: account),
             URLQueryItem(name: "acctpass", value: password)
             ])
