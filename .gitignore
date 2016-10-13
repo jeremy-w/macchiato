@@ -1,5 +1,8 @@
 project.xcworkspace
 
+# This file holds a secret, so it is not committed.
+src/TenCenturiesSessionManager+AppClientGUID.swift
+
 # Created by https://www.gitignore.io/api/swift
 
 ### Swift ###
