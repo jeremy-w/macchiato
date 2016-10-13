@@ -14,32 +14,20 @@ struct RateLimit {
     }
 
     init?(headers: [AnyHashable: Any], at date: Date = Date()) {
-        var maybeLimit: Int?
-        var maybeRemaining: Int?
-        var maybeResetsAfter: TimeInterval?
-
-        for header in headers {
-            guard let key = header.key as? String
-                , let value = header.value as? String
-                , let number = Int(value) else {
-                continue
-            }
-
-            switch key.lowercased() {
-            case "x-ratelimit-limit": maybeLimit = number
-            case "x-ratelimit-remaining": maybeRemaining = number
-            case "x-ratelimit-reset": maybeResetsAfter = TimeInterval(number)
-            default: continue
-            }
-        }
-
-        guard let limit = maybeLimit
-        , let remaining = maybeRemaining
-        , let resetsAfter = maybeResetsAfter else { return nil }
+        guard let limit = header("x-ratelimit-limit", in: headers)
+        , let remaining = header("x-ratelimit-remaining", in: headers)
+        , let resetsAfter = header("x-ratelimit-reset", in: headers).map(TimeInterval.init) else { return nil }
 
         self.limit = limit
         self.remaining = remaining
         self.resetsAfter = resetsAfter
         self.resetsAt = date + resetsAfter
     }
+}
+
+
+private func header(_ key: String, in headers: [AnyHashable: Any]) -> Int? {
+    return headers
+        .first(where: { ($0.key as? String)?.lowercased() == key }
+        )?.value as? Int
 }
