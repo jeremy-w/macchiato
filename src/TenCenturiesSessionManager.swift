@@ -94,12 +94,6 @@ extension TenCenturiesSessionManager {
     }
 }
 
-extension UUID {
-    var lowercaseHexString: String {
-        return uuidString.lowercased().components(separatedBy: "-").joined()
-    }
-}
-
 
 // MARK: - Handle log in/out actions
 extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
