@@ -4,7 +4,7 @@ import Security
 class TenCenturiesSessionManager {
     let session: URLSession
     let clientGUID: String
-    let user: User?
+    fileprivate(set) var user: User?
     // You will need to define a `static var appClientGUID: String` in the ignored file: TenCenturiesSessionManager+AppClientGUID.swift
     // to provide your client secret to the app.
     // You can find your client secret, or create one, at: https://admin.10centuries.org/apps/
@@ -125,7 +125,9 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
                 let parent = try result.unwrap()
                 let body: [String: Any] = try unpack(parent, "data")
                 let token: String = try unpack(body, "token")
-                self.save(user: User(account: account, token: token))
+                let user = User(account: account, token: token)
+                self.user = user
+                self.save(user: user)
                 return true
             }
             completion(result)
