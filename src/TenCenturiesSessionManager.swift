@@ -37,19 +37,20 @@ extension TenCenturiesSessionManager: RequestAuthenticator {
 extension TenCenturiesSessionManager {
     func save(user: User) {
         TenCenturiesSessionManager.updateLastAccount(user.account)
-        let dict: NSDictionary = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: user.account,
-            kSecAttrService: "10Centuries",
-            kSecAttrGeneric: clientGUID.data(using: .utf8),
-            kSecValueData: user.token.data(using: .utf8),
-        ]
-        let status = SecItemAdd(dict, nil)
-        guard status == errSecSuccess else {
-            print("AUTH: ERROR: Failed to add token to keychain: error \(status) - input \(dict)")
+        guard let tokenData = user.token.data(using: .utf8)
+        , let guidData = clientGUID.data(using: .utf8) else {
+            print("AUTH: ERROR: Failed to serialize token or guid strings as data")
             return
         }
-        print("AUTH: INFO: Saved token for \(user.account)")
+
+        guard Keychain.add(
+            account: user.account,
+            service: "10Centuries",
+            data: tokenData,
+            generic: guidData) else {
+            return print("AUTH: ERROR: Failed to save token for \(user.account)")
+        }
+        print("AUTH: INFO: Successfully saved token for \(user.account)")
     }
 
     /// Nil account means "use the last one we used".
@@ -58,26 +59,12 @@ extension TenCenturiesSessionManager {
             print("AUTH: ERROR: No account to look up token for")
             return nil
         }
-
-        let query: NSDictionary = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: account,
-            kSecAttrService: "10Centuries",
-            kSecAttrGeneric: clientGUID.data(using: .utf8),
-            kSecReturnData: true,
-        ]
-        var result: CFTypeRef?
-        let status = SecItemCopyMatching(query, &result)
-        guard status == errSecSuccess else {
-            print("AUTH: ERROR: Failed to fetch token from keychain: error \(status) - query \(query)")
+        guard let guidData = clientGUID.data(using: .utf8) else {
+            print("AUTH: ERROR: Failed to serialize client GUID as UTF-8-encoded data.")
             return nil
         }
-        guard let value = result else {
-            print("AUTH: ERROR: Success, but got nil!")
-            return nil
-        }
-        guard let data = value as? Data else {
-            print("AUTH: ERROR: Failed understanding returned value of type \(type(of: result))")
+        guard let data = Keychain.find(account: account, service: "10Centuries", generic: guidData) else {
+            print("AUTH: INFO: No login info found for account \(account).")
             return nil
         }
         guard let token = String(data: data, encoding: .utf8) else {
