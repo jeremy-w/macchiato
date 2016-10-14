@@ -93,7 +93,7 @@ extension TenCenturiesSessionManager {
 
     static func updateLastAccount(_ name: String) {
         print("AUTH: INFO: Last used account updated to: \(name)")
-        UserDefaults.standard.set(lastAccount, forKey: "lastAccount")
+        UserDefaults.standard.set(name, forKey: "lastAccount")
     }
 }
 
