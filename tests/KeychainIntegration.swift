@@ -1,6 +1,7 @@
 import XCTest
 @testable import Macchiato
 
+#if arch(arm) || arch(arm64)
 class KeychainIntegration: XCTestCase {
     let user = "Test User"
     let service = "Test Service"
@@ -20,3 +21,4 @@ class KeychainIntegration: XCTestCase {
         XCTAssertEqual(fetched, password, "found password does not match stored")
     }
 }
+#endif
