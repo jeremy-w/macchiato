@@ -42,20 +42,19 @@
                             </stackView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="750" layoutMarginsFollowReadableWidth="YES" showsHorizontalScrollIndicator="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="dYz-qF-gej">
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="send" enablesReturnKeyAutomatically="YES"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Obl-kS-Ffu" firstAttribute="top" secondItem="uD5-dQ-zvv" secondAttribute="bottom" id="01B-CP-60R"/>
                             <constraint firstItem="uD5-dQ-zvv" firstAttribute="leading" secondItem="YcW-Fh-QTf" secondAttribute="leadingMargin" id="2Fj-5f-VNy"/>
                             <constraint firstAttribute="trailingMargin" secondItem="uD5-dQ-zvv" secondAttribute="trailing" id="3ny-3L-cpc"/>
-                            <constraint firstItem="uD5-dQ-zvv" firstAttribute="top" secondItem="dYz-qF-gej" secondAttribute="bottom" constant="8" id="Plb-DU-Siy"/>
-                            <constraint firstItem="dYz-qF-gej" firstAttribute="top" secondItem="YcW-Fh-QTf" secondAttribute="topMargin" id="YSU-bK-Jic"/>
+                            <constraint firstItem="uD5-dQ-zvv" firstAttribute="top" secondItem="uMv-Fd-xFk" secondAttribute="bottom" id="BHV-0T-Tj6"/>
+                            <constraint firstItem="dYz-qF-gej" firstAttribute="top" secondItem="uD5-dQ-zvv" secondAttribute="bottom" constant="8" id="Kfv-ui-wel"/>
                             <constraint firstItem="dYz-qF-gej" firstAttribute="trailing" secondItem="YcW-Fh-QTf" secondAttribute="trailingMargin" id="hDw-Lz-5lw"/>
                             <constraint firstItem="dYz-qF-gej" firstAttribute="leading" secondItem="YcW-Fh-QTf" secondAttribute="leadingMargin" id="lt5-6x-6bB"/>
+                            <constraint firstItem="Obl-kS-Ffu" firstAttribute="top" secondItem="dYz-qF-gej" secondAttribute="bottom" id="y9N-gR-LgL"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
