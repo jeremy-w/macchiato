@@ -24,7 +24,7 @@ class Stream {
         case mentions
         case interactions
         case starters
-        case thread(root: String)
+        case thread(containing: String)
 
         var localizedName: String {
             switch self {
@@ -57,6 +57,6 @@ class Stream {
 
 extension Post {
     var threadStream: Stream {
-        return Stream(view: .thread(root: self.thread?.root ?? id), posts: [self])
+        return Stream(view: .thread(containing: id), posts: [self])
     }
 }

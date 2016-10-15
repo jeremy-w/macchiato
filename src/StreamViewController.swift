@@ -86,6 +86,7 @@ class StreamViewController: UITableViewController {
         guard let streamVC = segue.destination as? StreamViewController
         , let postRepository = self.postRepository else { return true }
 
+        // (jws/2016-10-14)FIXME: Should create the stream ourselves, and bootstrap with all the posts we already have in the thread (filter by thread.root match)
         streamVC.configure(stream: post.threadStream, postRepository: postRepository)
         return true
     }
