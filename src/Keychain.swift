@@ -1,43 +1,43 @@
 import Foundation
 
 enum Keychain {
-    static func add(account: String, service: String, data: Data, generic: Data) -> Bool {
+    static func add(account: String, service: String, data: Data) -> Bool {
     // swiftlint:disable:previous function_body_length
-        let dict: NSDictionary = [
+        let query = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,
             kSecAttrService: service,
-            kSecAttrGeneric: generic,
-            kSecValueData: data,
-            ]
+            ] as NSDictionary
 
-        let status = SecItemAdd(dict, nil)
-        guard status != errSecDuplicateItem else {
-            print("KEYCHAIN: DEBUG: Duplicate item: account \(account) with service \(service) - falling back to updating instead of adding")
-            let updated = SecItemUpdate(dict, dict)
-            // If the update gripes that it's a perfect duplicate, it succeeded, right?
-            guard updated == errSecSuccess || updated == errSecDuplicateItem else {
-                print("KEYCHAIN: ERROR: Failed to update account \(account) with service \(service) keychain item: error \(status)")
-                return false
-            }
-            return true
+        let exists = SecItemCopyMatching(query, nil) == errSecSuccess
+        print("KEYCHAIN: DEBUG: generic password for account «\(account)» with service «\(service)» "
+            + "\(exists ? "already exists" : "does not yet exist")")
+        let status: OSStatus
+        if exists {
+            status = SecItemUpdate(query, [ kSecValueData: data, ] as NSDictionary)
+        } else {
+            let attributes = [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrAccount: account,
+                kSecAttrService: service,
+                kSecValueData: data,
+            ] as NSDictionary
+            status = SecItemAdd(attributes, nil)
         }
-
-        guard status == errSecSuccess else {
-            print("KEYCHAIN: ERROR: Failed to add account \(account) with service \(service) to keychain: error \(status)")
+        guard status == errSecSuccess || status == errSecDuplicateItem else {
+            print("KEYCHAIN: ERROR: Failed to add or update account «\(account)» with service «\(service)» keychain item: error \(status)")
             return false
         }
-        print("AUTH: DEBUG: Saved \(data.count) bytes of data for account \(account) with service \(service).")
+        print("KEYCHAIN: DEBUG: Saved \(data.count) bytes of data for account «\(account)» with service «\(service)».")
         return true
     }
 
-    static func find(account: String, service: String, generic: Data) -> Data? {
+    static func find(account: String, service: String) -> Data? {
         // swiftlint:disable:previous function_body_length
         let query: NSDictionary = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,
             kSecAttrService: service,
-            kSecAttrGeneric: generic,
             kSecReturnData: true,
             ]
         var result: CFTypeRef?
@@ -54,7 +54,7 @@ enum Keychain {
             print("AUTH: ERROR: Failed understanding returned value of type \(type(of: result))")
             return nil
         }
-        print("AUTH: DEBUG: Found \(data.count) bytes of data for account \(account) with service \(service).")
+        print("AUTH: DEBUG: Found \(data.count) bytes of data for account «\(account)» with service «\(service)».")
         return data
     }
 }

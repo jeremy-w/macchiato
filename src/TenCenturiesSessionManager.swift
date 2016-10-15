@@ -8,10 +8,10 @@ class TenCenturiesSessionManager {
     // You will need to define a `static var appClientGUID: String` in the ignored file: TenCenturiesSessionManager+AppClientGUID.swift
     // to provide your client secret to the app.
     // You can find your client secret, or create one, at: https://admin.10centuries.org/apps/
-    init(session: URLSession, clientGUID: String = TenCenturiesSessionManager.appClientGUID, user: String? = nil) {
+    init(session: URLSession, clientGUID: String = TenCenturiesSessionManager.appClientGUID, user account: String? = nil) {
         self.session = session
         self.clientGUID = clientGUID
-        self.user = TenCenturiesSessionManager.load(account: user, clientGUID: clientGUID)
+        user = TenCenturiesSessionManager.load(account: account)
     }
 
     struct User {
@@ -37,33 +37,27 @@ extension TenCenturiesSessionManager: RequestAuthenticator {
 extension TenCenturiesSessionManager {
     func save(user: User) {
         TenCenturiesSessionManager.updateLastAccount(user.account)
-        guard let tokenData = user.token.data(using: .utf8)
-        , let guidData = clientGUID.data(using: .utf8) else {
-            print("AUTH: ERROR: Failed to serialize token or guid strings as data")
+        guard let tokenData = user.token.data(using: .utf8) else {
+            print("AUTH: ERROR: Failed to serialize token as data")
             return
         }
 
         guard Keychain.add(
             account: user.account,
             service: "10Centuries",
-            data: tokenData,
-            generic: guidData) else {
+            data: tokenData) else {
             return print("AUTH: ERROR: Failed to save token for \(user.account)")
         }
         print("AUTH: INFO: Successfully saved token for \(user.account)")
     }
 
     /// Nil account means "use the last one we used".
-    static func load(account: String?, clientGUID: String) -> User? {
+    static func load(account: String?) -> User? {
         guard let account = account ?? lastAccount else {
             print("AUTH: ERROR: No account to look up token for")
             return nil
         }
-        guard let guidData = clientGUID.data(using: .utf8) else {
-            print("AUTH: ERROR: Failed to serialize client GUID as UTF-8-encoded data.")
-            return nil
-        }
-        guard let data = Keychain.find(account: account, service: "10Centuries", generic: guidData) else {
+        guard let data = Keychain.find(account: account, service: "10Centuries") else {
             print("AUTH: INFO: No login info found for account \(account).")
             return nil
         }
