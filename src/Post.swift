@@ -29,3 +29,12 @@ struct Post {
     /// If the same as `date`, then the post has not been edited.
     let updated: Date
 }
+
+
+struct EditingPost {
+    var content: String
+
+    let channel = 1
+    let updating: String?
+    let replyTo: String?
+}

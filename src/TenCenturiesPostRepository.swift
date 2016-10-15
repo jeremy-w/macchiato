@@ -44,13 +44,13 @@ extension Stream.View {
         }
     }
 
-    var queryItems: [URLQueryItem] {
+    var queryItems: [URLQueryItem]? {
         switch self {
         case let .thread(root):
             return [URLQueryItem(name: "post_id", value: root)]
 
         default:
-            return []
+            return nil
         }
     }
 }
@@ -64,6 +64,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         self.authenticator = authenticator
     }
 
+    // MARK: - Parses posts from a stream
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
     func find(stream: Stream, since: Post?, completion: @escaping (Result<[Post]>) -> Void) {
         let url = URL(string: stream.view.path, relativeTo: TenCenturies.baseURL)!
@@ -75,14 +76,14 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             let result = Result.of { () -> [Post] in
                 let parent = try result.unwrap()
                 let data: [JSONDictionary] = try unpack(parent, "data")
-                let posts = try self.parsePosts(from: data, source: url)
+                let posts = try self.parsePosts(from: data)
                 return posts
             }
             completion(result)
         }
     }
 
-    func parsePosts(from posts: [JSONDictionary], source url: URL) throws -> [Post] {
+    func parsePosts(from posts: [JSONDictionary]) throws -> [Post] {
         return try posts.map { post in try parsePost(from: post) }
     }
 
@@ -114,5 +115,37 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             parentID: parentID,
             client: try unpack(unpack(post, "client"), "name"),
             updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")))
+    }
+
+
+    // MARK: - Saves posts
+    func save(post: EditingPost, completion: @escaping (Result<[Post]>) -> Void) {
+        let url = URL(string: "/content", relativeTo: TenCenturies.baseURL)!
+        var request = URLRequest(url: url)
+        request.httpBody = json(for: post)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let _ = send(request: request) { result in
+            let result = Result.of { () -> [Post] in
+                let wrapper = try result.unwrap()
+                let data: [JSONDictionary] = try unpack(wrapper, "data")
+                return try self.parsePosts(from: data)
+            }
+            completion(result)
+        }
+    }
+
+    func json(for post: EditingPost) -> Data {
+        var json: JSONDictionary = [
+            "content": post.content,
+            "channel": post.channel,
+            ]
+        if let postID = post.updating.flatMap({ UIntMax($0, radix: 10) }) {
+            json["post_id"] = postID
+        }
+        if let replyTo = post.replyTo.flatMap({ UIntMax($0, radix: 10) }) {
+            json["reply_to"] = replyTo
+        }
+        // swiftlint:disable:next force_try
+        return try! JSONSerialization.data(withJSONObject: json, options: [])
     }
 }
