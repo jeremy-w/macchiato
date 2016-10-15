@@ -19,6 +19,17 @@ class ComposePostViewController: UIViewController {
         self.action = action
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        registerForKeyboardNotifications()
+    }
+
+    func registerForKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(notification:)), name: .UIKeyboardWillChangeFrame, object: nil)
+    }
+
+
+    // MARK: - Sends a new post
     @IBOutlet var textView: UITextView?
     @IBAction func postAction() {
         postRepository?.save(post: post, completion: { result in
@@ -72,5 +83,15 @@ class ComposePostViewController: UIViewController {
             replyTo = current.thread?.replyTo
         }
         return EditingPost(content: textView?.text ?? "", updating: updating, replyTo: replyTo)
+    }
+
+
+    // MARK: - Moves out of the way of the keyboard
+    @IBOutlet var bottomConstraint: NSLayoutConstraint?
+    @objc func keyboardWillChangeFrame(notification note: NSNotification) {
+        guard let window = view.window, let constraint = bottomConstraint else { return }
+        guard let value = note.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let topEdgeOfKeyboard = window.convert(value.cgRectValue, from: nil).minY
+        constraint.constant = window.bounds.height - topEdgeOfKeyboard
     }
 }
