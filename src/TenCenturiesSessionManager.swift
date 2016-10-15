@@ -82,7 +82,7 @@ extension TenCenturiesSessionManager {
 // MARK: - Handle log in/out actions
 extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     var loggedInAccountName: String? {
-        return nil
+        return user?.account
     }
 
     var authenticator: RequestAuthenticator { return self }
