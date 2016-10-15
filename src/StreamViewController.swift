@@ -12,6 +12,7 @@ class StreamViewController: UITableViewController {
         tableView.estimatedRowHeight = 44
     }
 
+    @IBOutlet var newPostButton: UIBarButtonItem?
     override func viewDidLoad() {
         super.viewDidLoad()
         refreshControl = makeRefreshControl()
@@ -20,6 +21,16 @@ class StreamViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         if prepareToShowThread(segue: segue, sender: sender) { return }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        canSendPostDidChange()
+    }
+
+    // (jws/2016-10-14)TODO: We need access to this.
+    // Probably by way of whatever allows us to interact with posts when logged in.
+    var isLoggedIn: Bool {
+        return true
     }
 
 
@@ -94,5 +105,15 @@ class StreamViewController: UITableViewController {
     func post(at point: CGPoint) -> Post? {
         guard let index = tableView.indexPathForRow(at: point)?.row else { return nil }
         return stream?.posts[index]
+    }
+
+
+    // MARK: - Allows to post a new post
+    func canSendPostDidChange() {
+        navigationItem.rightBarButtonItem = isLoggedIn ? newPostButton : nil
+    }
+
+    @IBAction func unwindToParentStreamViewController(_ segue: UIStoryboardSegue) {
+        return
     }
 }

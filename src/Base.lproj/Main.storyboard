@@ -338,7 +338,16 @@
                             <outletCollection property="gestureRecognizers" destination="qMj-WT-Kw2" appends="YES" id="1ar-ka-0uk"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="Bsv-kP-gF2"/>
+                    <navigationItem key="navigationItem" id="Bsv-kP-gF2">
+                        <barButtonItem key="rightBarButtonItem" title="+" id="Az5-2O-c7t">
+                            <connections>
+                                <segue destination="Jhq-7V-JqW" kind="presentation" id="oLq-f0-gxt"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="newPostButton" destination="Az5-2O-c7t" id="Evw-ul-HML"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ux4-f5-wRr" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <swipeGestureRecognizer direction="left" id="qMj-WT-Kw2">
@@ -348,6 +357,14 @@
                 </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="709.60000000000002" y="131.78410794602701"/>
+        </scene>
+        <!--ComposePost-->
+        <scene sceneID="sMx-XH-uKa">
+            <objects>
+                <viewControllerPlaceholder storyboardName="ComposePost" id="Jhq-7V-JqW" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mDQ-9t-Mtd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1517" y="131"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
