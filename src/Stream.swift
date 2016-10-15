@@ -53,3 +53,10 @@ class Stream {
         }
     }
 }
+
+
+extension Post {
+    var threadStream: Stream {
+        return Stream(view: .thread(root: self.thread?.root ?? id), posts: [self])
+    }
+}

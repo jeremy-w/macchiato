@@ -243,10 +243,10 @@
             </objects>
             <point key="canvasLocation" x="3431" y="-630"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Settings Navigation Controller-->
         <scene sceneID="oDg-Hk-Z1J">
             <objects>
-                <navigationController id="WA1-m7-6fC" sceneMemberID="viewController">
+                <navigationController id="WA1-m7-6fC" userLabel="Settings Navigation Controller" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="oVp-71-T1b">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -259,10 +259,10 @@
             </objects>
             <point key="canvasLocation" x="1724" y="-630"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Stream Navigation Controller-->
         <scene sceneID="r7l-gg-dq7">
             <objects>
-                <navigationController id="vC3-pB-5Vb" sceneMemberID="viewController">
+                <navigationController id="vC3-pB-5Vb" userLabel="Stream Navigation Controller" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="DjV-YW-jjY">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -283,6 +283,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="PostCell" rowHeight="350" id="VDA-u1-3Hw" customClass="PostCell" customModule="Macchiato" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="92" width="375" height="350"/>
@@ -334,16 +335,23 @@
                         <connections>
                             <outlet property="dataSource" destination="okv-1E-ESU" id="cSc-NY-1Ge"/>
                             <outlet property="delegate" destination="okv-1E-ESU" id="Yz3-Z1-cuG"/>
+                            <outletCollection property="gestureRecognizers" destination="qMj-WT-Kw2" appends="YES" id="1ar-ka-0uk"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="Bsv-kP-gF2"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ux4-f5-wRr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="left" id="qMj-WT-Kw2">
+                    <connections>
+                        <segue destination="okv-1E-ESU" kind="show" identifier="ShowThread" id="es5-Sc-Pfh"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="709.60000000000002" y="131.78410794602701"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="6S0-TO-JiA"/>
+        <segue reference="Y7p-AU-gU9"/>
     </inferredMetricsTieBreakers>
 </document>

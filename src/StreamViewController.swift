@@ -17,12 +17,13 @@ class StreamViewController: UITableViewController {
         refreshControl = makeRefreshControl()
     }
 
-    func makeRefreshControl() -> UIRefreshControl {
-        let control = UIRefreshControl()
-        control.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
-        return control
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        if prepareToShowThread(segue: segue, sender: sender) { return }
     }
 
+
+    // MARK: - Supports Pull to Refresh
     @IBAction func refreshAction() {
         guard let stream = stream, let postRepository = postRepository else { return }
 
@@ -50,6 +51,13 @@ class StreamViewController: UITableViewController {
         }
     }
 
+    func makeRefreshControl() -> UIRefreshControl {
+        let control = UIRefreshControl()
+        control.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
+        return control
+    }
+
+
     // MARK: - Vends posts to a table view
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -66,5 +74,24 @@ class StreamViewController: UITableViewController {
             cell.configure(post: post)
         }
         return cell
+    }
+
+
+    // MARK: - Loads thread on swipe to left
+    func prepareToShowThread(segue: UIStoryboardSegue, sender: Any) -> Bool {
+        guard segue.identifier == "ShowThread" else { return false }
+        guard let swipe = sender as? UISwipeGestureRecognizer
+        , let post = post(at: swipe.location(in: view)) else { return true }
+
+        guard let streamVC = segue.destination as? StreamViewController
+        , let postRepository = self.postRepository else { return true }
+
+        streamVC.configure(stream: post.threadStream, postRepository: postRepository)
+        return true
+    }
+
+    func post(at point: CGPoint) -> Post? {
+        guard let index = tableView.indexPathForRow(at: point)?.row else { return nil }
+        return stream?.posts[index]
     }
 }
