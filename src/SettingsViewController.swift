@@ -99,6 +99,7 @@ class SettingsViewController: UITableViewController {
         } catch {
             toastFailedLogin(error: error)
         }
+        tableView?.reloadData()
     }
 
     private func toastSuccessfulLogin(as account: String) {
