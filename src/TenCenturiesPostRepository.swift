@@ -120,8 +120,9 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Saves posts
     func save(post: EditingPost, completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: "/content", relativeTo: TenCenturies.baseURL)!
+        let url = URL(string: "/content/write", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
+        request.httpMethod = "POST"
         request.httpBody = json(for: post)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         let _ = send(request: request) { result in
@@ -135,16 +136,11 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func json(for post: EditingPost) -> Data {
-        var json: JSONDictionary = [
+        let json: JSONDictionary = [
             "content": post.content,
-            "channel": post.channel,
+            "post_id": post.updating ?? "",
+            "reply_to": post.replyTo ?? "",
             ]
-        if let postID = post.updating.flatMap({ UIntMax($0, radix: 10) }) {
-            json["post_id"] = postID
-        }
-        if let replyTo = post.replyTo.flatMap({ UIntMax($0, radix: 10) }) {
-            json["reply_to"] = replyTo
-        }
         // swiftlint:disable:next force_try
         return try! JSONSerialization.data(withJSONObject: json, options: [])
     }
