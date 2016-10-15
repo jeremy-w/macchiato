@@ -10,7 +10,7 @@
         <!--New Post-->
         <scene sceneID="EVd-XB-QJD">
             <objects>
-                <viewController title="New Post" modalPresentationStyle="pageSheet" id="Qw4-kH-RwE" sceneMemberID="viewController">
+                <viewController title="New Post" modalPresentationStyle="pageSheet" id="Qw4-kH-RwE" customClass="ComposePostViewController" customModule="Macchiato" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="uMv-Fd-xFk"/>
                         <viewControllerLayoutGuide type="bottom" id="Obl-kS-Ffu"/>
@@ -34,6 +34,7 @@
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                         <state key="normal" title="Post"/>
                                         <connections>
+                                            <action selector="postAction" destination="Qw4-kH-RwE" eventType="touchUpInside" id="7d3-sv-TnE"/>
                                             <segue destination="UEc-Sh-0fK" kind="unwind" unwindAction="unwindToParentStreamViewController:" id="h13-a3-xuw"/>
                                         </connections>
                                     </button>
@@ -59,6 +60,9 @@
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
+                    <connections>
+                        <outlet property="textView" destination="dYz-qF-gej" id="XK9-6i-h0O"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FqN-SG-bdT" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="UEc-Sh-0fK" userLabel="Exit" sceneMemberID="exit"/>

@@ -40,6 +40,7 @@
 		3F2E29AB1DB1933B00519C9E /* KeychainIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29AA1DB1933B00519C9E /* KeychainIntegration.swift */; };
 		3F2E29AD1DB1937500519C9E /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29AC1DB1937500519C9E /* Keychain.swift */; };
 		3F2E29B01DB1C60E00519C9E /* ComposePost.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */; };
+		3F2E29B21DB252D200519C9E /* ComposePostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		3F2E29AA1DB1933B00519C9E /* KeychainIntegration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainIntegration.swift; sourceTree = "<group>"; };
 		3F2E29AC1DB1937500519C9E /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ComposePost.storyboard; sourceTree = "<group>"; };
+		3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */,
+				3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */,
 			);
 			name = "Composing Posts";
 			sourceTree = "<group>";
@@ -365,6 +368,7 @@
 				3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */,
 				3F2E29311DA9E9D700519C9E /* Random.swift in Sources */,
 				3F2E29461DAB12BB00519C9E /* SettingsViewController.swift in Sources */,
+				3F2E29B21DB252D200519C9E /* ComposePostViewController.swift in Sources */,
 				3F2E29A31DAFC6DD00519C9E /* URLRequest+FormEncoding.swift in Sources */,
 				3F2E29AD1DB1937500519C9E /* Keychain.swift in Sources */,
 				3F2E292B1DA9DC9900519C9E /* StreamViewController.swift in Sources */,

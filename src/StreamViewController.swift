@@ -113,6 +113,14 @@ class StreamViewController: UITableViewController {
         navigationItem.rightBarButtonItem = isLoggedIn ? newPostButton : nil
     }
 
+    func prepareToComposePost(segue: UIStoryboardSegue) -> Bool {
+        guard let composer = segue.destination as? ComposePostViewController else { return false }
+
+        guard let postRepository = self.postRepository else { return true }
+        composer.configure(postRepository: postRepository)
+        return true
+    }
+
     @IBAction func unwindToParentStreamViewController(_ segue: UIStoryboardSegue) {
         return
     }
