@@ -272,6 +272,7 @@
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SLD-UC-DBI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="xaH-QF-b8L" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-45" y="129"/>
         </scene>
@@ -336,6 +337,7 @@
                             <outlet property="dataSource" destination="okv-1E-ESU" id="cSc-NY-1Ge"/>
                             <outlet property="delegate" destination="okv-1E-ESU" id="Yz3-Z1-cuG"/>
                             <outletCollection property="gestureRecognizers" destination="qMj-WT-Kw2" appends="YES" id="1ar-ka-0uk"/>
+                            <outletCollection property="gestureRecognizers" destination="9Fd-dp-n05" appends="YES" id="mh8-nw-YRM"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="Bsv-kP-gF2">
@@ -350,7 +352,12 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ux4-f5-wRr" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="left" id="qMj-WT-Kw2">
+                <swipeGestureRecognizer direction="right" id="9Fd-dp-n05" userLabel="&quot;Go Back&quot; Swipe Gesture Recognizer">
+                    <connections>
+                        <segue destination="xaH-QF-b8L" kind="unwind" unwindAction="unwindToParentStreamViewController:" id="OOE-nQ-UAX"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="qMj-WT-Kw2" userLabel="&quot;Show Thread&quot; Swipe Gesture Recognizer">
                     <connections>
                         <segue destination="okv-1E-ESU" kind="show" identifier="ShowThread" id="es5-Sc-Pfh"/>
                     </connections>
