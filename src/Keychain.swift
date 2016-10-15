@@ -12,6 +12,17 @@ enum Keychain {
             ]
 
         let status = SecItemAdd(dict, nil)
+        guard status != errSecDuplicateItem else {
+            print("KEYCHAIN: DEBUG: Duplicate item: account \(account) with service \(service) - falling back to updating instead of adding")
+            let updated = SecItemUpdate(dict, dict)
+            // If the update gripes that it's a perfect duplicate, it succeeded, right?
+            guard updated == errSecSuccess || updated == errSecDuplicateItem else {
+                print("KEYCHAIN: ERROR: Failed to update account \(account) with service \(service) keychain item: error \(status)")
+                return false
+            }
+            return true
+        }
+
         guard status == errSecSuccess else {
             print("KEYCHAIN: ERROR: Failed to add account \(account) with service \(service) to keychain: error \(status)")
             return false
