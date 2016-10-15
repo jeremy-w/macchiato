@@ -26,7 +26,8 @@ extension TenCenturiesService {
         precondition(unauthenticated.url != nil, "request without URL: \(String(reflecting: unauthenticated))")
         let request = authenticator.authenticate(request: unauthenticated)
         let url = request.url!  // swiftlint:disable:this
-        print("API: INFO: BEGIN \(request.url)")
+        print("API: INFO: BEGIN \(request.url) \(request)")
+        print("API: DEBUG: BEGIN:\n\(debugInfo(for: request))")
         let task = session.dataTask(with: request) { (data, response, error) in
             let result = Result.of { () throws -> JSONDictionary in
                 do {
@@ -43,6 +44,7 @@ extension TenCenturiesService {
                     let limits = RateLimit(headers: response.allHeaderFields)
                     print("API: INFO: END \(url): \(response.statusCode): \(data) \(error) "
                         + "- RATELIMIT: \(limits.map { String(reflecting: $0) } ?? "(headers not found)")")
+                    print("API: DEBUG: END: \(response)\n\(debugInfo(for: response))")
 
                     guard let data = data else {
                         throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
@@ -74,4 +76,19 @@ extension TenCenturiesService {
         task.resume()
         return task
     }
+}
+
+
+func debugInfo(for request: URLRequest) -> String {
+    let target = "\(request.httpMethod ?? "«no method»") \(request.url?.absoluteString ?? "«no url»")"
+    let headers = request.allHTTPHeaderFields?.map { "\($0.key): \($0.value)" }.joined(separator: "\n") ?? "«nil headers»"
+    let body = request.httpBody.flatMap { String(data: $0, encoding: .utf8) ?? String(reflecting: $0) }
+        ??  "httpBody: \(String(reflecting: request.httpBody)) - httpBodyStream: \(String(reflecting: request.httpBodyStream))"
+    return [target, headers, "", body].joined(separator: "\n")
+}
+
+func debugInfo(for response: HTTPURLResponse) -> String {
+    let target = "\(response.statusCode) \(response.url)"
+    let headers = response.allHeaderFields.map { "\($0.key): \($0.value)" }.joined(separator: "\n")
+    return [target, headers].joined(separator: "\n")
 }
