@@ -343,7 +343,7 @@
                     <navigationItem key="navigationItem" id="Bsv-kP-gF2">
                         <barButtonItem key="rightBarButtonItem" title="+" id="Az5-2O-c7t">
                             <connections>
-                                <segue destination="Jhq-7V-JqW" kind="presentation" id="oLq-f0-gxt"/>
+                                <segue destination="Jhq-7V-JqW" kind="presentation" identifier="CreateNewThread" id="oLq-f0-gxt"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

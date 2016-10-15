@@ -21,6 +21,7 @@ class StreamViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         if prepareToShowThread(segue: segue, sender: sender) { return }
+        if prepareToCreateNewThread(segue: segue) { return }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -97,7 +98,8 @@ class StreamViewController: UITableViewController {
         guard let streamVC = segue.destination as? StreamViewController
         , let postRepository = self.postRepository else { return true }
 
-        // (jws/2016-10-14)FIXME: Should create the stream ourselves, and bootstrap with all the posts we already have in the thread (filter by thread.root match)
+        // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
+        // (match on thread.root)
         streamVC.configure(stream: post.threadStream, postRepository: postRepository)
         return true
     }
@@ -113,11 +115,12 @@ class StreamViewController: UITableViewController {
         navigationItem.rightBarButtonItem = isLoggedIn ? newPostButton : nil
     }
 
-    func prepareToComposePost(segue: UIStoryboardSegue) -> Bool {
-        guard let composer = segue.destination as? ComposePostViewController else { return false }
+    func prepareToCreateNewThread(segue: UIStoryboardSegue) -> Bool {
+        guard segue.identifier == "CreateNewThread" else { return false }
+        guard let composer = segue.destination as? ComposePostViewController else { return true }
 
         guard let postRepository = self.postRepository else { return true }
-        composer.configure(postRepository: postRepository)
+        composer.configure(postRepository: postRepository, action: .newThread)
         return true
     }
 
