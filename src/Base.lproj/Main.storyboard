@@ -338,6 +338,7 @@
                             <outlet property="delegate" destination="okv-1E-ESU" id="Yz3-Z1-cuG"/>
                             <outletCollection property="gestureRecognizers" destination="qMj-WT-Kw2" appends="YES" id="1ar-ka-0uk"/>
                             <outletCollection property="gestureRecognizers" destination="9Fd-dp-n05" appends="YES" id="mh8-nw-YRM"/>
+                            <outletCollection property="gestureRecognizers" destination="Stn-t1-Ks6" appends="YES" id="gmo-se-ada"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="Bsv-kP-gF2">
@@ -362,6 +363,11 @@
                         <segue destination="okv-1E-ESU" kind="show" identifier="ShowThread" id="es5-Sc-Pfh"/>
                     </connections>
                 </swipeGestureRecognizer>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="Stn-t1-Ks6">
+                    <connections>
+                        <action selector="longPressActionWithSender:" destination="okv-1E-ESU" id="6VK-4w-RAM"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="709.60000000000002" y="131.78410794602701"/>
         </scene>

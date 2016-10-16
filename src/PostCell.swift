@@ -76,6 +76,7 @@ class PostCell: UITableViewCell {
         }
         info.append("client: \(post.client)")
         info.append("id: \(post.id)")
+        if post.deleted { info.append("deleted!") }
         if let thread = post.thread {
             info.append("reply to: \(thread.replyTo)")
             info.append("in thread: \(thread.root)")
@@ -83,6 +84,13 @@ class PostCell: UITableViewCell {
         if let parentID = post.parentID {
             info.append("parent: \(parentID)")
         }
+
+        let you = post.you
+        if you.starred { info.append("🌟") }
+        if let pinned = you.pinned { info.append("📌 \(pinned)") }
+        if you.reposted { info.append("♻️") }
+        if you.muted { info.append("☠️ (you muted this)") }
+        if you.cannotSee { info.append("invisible to you! 👻") }
         return info
     }
 }

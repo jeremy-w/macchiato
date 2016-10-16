@@ -4,7 +4,7 @@ struct Post {
     let id: String
     let author: String
     let date: Date
-    let content: String
+    var content: String
 
     static func makeFake() -> Post {
         // swiftlint:disable:previous function_body_length
@@ -18,7 +18,9 @@ struct Post {
             thread: nil,
             parentID: nil,
             client: "Magicat",
-            updated: now)
+            updated: now,
+            deleted: false,
+            you: You())
     }
 
     let privacy: String
@@ -27,7 +29,28 @@ struct Post {
     let client: String
 
     /// If the same as `date`, then the post has not been edited.
-    let updated: Date
+    var updated: Date
+    var deleted: Bool
+
+    var you: You
+
+    struct You {
+        var wereMentioned: Bool = false
+        var starred: Bool = false
+        var pinned: PinColor?
+        var reposted: Bool = false
+        var muted: Bool = false
+        var cannotSee: Bool = false
+    }
+
+    enum PinColor {
+        case black
+        case blue
+        case green
+        case orange
+        case red
+        case yellow
+    }
 }
 
 

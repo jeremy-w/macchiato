@@ -5,13 +5,17 @@ class PostParsing: XCTestCase {
     let subject = TenCenturiesPostRepository(session: anySession, authenticator: DummyRequestAuthenticator())
 
     func testParsingThreadInfoForAThreadedPost() throws {
-        let post = try subject.parsePost(from: capturedPostWithThreadInfo)
-        guard let thread = post.thread else {
-            return XCTFail("failed to parse any thread info from post")
-        }
+        do {
+            let post = try subject.parsePost(from: capturedPostWithThreadInfo)
+            guard let thread = post.thread else {
+                return XCTFail("failed to parse any thread info from post")
+            }
 
-        XCTAssertEqual(thread.root, "78779", "failed to correctly parse threadID AKA root")
-        XCTAssertEqual(thread.replyTo, "78786", "failed to correctly parse replyTo")
+            XCTAssertEqual(thread.root, "78779", "failed to correctly parse threadID AKA root")
+            XCTAssertEqual(thread.replyTo, "78786", "failed to correctly parse replyTo")
+        } catch {
+            return XCTFail("parsing failed completely: \(error)")
+        }
     }
 
     var capturedPostWithThreadInfo: [String: Any] {

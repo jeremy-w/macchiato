@@ -21,7 +21,7 @@ class StreamViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         if prepareToShowThread(segue: segue, sender: sender) { return }
-        if prepareToCreateNewThread(segue: segue) { return }
+        if prepareToCreateNewThread(segue: segue, sender: sender) { return }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -90,7 +90,7 @@ class StreamViewController: UITableViewController {
 
 
     // MARK: - Loads thread on swipe to left
-    func prepareToShowThread(segue: UIStoryboardSegue, sender: Any) -> Bool {
+    func prepareToShowThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == "ShowThread" else { return false }
         guard let swipe = sender as? UISwipeGestureRecognizer
         , let post = post(at: swipe.location(in: view)) else { return true }
@@ -115,16 +115,91 @@ class StreamViewController: UITableViewController {
         navigationItem.rightBarButtonItem = isLoggedIn ? newPostButton : nil
     }
 
-    func prepareToCreateNewThread(segue: UIStoryboardSegue) -> Bool {
-        guard segue.identifier == "CreateNewThread" else { return false }
+    enum Segue: String {
+        case createNewThread = "CreateNewThread"
+    }
+    func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
+        guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
 
+        let action: ComposePostViewController.Action
+        if let actionSender = sender as? ComposePostViewController.Action {
+            action = actionSender
+        } else {
+            action = .newThread
+        }
+
         guard let postRepository = self.postRepository else { return true }
-        composer.configure(postRepository: postRepository, action: .newThread)
+        composer.configure(postRepository: postRepository, action: action)
         return true
     }
 
     @IBAction func unwindToParentStreamViewController(_ segue: UIStoryboardSegue) {
         return
+    }
+
+
+    // MARK: - Allows taking actions on posts
+    @IBAction func longPressAction(sender: UILongPressGestureRecognizer) {
+        guard let target = post(at: sender.location(in: view)) else { return }
+
+        let alert = makePostActionAlert(for: target)
+        present(alert, animated: true, completion: nil)
+    }
+
+    func makePostActionAlert(for post: Post) -> UIAlertController {
+        let alert = UIAlertController(title: NSLocalizedString("Post Actions", comment: "alert title"), message: nil, preferredStyle: .actionSheet)
+        func perform(_ action: PostAction) -> (UIAlertAction) -> Void {
+            return { [weak self] _ in self?.take(action: action, on: post) }
+        }
+        for (title, action) in [
+            (NSLocalizedString("Reply", comment: "button"), .reply),
+            (NSLocalizedString("Un/Star", comment: "button"), .star),
+            (NSLocalizedString("Un/Pin", comment: "button"), .pin),
+        ] as [(String, PostAction)] {
+            alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
+        }
+        return alert
+    }
+
+    func take(action: PostAction, on post: Post) {
+        switch action {
+        case .reply:
+            performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: ComposePostViewController.Action.newReply(to: post))
+
+        case .star:
+            postRepository?.star(post: post) { result in
+                if case .success = result {
+                    guard let stream = self.stream
+                    , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
+
+                    stream.posts[index].you.starred = !stream.posts[index].you.starred
+                    self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                }
+                /* (jws/2016-10-15)FIXME: Need general "report the error" handler. */
+            }
+
+        case .pin:
+            /* (jws/2016-10-15)TODO: Ask what color they want. */
+            break
+
+        case .repost:
+            postRepository?.repost(post: post, completion: { (result) in
+                guard let stream = self.stream
+                , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
+
+                if case .success = result {
+                    stream.posts[index].you.reposted = true
+                    self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                }
+            })
+        }
+    }
+
+    enum PostAction {
+        case reply
+        case star
+        case pin
+        case repost
     }
 }

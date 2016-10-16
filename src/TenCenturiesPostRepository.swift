@@ -4,9 +4,12 @@ typealias JSONDictionary = [String: Any]
 
 let notYetImplemented = NSError(domain: "notyetimplemented", code: -1, userInfo: [NSLocalizedDescriptionKey: "Not Yet Implemented"])
 
-func unpack<T>(_ obj: JSONDictionary, _ field: String) throws -> T {
+func unpack<T>(_ obj: JSONDictionary, _ field: String, default: T? = nil) throws -> T {
     guard let value = obj[field] else {
-        throw TenCenturiesError.missingField(field: field, object: obj)
+        guard let defaultValue = `default` else {
+            throw TenCenturiesError.missingField(field: field, object: obj)
+        }
+        return defaultValue
     }
 
     guard let cast = value as? T else {
@@ -114,7 +117,32 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             thread: thread,
             parentID: parentID,
             client: try unpack(unpack(post, "client"), "name"),
-            updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")))
+            updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")),
+            deleted: try unpack(post, "is_deleted"),
+            you: try parseYou(from: post))
+    }
+
+    func parseYou(from post: JSONDictionary) throws -> Post.You {
+        return Post.You(
+            wereMentioned: try unpack(post, "is_mention"),
+            starred: try unpack(post, "you_starred"),
+            pinned: parseYouPinned(try unpack(post, "you_pinned") as Any),
+            reposted: try unpack(post, "you_reposted"),  // docs say "you_reblurbed" but are wrong
+            muted: try unpack(post, "is_muted"),
+            cannotSee: try !unpack(post, "is_visible"))
+    }
+
+    func parseYouPinned(_ rawPinned: Any) -> Post.PinColor? {
+        if rawPinned is Bool {
+            return nil
+        }
+
+        guard let text = rawPinned as? String else { return nil }
+
+        let pins = ["pin.black", "pin.blue", "pin.red", "pin.green", "pin.orange", "pin.yellow"]
+        let colors: [Post.PinColor] = [.black, .blue, .red, .green, .orange, .yellow]
+        assert(pins.count == colors.count, "pins.count \(pins.count) != colors.count \(colors.count)")
+        return pins.index(of: text).map { colors[$0] }
     }
 
 
@@ -143,5 +171,25 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             ]
         // swiftlint:disable:next force_try
         return try! JSONSerialization.data(withJSONObject: json, options: [])
+    }
+
+
+    // MARK: - Deletes posts
+    func delete(post: Post, completion: @escaping (Result<Void>) -> Void) {
+        completion(.failure(notYetImplemented))
+    }
+
+
+    // MARK: - Takes sundry other actions
+    func star(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
+        completion(.failure(notYetImplemented))
+    }
+
+    func pin(post: Post, color: Post.PinColor?, completion: @escaping (Result<[Post]>) -> Void) {
+        completion(.failure(notYetImplemented))
+    }
+
+    func repost(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
+        completion(.failure(notYetImplemented))
     }
 }
