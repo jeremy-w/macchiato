@@ -154,12 +154,24 @@ class StreamViewController: UITableViewController {
         }
         for (title, action) in [
             (NSLocalizedString("Reply", comment: "button"), .reply),
-            (NSLocalizedString("Un/Star", comment: "button"), .star),
-            (NSLocalizedString("Un/Pin", comment: "button"), .pin),
+            (post.you.starred
+                ? NSLocalizedString("Unstar", comment: "button")
+                : NSLocalizedString("Star", comment: "button"), .star),
+            (post.you.pinned == nil
+                ? NSLocalizedString("Pin", comment: "button")
+                : NSLocalizedString("Edit Pin", comment: "button"), .pin),
+            (NSLocalizedString("Repost", comment: "button"), .repost)
         ] as [(String, PostAction)] {
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
         }
+        let cancel = makeCancelAction()
+        alert.addAction(cancel)
+        alert.preferredAction = cancel
         return alert
+    }
+
+    func makeCancelAction() -> UIAlertAction {
+        return UIAlertAction(title: NSLocalizedString("Cancel", comment: "button"), style: .default, handler: nil)
     }
 
     func take(action: PostAction, on post: Post) {
@@ -172,16 +184,17 @@ class StreamViewController: UITableViewController {
                 if case .success = result {
                     guard let stream = self.stream
                     , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
-
-                    stream.posts[index].you.starred = !stream.posts[index].you.starred
-                    self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    DispatchQueue.main.async {
+                        stream.posts[index].you.starred = !stream.posts[index].you.starred
+                        self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
                 }
                 /* (jws/2016-10-15)FIXME: Need general "report the error" handler. */
             }
 
         case .pin:
-            /* (jws/2016-10-15)TODO: Ask what color they want. */
-            break
+            let followup = makePinAlert(for: post)
+            present(followup, animated: true, completion: nil)
 
         case .repost:
             postRepository?.repost(post: post, completion: { (result) in
@@ -189,10 +202,53 @@ class StreamViewController: UITableViewController {
                 , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
 
                 if case .success = result {
-                    stream.posts[index].you.reposted = true
-                    self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    DispatchQueue.main.async {
+                        stream.posts[index].you.reposted = true
+                        self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
                 }
             })
+        }
+    }
+
+    func makePinAlert(for post: Post) -> UIAlertController {
+        let alert = UIAlertController(title: NSLocalizedString("Pin With…", comment: "button"), message: nil, preferredStyle: .actionSheet)
+        for color: Post.PinColor in [.black, .blue, .green, .orange, .yellow, .red] {
+            alert.addAction(
+                UIAlertAction(
+                    title: String(describing: color).capitalized,
+                    style: .default,
+                    handler: { _ in self.pin(post: post, with: color) }))
+        }
+
+        if post.you.pinned != nil {
+            alert.addAction(
+                UIAlertAction(
+                    title: NSLocalizedString("Unpin", comment: "button"),
+                    style: .destructive,
+                    handler: { _ in self.pin(post: post, with: nil) }))
+        }
+
+        let cancel = makeCancelAction()
+        alert.addAction(cancel)
+        alert.preferredAction = cancel
+        return alert
+    }
+
+    func pin(post: Post, with color: Post.PinColor?) {
+        guard let repo = self.postRepository else { return }
+        repo.pin(post: post, color: color) { (result) in
+            do {
+                let posts = try result.unwrap()
+                guard let post = posts.first, let stream = self.stream else { return }
+                guard let index = stream.posts.index(where: { $0.id == post.id }) else { return }
+                DispatchQueue.main.async {
+                    stream.posts[index] = post
+                    self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                }
+            } catch {
+                // TODO: show error
+            }
         }
     }
 
