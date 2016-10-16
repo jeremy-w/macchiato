@@ -40,6 +40,12 @@ extension Stream.View {
         case .starters:
             return "/content/blurbs/starters"
 
+        case .private_:
+            return "/content/blurbs/private"
+
+        case .starred:
+            return "/content/blurbs/stars"
+
         case .thread:
             // Requires -d post_id=post.thread.root
             // Alternatively, hit /content/social/thread with -d thread_id=post.thread.root.

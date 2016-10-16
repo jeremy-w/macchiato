@@ -20,10 +20,15 @@ class Stream {
     enum View {
         case global
         case home
-        case pinned
+        case starters
+
         case mentions
         case interactions
-        case starters
+        case private_
+
+        case pinned
+        case starred
+
         case thread(containing: String)
 
         var localizedName: String {
@@ -34,8 +39,8 @@ class Stream {
             case .home:
                 return NSLocalizedString("Home", comment: "stream name")
 
-            case .pinned:
-                return NSLocalizedString("Pinned", comment: "stream name")
+            case .starters:
+                return NSLocalizedString("Starters", comment: "stream name")
 
             case .mentions:
                 return NSLocalizedString("Mentions", comment: "stream name")
@@ -43,8 +48,14 @@ class Stream {
             case .interactions:
                 return NSLocalizedString("Interactions", comment: "stream name")
 
-            case .starters:
-                return NSLocalizedString("Starters", comment: "stream name")
+            case .private_:
+                return NSLocalizedString("Private", comment: "stream name")
+
+            case .pinned:
+                return NSLocalizedString("Pinned", comment: "stream name")
+
+            case .starred:
+                return NSLocalizedString("Starred", comment: "stream name")
 
             case let .thread(root):
                 let format = NSLocalizedString("Thread for Post #%@", comment: "stream name - %@ is post ID")

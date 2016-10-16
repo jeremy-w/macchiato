@@ -40,10 +40,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         master.streams = [
             Stream.View.global,
             Stream.View.home,
-            Stream.View.interactions,
-            Stream.View.mentions,
-            Stream.View.pinned,
             Stream.View.starters,
+            Stream.View.mentions,
+            Stream.View.interactions,
+            Stream.View.private_,
+            Stream.View.pinned,
+            Stream.View.starred,
             ].map { Stream(view: $0) }
     }
 
