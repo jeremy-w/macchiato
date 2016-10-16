@@ -181,15 +181,18 @@ class StreamViewController: UITableViewController {
 
         case .star:
             postRepository?.star(post: post) { result in
-                if case .success = result {
+                do {
+                    let _ = try result.unwrap()
                     guard let stream = self.stream
                     , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
                     DispatchQueue.main.async {
                         stream.posts[index].you.starred = !stream.posts[index].you.starred
                         self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                        toast(title: NSLocalizedString("Starred!", comment: "title"))
                     }
+                } catch {
+                    toast(error: error, prefix: NSLocalizedString("Starring Failed", comment: "title"))
                 }
-                /* (jws/2016-10-15)FIXME: Need general "report the error" handler. */
             }
 
         case .pin:
@@ -201,11 +204,15 @@ class StreamViewController: UITableViewController {
                 guard let stream = self.stream
                 , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
 
-                if case .success = result {
+                do {
+                    let _ = try result.unwrap()
                     DispatchQueue.main.async {
                         stream.posts[index].you.reposted = true
                         self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                        toast(title: NSLocalizedString("Reposted!", comment: "title"))
                     }
+                } catch {
+                    toast(error: error, prefix: NSLocalizedString("Repost Failed", comment: "title"))
                 }
             })
         }
@@ -245,9 +252,10 @@ class StreamViewController: UITableViewController {
                 DispatchQueue.main.async {
                     stream.posts[index] = post
                     self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    toast(title: NSLocalizedString("Pinned!", comment: "title"))
                 }
             } catch {
-                // TODO: show error
+                toast(error: error, prefix: NSLocalizedString("Pin Failed", comment: "title"))
             }
         }
     }
@@ -257,5 +265,14 @@ class StreamViewController: UITableViewController {
         case star
         case pin
         case repost
+    }
+}
+
+
+func toast(error: Error, prefix: String) {
+    if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
+        toast(title: "\(prefix): \(text)")
+    } else {
+        toast(title: "\(prefix): \(error)")
     }
 }
