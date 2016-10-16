@@ -1,4 +1,7 @@
 disabled_rules:
+    # We avoid this well enough on our own that this is just annoying.
+    - force_try
+
     # TODO notations are very handy.
     # We have a custom rule to force them to fit a specific format.
     - todo

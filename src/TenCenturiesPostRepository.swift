@@ -176,20 +176,83 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Deletes posts
     func delete(post: Post, completion: @escaping (Result<Void>) -> Void) {
-        completion(.failure(notYetImplemented))
+        let url = URL(string: "/content/\(post.id)", relativeTo: TenCenturies.baseURL)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        let _ = send(request: request) { result in
+            do {
+                let _ = try result.unwrap()
+                completion(.success(Void()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
 
     // MARK: - Takes sundry other actions
     func star(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
-        completion(.failure(notYetImplemented))
+        let url = URL(string: "/content/star/\(post.id)", relativeTo: TenCenturies.baseURL)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        let _ = send(request: request) { (result) in
+            do {
+                let wrapper = try result.unwrap()
+                let posts = try self.parsePosts(from: unpack(wrapper, "data"))
+                completion(.success(posts))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func pin(post: Post, color: Post.PinColor?, completion: @escaping (Result<[Post]>) -> Void) {
-        completion(.failure(notYetImplemented))
+        let url = URL(string: "/content/\(post.id)/pin)", relativeTo: TenCenturies.baseURL)!
+        var request = URLRequest(url: url)
+        if let pin = color {
+            request.httpMethod = "POST"
+            request.httpBody = try! JSONSerialization.data(
+                withJSONObject: [ "color": hex(for: pin) ],
+                options: [])
+        } else {
+            request.httpMethod = "DELETE"
+        }
+        let _ = send(request: request) { (result) in
+            do {
+                let wrapper = try result.unwrap()
+                let posts = try self.parsePosts(from: unpack(wrapper, "data"))
+                completion(.success(posts))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func repost(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
-        completion(.failure(notYetImplemented))
+        let url = URL(string: "/content/repost/\(post.id)", relativeTo: TenCenturies.baseURL)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        let _ = send(request: request) { (result) in
+            do {
+                let wrapper = try result.unwrap()
+                let posts = try self.parsePosts(from: unpack(wrapper, "data"))
+                completion(.success(posts))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+}
+
+
+
+func hex(for pin: Post.PinColor) -> String {
+    switch pin {
+    case .black: return "#000000"
+    case .blue: return "#0000ff"
+    case .green: return "#00ff00"
+    case .orange: return "#ffa500"
+    case .red: return "#ff0000"
+    case .yellow: return "#ffff00"
     }
 }
