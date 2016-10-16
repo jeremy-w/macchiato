@@ -22,10 +22,15 @@ class ComposePostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         registerForKeyboardNotifications()
+        loadTextFromAction()
     }
 
     func registerForKeyboardNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(notification:)), name: .UIKeyboardWillChangeFrame, object: nil)
+    }
+
+    func loadTextFromAction() {
+        textView?.text = action.text
     }
 
 
@@ -93,5 +98,34 @@ class ComposePostViewController: UIViewController {
         guard let value = note.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue else { return }
         let topEdgeOfKeyboard = window.convert(value.cgRectValue, from: nil).minY
         constraint.constant = window.bounds.height - topEdgeOfKeyboard
+    }
+}
+
+
+extension ComposePostViewController.Action {
+    var text: String {
+        switch self {
+        case .newThread:
+            return ""
+
+        case let .newReply(to: parent):
+            // (jws/2016-10-16)TODO: Pull in the mentions array and use that to fill in CC list.
+            return "@\(parent.author) "
+
+        case let .editDraft(original):
+            return original.content
+
+        case let .editDraftReply(original, to: parent):
+            assert(original.replyTo == parent.id, "editDraftReply but original.replyTo does not match parent.id: \(original.replyTo) != \(parent.id)")
+            return original.content
+
+        case let .update(current):
+            return current.content
+
+        case let .updateReply(current, to: parent):
+            assert(current.thread?.replyTo == parent.id,
+                   "updateReply but current.thread.replyTo does not match parent.id: \(current.thread?.replyTo) != \(parent.id)")
+            return current.content
+        }
     }
 }
