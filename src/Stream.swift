@@ -3,6 +3,7 @@ import Foundation
 class Stream {
     let name: String
     let view: View
+    var lastFetched: Date?
 
     var posts: [Post]
     init(name: String, view: View, posts: [Post] = []) {
