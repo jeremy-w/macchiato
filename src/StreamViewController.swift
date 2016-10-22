@@ -1,4 +1,5 @@
 import UIKit
+import SafariServices
 
 class StreamViewController: UITableViewController {
     var stream: Stream?
@@ -160,7 +161,8 @@ class StreamViewController: UITableViewController {
             (post.you.pinned == nil
                 ? NSLocalizedString("Pin", comment: "button")
                 : NSLocalizedString("Edit Pin", comment: "button"), .pin),
-            (NSLocalizedString("Repost", comment: "button"), .repost)
+            (NSLocalizedString("Repost", comment: "button"), .repost),
+            (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
         }
@@ -215,6 +217,10 @@ class StreamViewController: UITableViewController {
                     toast(error: error, prefix: NSLocalizedString("Repost Failed", comment: "title"))
                 }
             })
+
+        case .webView:
+            let webView = SFSafariViewController(url: URL(string: "https://10centuries.org/post/\(post.id)")!)
+            present(webView, animated: true, completion: nil)
         }
     }
 
@@ -265,6 +271,7 @@ class StreamViewController: UITableViewController {
         case star
         case pin
         case repost
+        case webView
     }
 }
 
