@@ -4,6 +4,7 @@ class Stream {
     let name: String
     let view: View
     var lastFetched: Date?
+    var earliestFetched: Date?
 
     var posts: [Post]
     init(name: String, view: View, posts: [Post] = []) {
@@ -16,6 +17,42 @@ class Stream {
         self.init(name: view.localizedName, view: view, posts: posts)
     }
 
+    // MARK: - Handles merging in new posts
+    func replacePosts(with posts: [Post], fetchedAt date: Date) {
+        self.posts = posts
+        lastFetched = date
+
+        let earliestInBatch = posts.map({ $0.updated }).min()
+        maybeUpdateEarliestFetched(with: earliestInBatch)
+    }
+
+    func maybeUpdateEarliestFetched(with date: Date?) {
+        switch (earliestFetched, date) {
+        case let (was?, now?):
+            earliestFetched = min(was, now)
+
+        case let (nil, now?):
+            earliestFetched = now
+
+        default:
+            break
+        }
+    }
+
+    func merge(posts merging: [Post], olderThan border: Date) {
+        guard !merging.isEmpty, let earliestInBatch = merging.map({ $0.updated }).min() else {
+            return
+        }
+        maybeUpdateEarliestFetched(with: earliestInBatch)
+
+        posts.append(contentsOf: merging)
+        posts.sort(by: { $0.updated > $1.updated })
+        // (@jeremy-w/2016-10-21)FIXME: We seem to be getting a duplicate right at the boundary date most of the time.
+        // We should probably uniq these by post ID, preferring those updated more recently.
+    }
+
+
+    // MARK: - Knows about well-known streams
     static let global = Stream(view: .global, posts: (0 ..< 10).map { _ in Post.makeFake() })
 
     enum View {

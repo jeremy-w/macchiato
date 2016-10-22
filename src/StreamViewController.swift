@@ -44,27 +44,22 @@ class StreamViewController: UITableViewController {
         guard let stream = stream, let postRepository = postRepository else { return }
 
         refreshControl?.beginRefreshing()
-        postRepository.find(stream: stream, since: stream.posts.first) {
+        postRepository.find(stream: stream, options: []) {
             [weak self] (result: Result<[Post]>) -> Void in
             DispatchQueue.main.async {
                 self?.refreshControl?.endRefreshing()
-                self?.didReceivePosts(result: result)
+                self?.didReceivePosts(result: result, at: Date())
             }
         }
     }
 
-    func didReceivePosts(result: Result<[Post]>) {
+    func didReceivePosts(result: Result<[Post]>, at date: Date) {
         do {
-            stream?.posts = try result.unwrap()
-            stream?.lastFetched = Date()
+            let posts = try result.unwrap()
+            stream?.replacePosts(with: posts, fetchedAt: date)
             tableView?.reloadData()
         } catch {
-            print("\(self): ERROR: \(error)")
-            if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
-                let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: nil, style: .default, handler: nil))
-                present(alert, animated: true, completion: nil)
-            }
+            reportError(error)
         }
     }
 
@@ -81,16 +76,61 @@ class StreamViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return stream?.posts.count ?? 0
+        return (stream?.posts.count ?? 0) + 1 /* Load Older */
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let stream = stream, stream.posts.isValid(index: indexPath.row) else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "LoadOlderButton", for: indexPath)
+            cell.accessibilityTraits |= UIAccessibilityTraitButton
+            return cell
+        }
+
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.identifier, for: indexPath) as! PostCell
         // swiftlint:disable:previous force_cast
-        if let post = stream?.posts[indexPath.row] {
-            cell.configure(post: post)
-        }
+        let post = stream.posts[indexPath.row]
+        cell.configure(post: post)
         return cell
+    }
+
+
+    // MARK: - Loads older posts when button in last row activated
+    @IBAction func loadOlderPostsAction() {
+        guard let repo = postRepository, let stream = stream else { return }
+        guard let earliest = stream.earliestFetched else {
+            return refreshAction()
+        }
+
+        UIAccessibilityPostNotification(
+            UIAccessibilityLayoutChangedNotification,
+            NSLocalizedString("Loading older posts", comment: "accessibility announcement"))
+        repo.find(stream: stream, options: [.before(earliest)]) { [weak self] in self?.didReceivePosts(result: $0, olderThan: earliest)
+        }
+    }
+
+    func didReceivePosts(result: Result<[Post]>, olderThan date: Date) {
+        do {
+            let posts = try result.unwrap()
+            stream?.merge(posts: posts, olderThan: date)
+            DispatchQueue.main.async {
+                let format = NSLocalizedString("Loaded %ld older posts", comment: "accessibility announcement")
+                UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, String(format: format, locale: nil, posts.count))
+                self.tableView.reloadData()
+            }
+        } catch {
+            reportError(error)
+        }
+    }
+
+    func reportError(_ error: Error) {
+        print("\(self): ERROR: \(error)")
+        if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: nil, style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 
 
@@ -111,7 +151,8 @@ class StreamViewController: UITableViewController {
 
     func post(at point: CGPoint) -> Post? {
         guard let index = tableView.indexPathForRow(at: point)?.row else { return nil }
-        return stream?.posts[index]
+        guard let posts = stream?.posts, posts.isValid(index: index) else { return nil }
+        return posts[index]
     }
 
 

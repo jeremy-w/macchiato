@@ -13,6 +13,7 @@ func toast(title: String) {
     DispatchQueue.main.async {
         let toaster = ToastViewController(title: title)
         let window = toaster.hostWindow(for: UIScreen.main, statusBarHeight: UIApplication.shared.statusBarFrame.maxY)
+        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, title)
 
         window.isHidden = false
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(5)) {

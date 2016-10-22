@@ -1,5 +1,5 @@
 class FakePostRepository: PostRepository {
-    func find(stream: Stream, since: Post?, completion: @escaping (Result<[Post]>) -> Void) {
+    func find(stream: Stream, options: [PostRepositoryFindOption] = [], completion: @escaping (Result<[Post]>) -> Void) {
         completion(.success((0 ..< 10).map { _ in Post.makeFake() }))
     }
 

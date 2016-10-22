@@ -280,7 +280,7 @@
         <scene sceneID="hAO-Ld-6kG">
             <objects>
                 <tableViewController id="okv-1E-ESU" customClass="StreamViewController" customModule="Macchiato" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="350" sectionHeaderHeight="28" sectionFooterHeight="28" id="NBv-mh-ENA">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="48" sectionHeaderHeight="28" sectionFooterHeight="28" id="NBv-mh-ENA">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -332,6 +332,33 @@
                                     <outlet property="date" destination="xC9-6S-Dc5" id="OPh-sK-kz1"/>
                                     <outlet property="verticalStack" destination="7DO-y4-hqa" id="eW3-B7-Lau"/>
                                 </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="LoadOlderButton" rowHeight="350" id="w7G-Hw-BAL" customClass="PostCell" customModule="Macchiato" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="442" width="375" height="350"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w7G-Hw-BAL" id="MIB-0L-FDj">
+                                    <frame key="frameInset" width="375" height="349"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kwk-UN-xny">
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="44" id="7C9-bQ-QtF"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                            <state key="normal" title="Load Older"/>
+                                            <connections>
+                                                <action selector="loadOlderPostsAction" destination="okv-1E-ESU" eventType="touchUpInside" id="BNN-l0-Zz8"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Kwk-UN-xny" firstAttribute="centerY" secondItem="MIB-0L-FDj" secondAttribute="centerY" id="8GN-l8-u0c"/>
+                                        <constraint firstAttribute="bottom" secondItem="Kwk-UN-xny" secondAttribute="bottom" id="Iws-l4-VvO"/>
+                                        <constraint firstItem="Kwk-UN-xny" firstAttribute="top" secondItem="MIB-0L-FDj" secondAttribute="top" id="OmO-36-k1e"/>
+                                        <constraint firstItem="Kwk-UN-xny" firstAttribute="leading" secondItem="MIB-0L-FDj" secondAttribute="leading" id="iGw-iC-Tt3"/>
+                                        <constraint firstAttribute="trailing" secondItem="Kwk-UN-xny" secondAttribute="trailing" id="qBZ-GM-UtB"/>
+                                    </constraints>
+                                </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <connections>
