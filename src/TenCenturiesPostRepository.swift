@@ -53,13 +53,13 @@ extension Stream.View {
         }
     }
 
-    var queryItems: [URLQueryItem]? {
+    var queryItems: [URLQueryItem] {
         switch self {
         case let .thread(root):
             return [URLQueryItem(name: "post_id", value: root)]
 
         default:
-            return nil
+            return []
         }
     }
 }
@@ -75,10 +75,11 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Parses posts from a stream
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
-    func find(stream: Stream, since: Post?, completion: @escaping (Result<[Post]>) -> Void) {
+    func find(stream: Stream, options: [PostRepositoryFindOption] = [], completion: @escaping (Result<[Post]>) -> Void) {
         let url = URL(string: stream.view.path, relativeTo: TenCenturies.baseURL)!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-        components.queryItems = stream.view.queryItems
+        let query = queryItems(for: options) + stream.view.queryItems
+        components.queryItems = query.isEmpty ? nil : query
         let request = URLRequest(url: components.url!)
 
         let _ = send(request: request) { result in
@@ -89,6 +90,21 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
                 return posts
             }
             completion(result)
+        }
+    }
+
+    func queryItems(for options: [PostRepositoryFindOption]) -> [URLQueryItem] {
+        return options.map { (option: PostRepositoryFindOption) -> URLQueryItem in
+            switch option {
+            case let .atMost(count):
+                return URLQueryItem(name: "count", value: "\(count)")
+
+            case let .before(date):
+                return URLQueryItem(name: "before_unix", value: String(describing: date.timeIntervalSince1970))
+
+            case let .after(date):
+                return URLQueryItem(name: "since_unix", value: String(describing: date.timeIntervalSince1970))
+            }
         }
     }
 

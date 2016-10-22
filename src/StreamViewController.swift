@@ -44,7 +44,7 @@ class StreamViewController: UITableViewController {
         guard let stream = stream, let postRepository = postRepository else { return }
 
         refreshControl?.beginRefreshing()
-        postRepository.find(stream: stream, since: stream.posts.first) {
+        postRepository.find(stream: stream, options: []) {
             [weak self] (result: Result<[Post]>) -> Void in
             DispatchQueue.main.async {
                 self?.refreshControl?.endRefreshing()
