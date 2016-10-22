@@ -17,6 +17,9 @@ class StreamViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         refreshControl = makeRefreshControl()
+        if let stream = stream, stream.lastFetched == nil {
+            refreshAction()
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -53,6 +56,7 @@ class StreamViewController: UITableViewController {
     func didReceivePosts(result: Result<[Post]>) {
         do {
             stream?.posts = try result.unwrap()
+            stream?.lastFetched = Date()
             tableView?.reloadData()
         } catch {
             print("\(self): ERROR: \(error)")
