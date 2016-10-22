@@ -96,16 +96,27 @@ class StreamViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return stream?.posts.count ?? 0
+        return (stream?.posts.count ?? 0) + 1 /* Load Older */
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let stream = stream, stream.posts.isValid(index: indexPath.row) else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "LoadOlderButton", for: indexPath)
+            cell.accessibilityTraits |= UIAccessibilityTraitButton
+            return cell
+        }
+
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.identifier, for: indexPath) as! PostCell
         // swiftlint:disable:previous force_cast
-        if let post = stream?.posts[indexPath.row] {
-            cell.configure(post: post)
-        }
+        let post = stream.posts[indexPath.row]
+        cell.configure(post: post)
         return cell
+    }
+
+
+    // MARK: - Loads older posts when button in last row activated
+    @IBAction func loadOlderPostsAction() {
+        print("LOAD OLDER POSTS!")
     }
 
 
@@ -126,7 +137,8 @@ class StreamViewController: UITableViewController {
 
     func post(at point: CGPoint) -> Post? {
         guard let index = tableView.indexPathForRow(at: point)?.row else { return nil }
-        return stream?.posts[index]
+        guard let posts = stream?.posts, posts.isValid(index: index) else { return nil }
+        return posts[index]
     }
 
 
