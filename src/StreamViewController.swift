@@ -56,30 +56,10 @@ class StreamViewController: UITableViewController {
     func didReceivePosts(result: Result<[Post]>, at date: Date) {
         do {
             let posts = try result.unwrap()
-            if let stream = stream {
-                stream.posts = posts
-                stream.lastFetched = date
-
-                let earliestInBatch = posts.map({ $0.updated }).min()
-                switch (stream.earliestFetched, earliestInBatch) {
-                case let (was?, now?):
-                    stream.earliestFetched = min(was, now)
-
-                case let (nil, now?):
-                    stream.earliestFetched = now
-
-                default:
-                    break
-                }
-            }
+            stream?.replacePosts(with: posts, fetchedAt: date)
             tableView?.reloadData()
         } catch {
-            print("\(self): ERROR: \(error)")
-            if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
-                let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: nil, style: .default, handler: nil))
-                present(alert, animated: true, completion: nil)
-            }
+            reportError(error)
         }
     }
 
@@ -116,7 +96,41 @@ class StreamViewController: UITableViewController {
 
     // MARK: - Loads older posts when button in last row activated
     @IBAction func loadOlderPostsAction() {
-        print("LOAD OLDER POSTS!")
+        guard let repo = postRepository, let stream = stream else { return }
+        guard let earliest = stream.earliestFetched else {
+            return refreshAction()
+        }
+
+        UIAccessibilityPostNotification(
+            UIAccessibilityLayoutChangedNotification,
+            NSLocalizedString("Loading older posts", comment: "accessibility announcement"))
+        repo.find(stream: stream, options: [.before(earliest)]) { [weak self] in self?.didReceivePosts(result: $0, olderThan: earliest)
+        }
+    }
+
+    func didReceivePosts(result: Result<[Post]>, olderThan date: Date) {
+        do {
+            let posts = try result.unwrap()
+            stream?.merge(posts: posts, olderThan: date)
+            DispatchQueue.main.async {
+                let format = NSLocalizedString("Loaded %ld older posts", comment: "accessibility announcement")
+                UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, String(format: format, locale: nil, posts.count))
+                self.tableView.reloadData()
+            }
+        } catch {
+            reportError(error)
+        }
+    }
+
+    func reportError(_ error: Error) {
+        print("\(self): ERROR: \(error)")
+        if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: nil, style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 
 
