@@ -48,15 +48,30 @@ class StreamViewController: UITableViewController {
             [weak self] (result: Result<[Post]>) -> Void in
             DispatchQueue.main.async {
                 self?.refreshControl?.endRefreshing()
-                self?.didReceivePosts(result: result)
+                self?.didReceivePosts(result: result, at: Date())
             }
         }
     }
 
-    func didReceivePosts(result: Result<[Post]>) {
+    func didReceivePosts(result: Result<[Post]>, at date: Date) {
         do {
-            stream?.posts = try result.unwrap()
-            stream?.lastFetched = Date()
+            let posts = try result.unwrap()
+            if let stream = stream {
+                stream.posts = posts
+                stream.lastFetched = date
+
+                let earliestInBatch = posts.map({ $0.updated }).min()
+                switch (stream.earliestFetched, earliestInBatch) {
+                case let (was?, now?):
+                    stream.earliestFetched = min(was, now)
+
+                case let (nil, now?):
+                    stream.earliestFetched = now
+
+                default:
+                    break
+                }
+            }
             tableView?.reloadData()
         } catch {
             print("\(self): ERROR: \(error)")
