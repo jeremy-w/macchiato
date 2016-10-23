@@ -2,7 +2,7 @@ import Foundation
 
 struct Post {
     let id: String
-    let author: String
+    let account: Account
     let date: Date
     var content: String
 
@@ -24,7 +24,7 @@ struct Post {
         let now = Date()
         return Post(
             id: UUID().uuidString,
-            author: pick(["@someone", "@someone_else", "@not_you"]),
+            account: Account.makeFake(),
             date: now,
             content: Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " "),
             privacy: "visibility.public",
@@ -35,6 +35,13 @@ struct Post {
             updated: now,
             deleted: false,
             you: You())
+    }
+}
+
+
+extension Post {
+    var author: String {
+        return account.username
     }
 }
 
