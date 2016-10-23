@@ -39,6 +39,20 @@ struct Post {
 }
 
 
+extension Post {
+    var replyTemplate: String {
+        let target = author
+        // (@jeremy-w/2016-10-23)FIXME: We need the post.account.id to properly do this comparison.
+        let bystanders = mentions.filter { $0.current != target }.map { $0.current }
+        guard !bystanders.isEmpty else {
+            return "@\(author) "
+        }
+
+        return "@\(author) \n\n// " + bystanders.joined(separator: " ")
+    }
+}
+
+
 struct EditingPost {
     var content: String
 
