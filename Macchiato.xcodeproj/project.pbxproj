@@ -42,6 +42,8 @@
 		3F2E29B01DB1C60E00519C9E /* ComposePost.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */; };
 		3F2E29B21DB252D200519C9E /* ComposePostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */; };
 		3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */; };
+		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
+		3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +96,8 @@
 		3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ComposePost.storyboard; sourceTree = "<group>"; };
 		3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostViewController.swift; sourceTree = "<group>"; };
 		3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+Indexing.swift"; sourceTree = "<group>"; };
+		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
+		3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRange+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,6 +207,7 @@
 				3F2E29301DA9E9D700519C9E /* Random.swift */,
 				3F2E29011DA9B9F200519C9E /* AppDelegate.swift */,
 				3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */,
+				3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */,
 				3F2E290C1DA9B9F200519C9E /* LaunchScreen.storyboard */,
 				3F2E290A1DA9B9F200519C9E /* Assets.xcassets */,
 				3F2E290F1DA9B9F200519C9E /* Info.plist */,
@@ -227,6 +232,7 @@
 			children = (
 				3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */,
 				3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */,
+				3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */,
 			);
 			name = "Composing Posts";
 			sourceTree = "<group>";
@@ -361,6 +367,7 @@
 				3F2E29371DA9EB6E00519C9E /* Result.swift in Sources */,
 				3F2E29571DAB385E00519C9E /* TenCenturiesService.swift in Sources */,
 				3F2E29041DA9B9F200519C9E /* MasterViewController.swift in Sources */,
+				3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */,
 				3F2E295C1DAD351C00519C9E /* RequestAuthenticator.swift in Sources */,
 				3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */,
 				3F2E29391DA9ED0200519C9E /* ServicePack.swift in Sources */,
@@ -379,6 +386,7 @@
 				3F2E292D1DA9DCF200519C9E /* PostCell.swift in Sources */,
 				3F2E29351DA9EB1900519C9E /* PostRepository.swift in Sources */,
 				3F2E29551DAB332500519C9E /* TenCenturiesSessionManager.swift in Sources */,
+				3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */,
 				3F2E294A1DAB249100519C9E /* SessionManager.swift in Sources */,
 				3F2E29481DAB20AB00519C9E /* LogInViewController.swift in Sources */,
 				3F2E29331DA9EA1800519C9E /* Post.swift in Sources */,
