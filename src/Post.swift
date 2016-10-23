@@ -6,6 +6,19 @@ struct Post {
     let date: Date
     var content: String
 
+    let privacy: String
+    let thread: (root: String, replyTo: String)?
+    let parentID: String?
+    let client: String
+
+    let mentions: [Mention]
+
+    /// If the same as `date`, then the post has not been edited.
+    var updated: Date
+    var deleted: Bool
+
+    var you: You
+
     static func makeFake() -> Post {
         // swiftlint:disable:previous function_body_length
         let now = Date()
@@ -23,20 +36,19 @@ struct Post {
             deleted: false,
             you: You())
     }
+}
 
-    let privacy: String
-    let thread: (root: String, replyTo: String)?
-    let parentID: String?
-    let client: String
 
-    let mentions: [Mention]
+struct EditingPost {
+    var content: String
 
-    /// If the same as `date`, then the post has not been edited.
-    var updated: Date
-    var deleted: Bool
+    let channel = 1
+    let updating: String?
+    let replyTo: String?
+}
 
-    var you: You
 
+extension Post {
     struct You {
         var wereMentioned: Bool = false
         var starred: Bool = false
@@ -65,15 +77,6 @@ struct Post {
         case red
         case yellow
     }
-}
-
-
-struct EditingPost {
-    var content: String
-
-    let channel = 1
-    let updating: String?
-    let replyTo: String?
 }
 
 
