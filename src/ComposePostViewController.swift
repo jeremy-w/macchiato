@@ -22,6 +22,7 @@ class ComposePostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         registerForKeyboardNotifications()
+        insertionPointSwiper = InsertionPointSwiper(editableTextView: textView!)
         loadTextFromAction()
     }
 
@@ -35,6 +36,7 @@ class ComposePostViewController: UIViewController {
 
 
     // MARK: - Sends a new post
+    private var insertionPointSwiper: InsertionPointSwiper?
     @IBOutlet var textView: UITextView?
     @IBAction func postAction() {
         postRepository?.save(post: post, completion: { result in
