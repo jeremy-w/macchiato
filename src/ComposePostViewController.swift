@@ -112,7 +112,7 @@ extension ComposePostViewController.Action {
 
         case let .newReply(to: parent):
             // (jws/2016-10-16)TODO: Pull in the mentions array and use that to fill in CC list.
-            return "@\(parent.author) "
+            return mentionText(for: parent)
 
         case let .editDraft(original):
             return original.content
@@ -129,5 +129,16 @@ extension ComposePostViewController.Action {
                    "updateReply but current.thread.replyTo does not match parent.id: \(current.thread?.replyTo) != \(parent.id)")
             return current.content
         }
+    }
+
+    private func mentionText(for post: Post) -> String {
+        let target = post.author
+        // (@jeremy-w/2016-10-23)FIXME: We need the post.account.id to properly do this comparison.
+        let bystanders = post.mentions.filter { $0.current != target }.map { $0.current }
+        guard !bystanders.isEmpty else {
+            return "@\(post.author) "
+        }
+
+        return "@\(post.author) \n\n// " + bystanders.joined(separator: " ")
     }
 }
