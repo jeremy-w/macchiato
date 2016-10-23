@@ -4,7 +4,7 @@ import XCTest
 class PostParsing: XCTestCase {
     let subject = TenCenturiesPostRepository(session: anySession, authenticator: DummyRequestAuthenticator())
 
-    func testParsingThreadInfoForAThreadedPost() throws {
+    func testParsingThreadInfoForAThreadedPost() {
         do {
             let post = try subject.parsePost(from: capturedPostWithThreadInfo)
             guard let thread = post.thread else {
@@ -13,6 +13,22 @@ class PostParsing: XCTestCase {
 
             XCTAssertEqual(thread.root, "78779", "failed to correctly parse threadID AKA root")
             XCTAssertEqual(thread.replyTo, "78786", "failed to correctly parse replyTo")
+        } catch {
+            return XCTFail("parsing failed completely: \(error)")
+        }
+    }
+
+    func testParsingMentions() {
+        do {
+            let post = try subject.parsePost(from: capturedPostWithThreadInfo)
+            let expected = [
+                Post.Mention(name: "@skematica", id: "12", current: "@skematica"),
+                Post.Mention(name: "@larand", id: "26", current: "@larand"),
+            ]
+            XCTAssertEqual(post.mentions.count, expected.count, "count of mentions doesn't match")
+            for (i, (actual, intended)) in zip(post.mentions, expected).enumerated() {
+                XCTAssertEqual(actual, intended, "bogus mention parsing at index \(i)")
+            }
         } catch {
             return XCTFail("parsing failed completely: \(error)")
         }

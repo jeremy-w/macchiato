@@ -129,6 +129,13 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             thread = nil
         }
 
+        let mentions: [JSONDictionary]
+        do {
+            mentions = try unpack(post, "mentions")
+        } catch {
+            mentions = []
+        }
+
         let parentID = try? unpack(post, "parent_id") as String
         return Post(
             id: String(describing: try unpack(post, "id") as Any),
@@ -139,6 +146,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             thread: thread,
             parentID: parentID,
             client: try unpack(unpack(post, "client"), "name"),
+            mentions: try parseMentions(from: mentions),
             updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")),
             deleted: try unpack(post, "is_deleted"),
             you: try parseYou(from: post))
@@ -165,6 +173,17 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let colors: [Post.PinColor] = [.black, .blue, .red, .green, .orange, .yellow]
         assert(pins.count == colors.count, "pins.count \(pins.count) != colors.count \(colors.count)")
         return pins.index(of: text).map { colors[$0] }
+    }
+
+    func parseMentions(from array: [JSONDictionary]) throws -> [Post.Mention] {
+        return try array.map { try parse(mention: $0) }
+    }
+
+    func parse(mention: JSONDictionary) throws -> Post.Mention {
+        return Post.Mention(
+            name: try unpack(mention, "name"),
+            id: String(describing: try unpack(mention, "id") as Any),
+            current: try unpack(mention, "current"))
     }
 
 
