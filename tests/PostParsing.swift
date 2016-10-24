@@ -4,7 +4,7 @@ import XCTest
 class PostParsing: XCTestCase {
     let subject = TenCenturiesPostRepository(session: anySession, authenticator: DummyRequestAuthenticator())
 
-    func testParsingThreadInfoForAThreadedPost() throws {
+    func testParsingThreadInfoForAThreadedPost() {
         do {
             let post = try subject.parsePost(from: capturedPostWithThreadInfo)
             guard let thread = post.thread else {
@@ -13,6 +13,52 @@ class PostParsing: XCTestCase {
 
             XCTAssertEqual(thread.root, "78779", "failed to correctly parse threadID AKA root")
             XCTAssertEqual(thread.replyTo, "78786", "failed to correctly parse replyTo")
+        } catch {
+            return XCTFail("parsing failed completely: \(error)")
+        }
+    }
+
+    func testParsingMentions() {
+        do {
+            let post = try subject.parsePost(from: capturedPostWithThreadInfo)
+            let expected = [
+                Post.Mention(name: "@skematica", id: "12", current: "@skematica"),
+                Post.Mention(name: "@larand", id: "26", current: "@larand"),
+            ]
+            XCTAssertEqual(post.mentions.count, expected.count, "count of mentions doesn't match")
+            for (i, (actual, intended)) in zip(post.mentions, expected).enumerated() {
+                XCTAssertEqual(actual, intended, "bogus mention parsing at index \(i)")
+            }
+        } catch {
+            return XCTFail("parsing failed completely: \(error)")
+        }
+    }
+
+    func testParsingAccount() {
+        do {
+            let post = try subject.parsePost(from: capturedPostWithThreadInfo)
+            let expected = Account(
+                id: "91",
+                username: "gtwilson",
+                name: (first: "Tom", last: "Wilson", display: "Tom Wilson"),
+                avatarURL: URL(string: "https://cdn.10centuries.org/p7E6pB/6bce7312df48d9061391d17301b04192.jpg")!,
+                verified: nil,
+                description: "Software developer. Husband. Wage slave.\nhttp://eee-eye-eee.io",
+                timezone: "US/Eastern",
+                counts: [
+                    "following": 38,
+                    "followers": 22,
+                    "stars": 77,
+                    "tinyposts": 494,
+                    "microposts": 1065,
+                    "shortposts": 261,
+                    "longposts": 4,
+                    "blogposts": 4,
+                    "podcasts": 0])
+            XCTAssertEqual(post.author, expected.username, "author")
+            XCTAssertEqual(post.account.id, expected.id, "id")
+            XCTAssertEqual(post.account.avatarURL, expected.avatarURL, "avatar URL")
+            XCTAssertEqual(post.account.counts, expected.counts, "counts")
         } catch {
             return XCTFail("parsing failed completely: \(error)")
         }

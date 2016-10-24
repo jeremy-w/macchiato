@@ -111,8 +111,7 @@ extension ComposePostViewController.Action {
             return ""
 
         case let .newReply(to: parent):
-            // (jws/2016-10-16)TODO: Pull in the mentions array and use that to fill in CC list.
-            return "@\(parent.author) "
+            return parent.replyTemplate
 
         case let .editDraft(original):
             return original.content

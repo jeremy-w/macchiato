@@ -114,7 +114,13 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     func parsePost(from post: JSONDictionary) throws -> Post {
         let accounts = try unpack(post, "account") as [JSONDictionary]
-        let account = accounts.first ?? ["username": "«unknown»"]
+        let account: Account?
+        do {
+            account = try accounts.first.map { try parseAccount($0) }
+        } catch {
+            print("PARSE: ERROR: Failed to parse account from \(accounts): \(error)")
+            account = Account.makeFake()
+        }
 
         // Doing try? "thread" then try? wrapper.map leads to a doubly-optional (String, String)??
         // as the Optional.map and try? gang-up on things. Yuck. Could flatMap at the end, but pretty unreadable by that point.
@@ -129,16 +135,24 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             thread = nil
         }
 
+        let mentions: [JSONDictionary]
+        do {
+            mentions = try unpack(post, "mentions")
+        } catch {
+            mentions = []
+        }
+
         let parentID = try? unpack(post, "parent_id") as String
         return Post(
             id: String(describing: try unpack(post, "id") as Any),
-            author: try unpack(account, "username"),
+            account: account ?? Account.makeFake(),
             date: Date(timeIntervalSince1970: try unpack(post, "created_unix")),
             content: try unpack(unpack(post, "content"), "text"),
             privacy: try unpack(post, "privacy"),
             thread: thread,
             parentID: parentID,
             client: try unpack(unpack(post, "client"), "name"),
+            mentions: try parseMentions(from: mentions),
             updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")),
             deleted: try unpack(post, "is_deleted"),
             you: try parseYou(from: post))
@@ -165,6 +179,46 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let colors: [Post.PinColor] = [.black, .blue, .red, .green, .orange, .yellow]
         assert(pins.count == colors.count, "pins.count \(pins.count) != colors.count \(colors.count)")
         return pins.index(of: text).map { colors[$0] }
+    }
+
+    func parseMentions(from array: [JSONDictionary]) throws -> [Post.Mention] {
+        return try array.map { try parse(mention: $0) }
+    }
+
+    func parse(mention: JSONDictionary) throws -> Post.Mention {
+        return Post.Mention(
+            name: try unpack(mention, "name"),
+            id: String(describing: try unpack(mention, "id") as Any),
+            current: try unpack(mention, "current"))
+    }
+
+    func parseAccount(_ dict: JSONDictionary) throws -> Account {
+        let nameDict = try unpack(dict, "name") as JSONDictionary
+
+        let verifiedDict = try unpack(dict, "verified") as JSONDictionary
+        let verified: URL?
+        if try unpack(verifiedDict, "is_verified") {
+            verified = URL(string: try unpack(verifiedDict, "url"))
+        } else {
+            verified = nil
+        }
+
+        let text: String
+        if let descDict = try? unpack(dict, "description") as JSONDictionary {
+            text = (try? unpack(descDict, "text")) ?? ""
+        } else {
+            text = ""
+        }
+
+        return Account(
+            id: String(describing: try unpack(dict, "id") as Any),
+            username: try unpack(dict, "username"),
+            name: (first: try unpack(nameDict, "first_name"), last: try unpack(nameDict, "last_name"), display: try unpack(nameDict, "display")),
+            avatarURL: (try? unpack(dict, "avatar_url") as String).flatMap({ URL(string: "https:" + $0) }) ?? Account.defaultAvatarURL,
+            verified: verified,
+            description: text,
+            timezone: try unpack(dict, "timezone"),
+            counts: try unpack(dict, "counts"))
     }
 
 

@@ -44,6 +44,7 @@
 		3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */; };
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */; };
+		3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E61DBD7C5200E176F4 /* Account.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+Indexing.swift"; sourceTree = "<group>"; };
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRange+CustomStringConvertible.swift"; sourceTree = "<group>"; };
+		3F9CE5E61DBD7C5200E176F4 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				3F2E29321DA9EA1800519C9E /* Post.swift */,
+				3F9CE5E61DBD7C5200E176F4 /* Account.swift */,
 				3F2E292C1DA9DCF200519C9E /* PostCell.swift */,
 				3F2E292A1DA9DC9900519C9E /* StreamViewController.swift */,
 			);
@@ -377,6 +380,7 @@
 				3F2E29A51DAFC75C00519C9E /* UUID+StringEncoding.swift in Sources */,
 				3F2E29421DAACF4B00519C9E /* TenCenturiesPostRepository.swift in Sources */,
 				3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */,
+				3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */,
 				3F2E29311DA9E9D700519C9E /* Random.swift in Sources */,
 				3F2E29461DAB12BB00519C9E /* SettingsViewController.swift in Sources */,
 				3F2E29B21DB252D200519C9E /* ComposePostViewController.swift in Sources */,
