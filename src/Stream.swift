@@ -45,10 +45,13 @@ class Stream {
         }
         maybeUpdateEarliestFetched(with: earliestInBatch)
 
+        var knownIDs: Set<String> = Set(merging.map({ $0.id }))
+        posts = posts.filter { post -> Bool in
+            let (didInsert, _) = knownIDs.insert(post.id)
+            return didInsert
+        }
         posts.append(contentsOf: merging)
         posts.sort(by: { $0.updated > $1.updated })
-        // (@jeremy-w/2016-10-21)FIXME: We seem to be getting a duplicate right at the boundary date most of the time.
-        // We should probably uniq these by post ID, preferring those updated more recently.
     }
 
 
