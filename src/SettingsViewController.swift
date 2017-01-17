@@ -9,44 +9,115 @@ class SettingsViewController: UITableViewController {
     var account: String? { return sessionManager?.loggedInAccountName }
 
     // MARK: - Populates a Table View
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return account == nil ? 1 : 2
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+
+    let debugInfo = [
+        NSLocalizedString("Version", comment: "row title"):
+            Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "—",
+        NSLocalizedString("Build", comment: "row title"):
+            Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) ?? "—",
+        NSLocalizedString("Built On", comment: "row title"):
+            Bundle.main.object(forInfoDictionaryKey: "BuildDate") ?? "—",
+        ].sorted(by: { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending })
+
+    enum Section: Int {
+        case account
+        case info
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection sectionNumber: Int) -> Int {
+        guard let section = Section(rawValue: sectionNumber) else { return 0 }
+
+        switch section {
+        case .account:
+            return account == nil ? 1 : 2
+
+        case .info:
+            return debugInfo.count
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection sectionNumber: Int) -> String? {
+        guard let section = Section(rawValue: sectionNumber) else { return nil }
+
+        switch section {
+        case .account:
+            return NSLocalizedString("Account", comment: "section title")
+
+        case .info:
+            return NSLocalizedString("App Info", comment: "section title")
+        }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let account = self.account {
-            switch indexPath.row {
-            case 0:
-                let cell = tableView.dequeueReusableCell(withIdentifier: "KeyValueCell", for: indexPath)
-                cell.textLabel?.text = NSLocalizedString("Account", comment: "row title")
-                cell.detailTextLabel?.text = account
-                return cell
+        guard let section = Section(rawValue: indexPath.section) else {
+            print("Settings: ERROR: Bogus index path: \(indexPath)")
+            return UITableViewCell()
+        }
 
-            default:
-                let cell = tableView.dequeueReusableCell(withIdentifier: ButtonCell.identifier, for: indexPath) as! ButtonCell
-                // swiftlint:disable:previous force_cast
-                cell.configure(text: NSLocalizedString("Log Out", comment: "button title"))
-                cell.textLabel?.textColor = UIColor.red
-                return cell
-            }
-        } else {
+        switch section {
+        case .account:
+            return accountCell(forRowAt: indexPath, in: tableView)
+
+        case .info:
+            return infoCell(forRowAt: indexPath, in: tableView)
+        }
+    }
+
+    func accountCell(forRowAt indexPath: IndexPath, in tableView: UITableView) -> UITableViewCell {
+        guard let account = account else {
             let cell = tableView.dequeueReusableCell(withIdentifier: ButtonCell.identifier, for: indexPath) as! ButtonCell
             // swiftlint:disable:previous force_cast
             cell.configure(text: NSLocalizedString("Log In", comment: "button title"))
             return cell
         }
+
+        switch indexPath.row {
+        case 0:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "KeyValueCell", for: indexPath)
+            cell.textLabel?.text = NSLocalizedString("Account", comment: "row title")
+            cell.detailTextLabel?.text = account
+            cell.selectionStyle = .none
+            return cell
+
+        default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: ButtonCell.identifier, for: indexPath) as! ButtonCell
+            // swiftlint:disable:previous force_cast
+            cell.configure(text: NSLocalizedString("Log Out", comment: "button title"))
+            cell.textLabel?.textColor = UIColor.red
+            return cell
+        }
+    }
+
+    func infoCell(forRowAt indexPath: IndexPath, in tableView: UITableView) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "KeyValueCell", for: indexPath)
+        cell.textLabel?.text = debugInfo[indexPath.row].key
+        cell.detailTextLabel?.text = String(describing: debugInfo[indexPath.row].value)
+        cell.selectionStyle = .none
+        return cell
     }
 
     // MARK: - Allows to log in/out
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let _ = self.account {
-            guard 1 == indexPath.row else {
-                return
-            }
+        guard let section = Section(rawValue: indexPath.section) else { return }
 
-            confirmLogOut()
-        } else {
-            logIn()
+        switch section {
+        case .account:
+            if let _ = self.account {
+                guard 1 == indexPath.row else {
+                    return
+                }
+
+                confirmLogOut()
+            } else {
+                logIn()
+            }
+            return
+
+        case .info:
+            return
         }
     }
 
