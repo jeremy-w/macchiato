@@ -3,6 +3,21 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (2) - 2017-01-16
+Fixes a crash. Hopefully fixes a login issue related to percent-encoding.
+
+Fixed:
+
+- iPad: Don't crash when showing post actions sheet. [#31]
+- Hopefully: Should be able to log in with + in email or password. [#29]
+    - Form-urlencoding adds some special "form" sauce atop "url encoding" that I missed.
+
+Changed:
+
+- iPad: Present Settings as a popover.
+- Add rudimentary app info in Settings, so you can see what version you're running.
+
+
 ### 1.0 (1) - 2017-01-16
 Initial release.
 
