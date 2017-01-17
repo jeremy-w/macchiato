@@ -187,13 +187,14 @@ class StreamViewController: UITableViewController {
 
     // MARK: - Allows taking actions on posts
     @IBAction func longPressAction(sender: UILongPressGestureRecognizer) {
-        guard let target = post(at: sender.location(in: view)) else { return }
+        let point = sender.location(in: view)
+        guard let target = post(at: point) else { return }
 
-        let alert = makePostActionAlert(for: target)
+        let alert = makePostActionAlert(for: target, at: point)
         present(alert, animated: true, completion: nil)
     }
 
-    func makePostActionAlert(for post: Post) -> UIAlertController {
+    func makePostActionAlert(for post: Post, at point: CGPoint) -> UIAlertController {
         let alert = UIAlertController(title: NSLocalizedString("Post Actions", comment: "alert title"), message: nil, preferredStyle: .actionSheet)
         func perform(_ action: PostAction) -> (UIAlertAction) -> Void {
             return { [weak self] _ in self?.take(action: action, on: post) }
@@ -205,7 +206,7 @@ class StreamViewController: UITableViewController {
                 : NSLocalizedString("Star", comment: "button"), .star),
             (post.you.pinned == nil
                 ? NSLocalizedString("Pin", comment: "button")
-                : NSLocalizedString("Edit Pin", comment: "button"), .pin),
+                : NSLocalizedString("Edit Pin", comment: "button"), .pin(at: point)),
             (NSLocalizedString("Repost", comment: "button"), .repost),
             (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
@@ -214,7 +215,20 @@ class StreamViewController: UITableViewController {
         let cancel = makeCancelAction()
         alert.addAction(cancel)
         alert.preferredAction = cancel
+        addPopoverLocationInfo(to: alert, at: point)
         return alert
+    }
+
+    func addPopoverLocationInfo(to alert: UIAlertController, at point: CGPoint) {
+        guard let presenter = alert.popoverPresentationController
+        , let tableView = tableView
+        else {
+            print("STREAM: WARNING: Unable to provide location info for popover: TableView is not loaded.")
+            return
+        }
+
+        presenter.sourceView = tableView
+        presenter.sourceRect = CGRect(origin: point, size: CGSize.zero)
     }
 
     func makeCancelAction() -> UIAlertAction {
@@ -242,8 +256,8 @@ class StreamViewController: UITableViewController {
                 }
             }
 
-        case .pin:
-            let followup = makePinAlert(for: post)
+        case let .pin(point):
+            let followup = makePinAlert(for: post, at: point)
             present(followup, animated: true, completion: nil)
 
         case .repost:
@@ -269,7 +283,7 @@ class StreamViewController: UITableViewController {
         }
     }
 
-    func makePinAlert(for post: Post) -> UIAlertController {
+    func makePinAlert(for post: Post, at point: CGPoint) -> UIAlertController {
         let alert = UIAlertController(title: NSLocalizedString("Pin With…", comment: "button"), message: nil, preferredStyle: .actionSheet)
         for color: Post.PinColor in [.black, .blue, .green, .orange, .yellow, .red] {
             alert.addAction(
@@ -290,6 +304,7 @@ class StreamViewController: UITableViewController {
         let cancel = makeCancelAction()
         alert.addAction(cancel)
         alert.preferredAction = cancel
+        addPopoverLocationInfo(to: alert, at: point)
         return alert
     }
 
@@ -314,7 +329,7 @@ class StreamViewController: UITableViewController {
     enum PostAction {
         case reply
         case star
-        case pin
+        case pin(at: CGPoint)
         case repost
         case webView
     }
