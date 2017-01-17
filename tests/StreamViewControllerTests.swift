@@ -31,6 +31,11 @@ class StreamViewControllerTests: XCTestCase {
 
 func assertAlertIsActionSheetWithValidPopoverLocation(_ alert: UIAlertController, file: StaticString = #file, line: UInt = #line) {
     XCTAssertEqual(alert.preferredStyle, .actionSheet, "should present alert \(alert.title) as action sheet", file: file, line: line)
+    guard UIDevice.current.userInterfaceIdiom == .pad else {
+        print(#function, ": Not able to check this on iPhone. Run tests under iPad.")
+        return
+    }
+
     guard let presenter = alert.popoverPresentationController else {
         return XCTFail("should have popover presentation controller", file: file, line: line)
     }
