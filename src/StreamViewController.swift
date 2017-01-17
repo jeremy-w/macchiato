@@ -187,13 +187,14 @@ class StreamViewController: UITableViewController {
 
     // MARK: - Allows taking actions on posts
     @IBAction func longPressAction(sender: UILongPressGestureRecognizer) {
-        guard let target = post(at: sender.location(in: view)) else { return }
+        let point = sender.location(in: view)
+        guard let target = post(at: point) else { return }
 
-        let alert = makePostActionAlert(for: target)
+        let alert = makePostActionAlert(for: target, at: point)
         present(alert, animated: true, completion: nil)
     }
 
-    func makePostActionAlert(for post: Post) -> UIAlertController {
+    func makePostActionAlert(for post: Post, at point: CGPoint) -> UIAlertController {
         let alert = UIAlertController(title: NSLocalizedString("Post Actions", comment: "alert title"), message: nil, preferredStyle: .actionSheet)
         func perform(_ action: PostAction) -> (UIAlertAction) -> Void {
             return { [weak self] _ in self?.take(action: action, on: post) }
@@ -214,6 +215,16 @@ class StreamViewController: UITableViewController {
         let cancel = makeCancelAction()
         alert.addAction(cancel)
         alert.preferredAction = cancel
+
+        guard let presenter = alert.popoverPresentationController
+            , let tableView = tableView
+        else {
+            print("STREAM: WARNING: Unable to provide location info for popover: TableView is not loaded.")
+            return alert
+        }
+
+        presenter.sourceView = tableView
+        presenter.sourceRect = CGRect(origin: point, size: CGSize.zero)
         return alert
     }
 

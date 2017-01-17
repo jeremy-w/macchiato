@@ -8,6 +8,15 @@ class StreamViewControllerTests: XCTestCase {
         subject = StreamViewController(style: .plain)
         XCTAssertNotNil(subject, "should have created StreamViewController")
     }
+
+    func testProvidesPopoverLocationForPostActionSheet() {
+        guard let subject = subject else { return }
+        let post = Post.makeFake()
+        subject.didReceivePosts(result: .success([post]), at: Date())
+
+        let sheet = subject.makePostActionAlert(for: post, at: CGPoint.zero)
+        assertAlertIsActionSheetWithValidPopoverLocation(sheet)
+    }
 }
 
 
