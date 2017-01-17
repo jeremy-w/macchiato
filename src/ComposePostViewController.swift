@@ -27,7 +27,10 @@ class ComposePostViewController: UIViewController {
     }
 
     func registerForKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(notification:)), name: .UIKeyboardWillChangeFrame, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillChangeFrame(notification:)),
+            name: .UIKeyboardWillChangeFrame, object: nil)
     }
 
     func loadTextFromAction() {
