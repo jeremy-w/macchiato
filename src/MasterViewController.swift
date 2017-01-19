@@ -52,7 +52,10 @@ class MasterViewController: UITableViewController {
         guard let services = self.services else { return true }
 
         let stream = streams[indexPath.row]
-        controller.configure(stream: stream, postRepository: services.postRepository)
+        // (jeremy-w/2017-01-18)FIXME: loggedInAccountName is an EMAIL, not the handle.
+        // We need to fetch the current user endpoint and keep that info available while logged in,
+        // I think.
+        controller.configure(stream: stream, postRepository: services.postRepository, currentUser: services.sessionManager.loggedInAccountName)
         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
         return true

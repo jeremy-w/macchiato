@@ -4,10 +4,14 @@ import SafariServices
 class StreamViewController: UITableViewController {
     var stream: Stream?
     var postRepository: PostRepository?
-    func configure(stream: Stream, postRepository: PostRepository) {
+    var user: String? = nil
+    func configure(stream: Stream, postRepository: PostRepository, currentUser: String?) {
         self.stream = stream
         self.postRepository = postRepository
+        user = currentUser
+
         title = stream.name
+
         tableView?.reloadData()
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 44
@@ -145,7 +149,7 @@ class StreamViewController: UITableViewController {
 
         // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
         // (match on thread.root)
-        streamVC.configure(stream: post.threadStream, postRepository: postRepository)
+        streamVC.configure(stream: post.threadStream, postRepository: postRepository, currentUser: user)
         return true
     }
 
@@ -167,11 +171,15 @@ class StreamViewController: UITableViewController {
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
+        guard let author = user else {
+            print("STREAMVC: ERROR: No current user - refusing to compose post.")
+            return true
+        }
 
         let action = (sender as? ComposePostAction) ?? .newThread
 
         guard let postRepository = self.postRepository else { return true }
-        composer.configure(postRepository: postRepository, action: action)
+        composer.configure(postRepository: postRepository, action: action, author: author)
         return true
     }
 
@@ -205,8 +213,17 @@ class StreamViewController: UITableViewController {
             (NSLocalizedString("Repost", comment: "button"), .repost),
             (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
+            switch action {
+            case .webView:
+                break
+
+            default:
+                guard user != nil else { continue }
+            }
+
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
         }
+
         let cancel = makeCancelAction()
         alert.addAction(cancel)
         alert.preferredAction = cancel

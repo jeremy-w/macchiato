@@ -8,13 +8,13 @@ enum ComposePostAction {
     case update(Post)
     case updateReply(Post, to: Post)
 
-    var template: String {
+    func template(notMentioning handles: [String]) -> String {
         switch self {
         case .newThread:
             return ""
 
         case let .newReply(to: parent):
-            return parent.replyTemplate
+            return parent.replyTemplate(notMentioning: handles)
 
         case let .editDraft(original):
             return original.content

@@ -3,10 +3,12 @@ import UIKit
 class ComposePostViewController: UIViewController {
     var postRepository: PostRepository?
     var action: ComposePostAction = .newThread
+    var author = ""
 
-    func configure(postRepository: PostRepository, action: ComposePostAction) {
+    func configure(postRepository: PostRepository, action: ComposePostAction, author: String) {
         self.postRepository = postRepository
         self.action = action
+        self.author = author
     }
 
     override func viewDidLoad() {
@@ -24,7 +26,7 @@ class ComposePostViewController: UIViewController {
     }
 
     func loadTextFromAction() {
-        textView?.text = action.template
+        textView?.text = action.template(notMentioning: [author])
     }
 
 
