@@ -24,7 +24,7 @@ class ComposePostViewController: UIViewController {
     }
 
     func loadTextFromAction() {
-        textView?.text = action.text
+        textView?.text = action.template
     }
 
 

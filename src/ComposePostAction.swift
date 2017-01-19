@@ -8,7 +8,7 @@ enum ComposePostAction {
     case update(Post)
     case updateReply(Post, to: Post)
 
-    var text: String {
+    var template: String {
         switch self {
         case .newThread:
             return ""
