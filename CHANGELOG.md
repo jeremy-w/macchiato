@@ -3,6 +3,12 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (3) - 2017-01-18
+Changed:
+
+- Targets iOS 9.3 rather than iOS 10. If you haven't upgraded to 10 yet, you're in luck!
+
+
 ### 1.0 (2) - 2017-01-16
 Fixes a crash. Hopefully fixes a login issue related to percent-encoding.
 
