@@ -59,15 +59,6 @@ extension Post {
 }
 
 
-struct EditingPost {
-    var content: String
-
-    let channel = 1
-    let updating: String?
-    let replyTo: String?
-}
-
-
 extension Post {
     struct You {
         var wereMentioned: Bool = false

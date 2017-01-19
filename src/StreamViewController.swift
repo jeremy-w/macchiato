@@ -168,12 +168,7 @@ class StreamViewController: UITableViewController {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
 
-        let action: ComposePostViewController.Action
-        if let actionSender = sender as? ComposePostViewController.Action {
-            action = actionSender
-        } else {
-            action = .newThread
-        }
+        let action = (sender as? ComposePostAction) ?? .newThread
 
         guard let postRepository = self.postRepository else { return true }
         composer.configure(postRepository: postRepository, action: action)
@@ -238,7 +233,7 @@ class StreamViewController: UITableViewController {
     func take(action: PostAction, on post: Post) {
         switch action {
         case .reply:
-            performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: ComposePostViewController.Action.newReply(to: post))
+            performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: ComposePostAction.newReply(to: post))
 
         case .star:
             postRepository?.star(post: post) { result in

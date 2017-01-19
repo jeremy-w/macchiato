@@ -43,6 +43,10 @@
 		3F2E29B21DB252D200519C9E /* ComposePostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */; };
 		3F6A07601E2DA9F200A56072 /* StreamViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A075F1E2DA9F200A56072 /* StreamViewControllerTests.swift */; };
 		3F6A07631E2DB7DA00A56072 /* FormEncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07621E2DB7DA00A56072 /* FormEncodingTests.swift */; };
+		3F6A076E1E3066A100A56072 /* PostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A076D1E3066A100A56072 /* PostTests.swift */; };
+		3F6A07711E30676700A56072 /* ComposePostViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07701E30676700A56072 /* ComposePostViewControllerTests.swift */; };
+		3F6A07731E30682200A56072 /* EditingPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07721E30682200A56072 /* EditingPost.swift */; };
+		3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07741E30690400A56072 /* ComposePostAction.swift */; };
 		3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */; };
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */; };
@@ -100,6 +104,10 @@
 		3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostViewController.swift; sourceTree = "<group>"; };
 		3F6A075F1E2DA9F200A56072 /* StreamViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamViewControllerTests.swift; sourceTree = "<group>"; };
 		3F6A07621E2DB7DA00A56072 /* FormEncodingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormEncodingTests.swift; sourceTree = "<group>"; };
+		3F6A076D1E3066A100A56072 /* PostTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostTests.swift; sourceTree = "<group>"; };
+		3F6A07701E30676700A56072 /* ComposePostViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostViewControllerTests.swift; sourceTree = "<group>"; };
+		3F6A07721E30682200A56072 /* EditingPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditingPost.swift; sourceTree = "<group>"; };
+		3F6A07741E30690400A56072 /* ComposePostAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostAction.swift; sourceTree = "<group>"; };
 		3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+Indexing.swift"; sourceTree = "<group>"; };
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRange+CustomStringConvertible.swift"; sourceTree = "<group>"; };
@@ -163,6 +171,7 @@
 				3F2E29AA1DB1933B00519C9E /* KeychainIntegration.swift */,
 				3F6A07611E2DB7B900A56072 /* Accessing Outside Content */,
 				3F6A075E1E2DA9D600A56072 /* Viewing Posts */,
+				3F6A076F1E30674C00A56072 /* Composing Posts */,
 			);
 			path = tests;
 			sourceTree = "<group>";
@@ -241,6 +250,8 @@
 			children = (
 				3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */,
 				3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */,
+				3F6A07741E30690400A56072 /* ComposePostAction.swift */,
+				3F6A07721E30682200A56072 /* EditingPost.swift */,
 				3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */,
 			);
 			name = "Composing Posts";
@@ -250,6 +261,7 @@
 			isa = PBXGroup;
 			children = (
 				3F6A075F1E2DA9F200A56072 /* StreamViewControllerTests.swift */,
+				3F6A076D1E3066A100A56072 /* PostTests.swift */,
 			);
 			name = "Viewing Posts";
 			sourceTree = "<group>";
@@ -260,6 +272,14 @@
 				3F6A07621E2DB7DA00A56072 /* FormEncodingTests.swift */,
 			);
 			name = "Accessing Outside Content";
+			sourceTree = "<group>";
+		};
+		3F6A076F1E30674C00A56072 /* Composing Posts */ = {
+			isa = PBXGroup;
+			children = (
+				3F6A07701E30676700A56072 /* ComposePostViewControllerTests.swift */,
+			);
+			name = "Composing Posts";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -404,12 +424,14 @@
 				3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */,
 				3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */,
 				3F2E29311DA9E9D700519C9E /* Random.swift in Sources */,
+				3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */,
 				3F2E29461DAB12BB00519C9E /* SettingsViewController.swift in Sources */,
 				3F2E29B21DB252D200519C9E /* ComposePostViewController.swift in Sources */,
 				3F2E29A31DAFC6DD00519C9E /* URLRequest+FormEncoding.swift in Sources */,
 				3F2E29AD1DB1937500519C9E /* Keychain.swift in Sources */,
 				3F2E292B1DA9DC9900519C9E /* StreamViewController.swift in Sources */,
 				3F2E292D1DA9DCF200519C9E /* PostCell.swift in Sources */,
+				3F6A07731E30682200A56072 /* EditingPost.swift in Sources */,
 				3F2E29351DA9EB1900519C9E /* PostRepository.swift in Sources */,
 				3F2E29551DAB332500519C9E /* TenCenturiesSessionManager.swift in Sources */,
 				3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */,
@@ -430,6 +452,8 @@
 				3F2E29AB1DB1933B00519C9E /* KeychainIntegration.swift in Sources */,
 				3F6A07601E2DA9F200A56072 /* StreamViewControllerTests.swift in Sources */,
 				3F2E295A1DAD243600519C9E /* PostParsing.swift in Sources */,
+				3F6A076E1E3066A100A56072 /* PostTests.swift in Sources */,
+				3F6A07711E30676700A56072 /* ComposePostViewControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
