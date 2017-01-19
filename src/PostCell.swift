@@ -64,7 +64,11 @@ class PostCell: UITableViewCell {
     func makeAdditionalInfoLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
-        label.adjustsFontForContentSizeCategory = true
+        if #available(iOS 10.0, *) {
+            label.adjustsFontForContentSizeCategory = true
+        } else {
+            // Fallback on earlier versions
+        }
         label.font = UIFont.preferredFont(forTextStyle: .footnote)
         return label
     }
