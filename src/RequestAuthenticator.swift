@@ -6,3 +6,10 @@ protocol RequestAuthenticator {
     /// (If not logged in, it probably won't do anything.)
     func authenticate(request: URLRequest) -> URLRequest
 }
+
+
+struct NopRequestAuthenticator: RequestAuthenticator {
+    func authenticate(request: URLRequest) -> URLRequest {
+        return request
+    }
+}

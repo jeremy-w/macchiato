@@ -1,4 +1,4 @@
-protocol SessionManager {
+protocol SessionManager: class {
     var loggedInAccountName: String? { get }
 
     func logOut()

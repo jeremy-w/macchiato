@@ -5,9 +5,11 @@ class TenCenturiesSessionManager {
     let session: URLSession
     let clientGUID: String
     fileprivate(set) var user: User?
-    // You will need to define a `static var appClientGUID: String` in the ignored file: TenCenturiesSessionManager+AppClientGUID.swift
-    // to provide your client secret to the app.
-    // You can find your client secret, or create one, at: https://admin.10centuries.org/apps/
+
+    /// You will need to define a `static var appClientGUID: String` in the ignored file: TenCenturiesSessionManager+AppClientGUID.swift
+    /// to provide your client secret to the app.
+    ///
+    /// You can find your client secret, or create one, at: https://admin.10centuries.org/apps/
     init(session: URLSession, clientGUID: String = TenCenturiesSessionManager.appClientGUID, user account: String? = nil) {
         self.session = session
         self.clientGUID = clientGUID
@@ -15,6 +17,7 @@ class TenCenturiesSessionManager {
     }
 
     struct User {
+        /// Confusingly, this is actually an email address. But it might not always be!
         let account: String
         let token: String
     }

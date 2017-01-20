@@ -4,6 +4,8 @@ import SafariServices
 class StreamViewController: UITableViewController {
     var stream: Stream?
     var postRepository: PostRepository?
+
+    /// The logged-in user's handle. If you'd be addressed as `@c`, it's just `"c"`.
     var user: String? = nil
     func configure(stream: Stream, postRepository: PostRepository, currentUser: String?) {
         self.stream = stream
