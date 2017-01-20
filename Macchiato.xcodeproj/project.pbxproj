@@ -48,6 +48,9 @@
 		3F6A07731E30682200A56072 /* EditingPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07721E30682200A56072 /* EditingPost.swift */; };
 		3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07741E30690400A56072 /* ComposePostAction.swift */; };
 		3F6A07771E306A1200A56072 /* ComposePostActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */; };
+		3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144EB1E31C17F001E25EC /* AccountRepository.swift */; };
+		3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */; };
+		3F8144F31E31C9B9001E25EC /* FakeAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */; };
 		3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */; };
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */; };
@@ -110,6 +113,9 @@
 		3F6A07721E30682200A56072 /* EditingPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditingPost.swift; sourceTree = "<group>"; };
 		3F6A07741E30690400A56072 /* ComposePostAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostAction.swift; sourceTree = "<group>"; };
 		3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostActionTests.swift; sourceTree = "<group>"; };
+		3F8144EB1E31C17F001E25EC /* AccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
+		3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TenCenturiesAccountRepository.swift; sourceTree = "<group>"; };
+		3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountRepository.swift; sourceTree = "<group>"; };
 		3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+Indexing.swift"; sourceTree = "<group>"; };
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRange+CustomStringConvertible.swift"; sourceTree = "<group>"; };
@@ -178,19 +184,11 @@
 			isa = PBXGroup;
 			children = (
 				3F2E29381DA9ED0200519C9E /* ServicePack.swift */,
-				3F2E29491DAB249100519C9E /* SessionManager.swift */,
 				3F2E295B1DAD351C00519C9E /* RequestAuthenticator.swift */,
 				3F2E29A61DAFC7AA00519C9E /* RateLimit.swift */,
-				3F2E29341DA9EB1900519C9E /* PostRepository.swift */,
-				3F2E293D1DAACF0400519C9E /* FakePostRepository.swift */,
 				3F2E29A21DAFC6DD00519C9E /* URLRequest+FormEncoding.swift */,
-				3F2E29A41DAFC75C00519C9E /* UUID+StringEncoding.swift */,
 				3F2E29561DAB385E00519C9E /* TenCenturiesService.swift */,
 				3F2E293F1DAACF2100519C9E /* TenCenturiesError.swift */,
-				3F2E29541DAB332500519C9E /* TenCenturiesSessionManager.swift */,
-				3F2E29AC1DB1937500519C9E /* Keychain.swift */,
-				3F2E29A81DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift */,
-				3F2E29411DAACF4B00519C9E /* TenCenturiesPostRepository.swift */,
 			);
 			name = "Accessing Outside Content";
 			sourceTree = "<group>";
@@ -274,6 +272,8 @@
 			isa = PBXGroup;
 			children = (
 				3F2E294E1DAB252600519C9E /* Plumbing */,
+				3F8144EF1E31C1EA001E25EC /* Logging In */,
+				3F8144ED1E31C1BB001E25EC /* Accounts */,
 				3F8144E91E31BB9D001E25EC /* Streams */,
 				3F8144EA1E31BBB3001E25EC /* Posts */,
 				3F2E294B1DAB24B900519C9E /* Accessing Outside Content */,
@@ -318,11 +318,44 @@
 			isa = PBXGroup;
 			children = (
 				3F2E29321DA9EA1800519C9E /* Post.swift */,
+				3F2E29341DA9EB1900519C9E /* PostRepository.swift */,
+				3F2E29411DAACF4B00519C9E /* TenCenturiesPostRepository.swift */,
+				3F2E293D1DAACF0400519C9E /* FakePostRepository.swift */,
+				3F8144EE1E31C1D1001E25EC /* Writing */,
+			);
+			name = Posts;
+			sourceTree = "<group>";
+		};
+		3F8144ED1E31C1BB001E25EC /* Accounts */ = {
+			isa = PBXGroup;
+			children = (
 				3F9CE5E61DBD7C5200E176F4 /* Account.swift */,
+				3F8144EB1E31C17F001E25EC /* AccountRepository.swift */,
+				3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */,
+				3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */,
+			);
+			name = Accounts;
+			sourceTree = "<group>";
+		};
+		3F8144EE1E31C1D1001E25EC /* Writing */ = {
+			isa = PBXGroup;
+			children = (
 				3F6A07741E30690400A56072 /* ComposePostAction.swift */,
 				3F6A07721E30682200A56072 /* EditingPost.swift */,
 			);
-			name = Posts;
+			name = Writing;
+			sourceTree = "<group>";
+		};
+		3F8144EF1E31C1EA001E25EC /* Logging In */ = {
+			isa = PBXGroup;
+			children = (
+				3F2E29491DAB249100519C9E /* SessionManager.swift */,
+				3F2E29541DAB332500519C9E /* TenCenturiesSessionManager.swift */,
+				3F2E29A81DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift */,
+				3F2E29A41DAFC75C00519C9E /* UUID+StringEncoding.swift */,
+				3F2E29AC1DB1937500519C9E /* Keychain.swift */,
+			);
+			name = "Logging In";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -473,10 +506,12 @@
 				3F2E29A31DAFC6DD00519C9E /* URLRequest+FormEncoding.swift in Sources */,
 				3F2E29AD1DB1937500519C9E /* Keychain.swift in Sources */,
 				3F2E292B1DA9DC9900519C9E /* StreamViewController.swift in Sources */,
+				3F8144F31E31C9B9001E25EC /* FakeAccountRepository.swift in Sources */,
 				3F2E292D1DA9DCF200519C9E /* PostCell.swift in Sources */,
 				3F6A07731E30682200A56072 /* EditingPost.swift in Sources */,
 				3F2E29351DA9EB1900519C9E /* PostRepository.swift in Sources */,
 				3F2E29551DAB332500519C9E /* TenCenturiesSessionManager.swift in Sources */,
+				3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */,
 				3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */,
 				3F2E294A1DAB249100519C9E /* SessionManager.swift in Sources */,
 				3F2E29481DAB20AB00519C9E /* LogInViewController.swift in Sources */,
@@ -484,6 +519,7 @@
 				3F2E29A71DAFC7AA00519C9E /* RateLimit.swift in Sources */,
 				3F2E292F1DA9E19000519C9E /* Stream.swift in Sources */,
 				3F2E29441DAAF53700519C9E /* ButtonCell.swift in Sources */,
+				3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

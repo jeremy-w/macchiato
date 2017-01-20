@@ -2,6 +2,10 @@ import Foundation
 
 enum TenCenturiesError: Error {
     case notHTTP(url: URL)
+    /**
+     Used when we failed to build a URL.
+     */
+    case badURL(string: String, info: [String: Any])
     case badResponse(url: URL, data: Data?, comment: String)
 
     case parseError(url: URL, object: Any, comment: String)
