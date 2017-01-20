@@ -155,12 +155,8 @@
 		3F2E29001DA9B9F200519C9E /* src */ = {
 			isa = PBXGroup;
 			children = (
-				3F2E294E1DAB252600519C9E /* Plumbing */,
-				3F2E294B1DAB24B900519C9E /* Accessing Outside Content */,
-				3F2E294D1DAB250200519C9E /* Logging In */,
-				3F2E294C1DAB24ED00519C9E /* Selecting a Stream */,
-				3F2E294F1DAB256600519C9E /* Viewing Posts */,
-				3F2E29AE1DB1C5D000519C9E /* Composing Posts */,
+				3F8144E71E31BAA1001E25EC /* iOS */,
+				3F8144E61E31BA81001E25EC /* MacchiatoKit */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -202,7 +198,6 @@
 		3F2E294C1DAB24ED00519C9E /* Selecting a Stream */ = {
 			isa = PBXGroup;
 			children = (
-				3F2E292E1DA9E19000519C9E /* Stream.swift */,
 				3F2E29071DA9B9F200519C9E /* Main.storyboard */,
 				3F2E29031DA9B9F200519C9E /* MasterViewController.swift */,
 			);
@@ -224,14 +219,8 @@
 			children = (
 				3F2E29361DA9EB6E00519C9E /* Result.swift */,
 				3F2E29301DA9E9D700519C9E /* Random.swift */,
-				3F2E29011DA9B9F200519C9E /* AppDelegate.swift */,
 				3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */,
 				3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */,
-				3F2E290C1DA9B9F200519C9E /* LaunchScreen.storyboard */,
-				3F2E290A1DA9B9F200519C9E /* Assets.xcassets */,
-				3F2E290F1DA9B9F200519C9E /* Info.plist */,
-				3F2E29501DAB29CF00519C9E /* ToastViewController.swift */,
-				3F2E29511DAB29CF00519C9E /* ToastViewController.xib */,
 			);
 			name = Plumbing;
 			sourceTree = "<group>";
@@ -239,8 +228,6 @@
 		3F2E294F1DAB256600519C9E /* Viewing Posts */ = {
 			isa = PBXGroup;
 			children = (
-				3F2E29321DA9EA1800519C9E /* Post.swift */,
-				3F9CE5E61DBD7C5200E176F4 /* Account.swift */,
 				3F2E292C1DA9DCF200519C9E /* PostCell.swift */,
 				3F2E292A1DA9DC9900519C9E /* StreamViewController.swift */,
 			);
@@ -252,8 +239,6 @@
 			children = (
 				3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */,
 				3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */,
-				3F6A07741E30690400A56072 /* ComposePostAction.swift */,
-				3F6A07721E30682200A56072 /* EditingPost.swift */,
 				3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */,
 			);
 			name = "Composing Posts";
@@ -283,6 +268,61 @@
 				3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */,
 			);
 			name = "Composing Posts";
+			sourceTree = "<group>";
+		};
+		3F8144E61E31BA81001E25EC /* MacchiatoKit */ = {
+			isa = PBXGroup;
+			children = (
+				3F2E294E1DAB252600519C9E /* Plumbing */,
+				3F8144E91E31BB9D001E25EC /* Streams */,
+				3F8144EA1E31BBB3001E25EC /* Posts */,
+				3F2E294B1DAB24B900519C9E /* Accessing Outside Content */,
+			);
+			name = MacchiatoKit;
+			sourceTree = "<group>";
+		};
+		3F8144E71E31BAA1001E25EC /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				3F8144E81E31BAF9001E25EC /* Plumbing */,
+				3F2E294D1DAB250200519C9E /* Logging In */,
+				3F2E294C1DAB24ED00519C9E /* Selecting a Stream */,
+				3F2E294F1DAB256600519C9E /* Viewing Posts */,
+				3F2E29AE1DB1C5D000519C9E /* Composing Posts */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		3F8144E81E31BAF9001E25EC /* Plumbing */ = {
+			isa = PBXGroup;
+			children = (
+				3F2E29011DA9B9F200519C9E /* AppDelegate.swift */,
+				3F2E290C1DA9B9F200519C9E /* LaunchScreen.storyboard */,
+				3F2E290A1DA9B9F200519C9E /* Assets.xcassets */,
+				3F2E290F1DA9B9F200519C9E /* Info.plist */,
+				3F2E29501DAB29CF00519C9E /* ToastViewController.swift */,
+				3F2E29511DAB29CF00519C9E /* ToastViewController.xib */,
+			);
+			name = Plumbing;
+			sourceTree = "<group>";
+		};
+		3F8144E91E31BB9D001E25EC /* Streams */ = {
+			isa = PBXGroup;
+			children = (
+				3F2E292E1DA9E19000519C9E /* Stream.swift */,
+			);
+			name = Streams;
+			sourceTree = "<group>";
+		};
+		3F8144EA1E31BBB3001E25EC /* Posts */ = {
+			isa = PBXGroup;
+			children = (
+				3F2E29321DA9EA1800519C9E /* Post.swift */,
+				3F9CE5E61DBD7C5200E176F4 /* Account.swift */,
+				3F6A07741E30690400A56072 /* ComposePostAction.swift */,
+				3F6A07721E30682200A56072 /* EditingPost.swift */,
+			);
+			name = Posts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
