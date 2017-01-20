@@ -24,7 +24,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         splitViewController?.delegate = self
         streamViewController?.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         configureMasterViewController()
+        beginFetchingCurrentUserAccount()
         return true
+    }
+
+    var currentUser: Account?
+    var loggedInUserDidChangeListener: Any?
+
+    func beginFetchingCurrentUserAccount() {
+        subscribeForLoggedInUserChanges()
+        fetchCurrentUserAccount()
+    }
+
+    func subscribeForLoggedInUserChanges() {
+        loggedInUserDidChangeListener = NotificationCenter.default.addObserver(
+            forName: .loggedInAccountDidChange,
+            object: services.sessionManager,
+            queue: OperationQueue.main) {
+                [weak self] (notification) in
+                guard let manager = notification.object as? SessionManager, manager.loggedInAccountName != nil else {
+                    // (jeremy-w/2017-01-20)TODO: Propagate this change to interested parties.
+                    self?.currentUser = nil
+                    return
+                }
+
+                self?.fetchCurrentUserAccount()
+        }
+    }
+
+    func fetchCurrentUserAccount() {
+        services.accountRepository.account(id: "me") { (result) in
+            guard case let .success(user) = result else { return }
+
+            self.currentUser = user
+        }
     }
 
     func configureMasterViewController() {
