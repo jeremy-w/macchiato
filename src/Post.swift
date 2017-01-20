@@ -47,24 +47,18 @@ extension Post {
 
 
 extension Post {
-    var replyTemplate: String {
+    func replyTemplate(notMentioning handles: [String]) -> String {
         let target = account.id
-        let bystanders = mentions.filter { $0.id != target }.map { $0.current }
+        let omit = Set(handles)
+        let bystanders = mentions
+            .filter { $0.id != target && !omit.contains($0.current) }
+            .map { $0.current }
         guard !bystanders.isEmpty else {
             return "@\(author) "
         }
 
-        return "@\(author) \n\n// " + bystanders.joined(separator: " ")
+        return "@\(author) \n\n// @" + bystanders.joined(separator: " @")
     }
-}
-
-
-struct EditingPost {
-    var content: String
-
-    let channel = 1
-    let updating: String?
-    let replyTo: String?
 }
 
 

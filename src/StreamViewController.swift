@@ -4,10 +4,15 @@ import SafariServices
 class StreamViewController: UITableViewController {
     var stream: Stream?
     var postRepository: PostRepository?
-    func configure(stream: Stream, postRepository: PostRepository) {
+
+    var currentUser: Account?
+    func configure(stream: Stream, postRepository: PostRepository, currentUser: Account?) {
         self.stream = stream
         self.postRepository = postRepository
+        self.currentUser = currentUser
+
         title = stream.name
+
         tableView?.reloadData()
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 44
@@ -145,7 +150,7 @@ class StreamViewController: UITableViewController {
 
         // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
         // (match on thread.root)
-        streamVC.configure(stream: post.threadStream, postRepository: postRepository)
+        streamVC.configure(stream: post.threadStream, postRepository: postRepository, currentUser: currentUser)
         return true
     }
 
@@ -167,16 +172,15 @@ class StreamViewController: UITableViewController {
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
-
-        let action: ComposePostViewController.Action
-        if let actionSender = sender as? ComposePostViewController.Action {
-            action = actionSender
-        } else {
-            action = .newThread
+        guard let author = currentUser else {
+            print("STREAMVC: ERROR: No current user - refusing to compose post.")
+            return true
         }
 
+        let action = (sender as? ComposePostAction) ?? .newThread
+
         guard let postRepository = self.postRepository else { return true }
-        composer.configure(postRepository: postRepository, action: action)
+        composer.configure(postRepository: postRepository, action: action, author: author)
         return true
     }
 
@@ -210,8 +214,17 @@ class StreamViewController: UITableViewController {
             (NSLocalizedString("Repost", comment: "button"), .repost),
             (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
+            switch action {
+            case .webView:
+                break
+
+            default:
+                guard currentUser != nil else { continue }
+            }
+
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
         }
+
         let cancel = makeCancelAction()
         alert.addAction(cancel)
         alert.preferredAction = cancel
@@ -238,7 +251,7 @@ class StreamViewController: UITableViewController {
     func take(action: PostAction, on post: Post) {
         switch action {
         case .reply:
-            performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: ComposePostViewController.Action.newReply(to: post))
+            performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: ComposePostAction.newReply(to: post))
 
         case .star:
             postRepository?.star(post: post) { result in

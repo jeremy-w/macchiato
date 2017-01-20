@@ -17,7 +17,7 @@ struct Account {
     let description: String
     let timezone: String
 
-    let counts: [String: Int]
+    let counts: [String: Int]  // following, followers, stars, posts of various sizes
 //    let createdAt: Date  // ISO8601, Zulu
 //    let annotations: Bool
 //    let coverImage: URL  // or false

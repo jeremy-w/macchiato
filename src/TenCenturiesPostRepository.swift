@@ -116,7 +116,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let accounts = try unpack(post, "account") as [JSONDictionary]
         let account: Account?
         do {
-            account = try accounts.first.map { try parseAccount($0) }
+            account = try accounts.first.map { try TenCenturiesAccountRepository.parseAccount(from: $0) }
         } catch {
             print("PARSE: ERROR: Failed to parse account from \(accounts): \(error)")
             account = Account.makeFake()
@@ -186,39 +186,15 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parse(mention: JSONDictionary) throws -> Post.Mention {
+        func stripPrefixedAtSign(from string: String) -> String {
+            guard string.hasPrefix("@") else { return string }
+            return string.substring(from: string.index(after: string.startIndex))
+        }
+
         return Post.Mention(
-            name: try unpack(mention, "name"),
+            name: stripPrefixedAtSign(from: try unpack(mention, "name")),
             id: String(describing: try unpack(mention, "id") as Any),
-            current: try unpack(mention, "current"))
-    }
-
-    func parseAccount(_ dict: JSONDictionary) throws -> Account {
-        let nameDict = try unpack(dict, "name") as JSONDictionary
-
-        let verifiedDict = try unpack(dict, "verified") as JSONDictionary
-        let verified: URL?
-        if try unpack(verifiedDict, "is_verified") {
-            verified = URL(string: try unpack(verifiedDict, "url"))
-        } else {
-            verified = nil
-        }
-
-        let text: String
-        if let descDict = try? unpack(dict, "description") as JSONDictionary {
-            text = (try? unpack(descDict, "text")) ?? ""
-        } else {
-            text = ""
-        }
-
-        return Account(
-            id: String(describing: try unpack(dict, "id") as Any),
-            username: try unpack(dict, "username"),
-            name: (first: try unpack(nameDict, "first_name"), last: try unpack(nameDict, "last_name"), display: try unpack(nameDict, "display")),
-            avatarURL: (try? unpack(dict, "avatar_url") as String).flatMap({ URL(string: "https:" + $0) }) ?? Account.defaultAvatarURL,
-            verified: verified,
-            description: text,
-            timezone: try unpack(dict, "timezone"),
-            counts: try unpack(dict, "counts"))
+            current: stripPrefixedAtSign(from: try unpack(mention, "current")))
     }
 
 
