@@ -423,7 +423,7 @@
 					};
 					3F2E29131DA9B9F200519C9E = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = EUDG8SE7G5;
+						DevelopmentTeam = 6ZA93RH52B;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3F2E28FD1DA9B9F200519C9E;
 					};
@@ -711,7 +711,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = EUDG8SE7G5;
+				DEVELOPMENT_TEAM = 6ZA93RH52B;
 				INFOPLIST_FILE = tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.MacchiatoTests;
@@ -726,7 +726,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = EUDG8SE7G5;
+				DEVELOPMENT_TEAM = 6ZA93RH52B;
 				INFOPLIST_FILE = tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.MacchiatoTests;
