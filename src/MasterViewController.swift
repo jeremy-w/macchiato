@@ -11,6 +11,7 @@ import UIKit
 class MasterViewController: UITableViewController {
     var streams = [Stream]()
     var services: ServicePack?
+    var currentUser: Account?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,10 +53,7 @@ class MasterViewController: UITableViewController {
         guard let services = self.services else { return true }
 
         let stream = streams[indexPath.row]
-        // (jeremy-w/2017-01-18)FIXME: loggedInAccountName is an EMAIL, not the handle.
-        // We need to fetch the current user endpoint and keep that info available while logged in,
-        // I think.
-        controller.configure(stream: stream, postRepository: services.postRepository, currentUser: services.sessionManager.loggedInAccountName)
+        controller.configure(stream: stream, postRepository: services.postRepository, currentUser: currentUser)
         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
         return true

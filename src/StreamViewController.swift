@@ -5,12 +5,11 @@ class StreamViewController: UITableViewController {
     var stream: Stream?
     var postRepository: PostRepository?
 
-    /// The logged-in user's handle. If you'd be addressed as `@c`, it's just `"c"`.
-    var user: String? = nil
-    func configure(stream: Stream, postRepository: PostRepository, currentUser: String?) {
+    var currentUser: Account?
+    func configure(stream: Stream, postRepository: PostRepository, currentUser: Account?) {
         self.stream = stream
         self.postRepository = postRepository
-        user = currentUser
+        self.currentUser = currentUser
 
         title = stream.name
 
@@ -151,7 +150,7 @@ class StreamViewController: UITableViewController {
 
         // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
         // (match on thread.root)
-        streamVC.configure(stream: post.threadStream, postRepository: postRepository, currentUser: user)
+        streamVC.configure(stream: post.threadStream, postRepository: postRepository, currentUser: currentUser)
         return true
     }
 
@@ -173,7 +172,7 @@ class StreamViewController: UITableViewController {
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
-        guard let author = user else {
+        guard let author = currentUser else {
             print("STREAMVC: ERROR: No current user - refusing to compose post.")
             return true
         }
@@ -220,7 +219,7 @@ class StreamViewController: UITableViewController {
                 break
 
             default:
-                guard user != nil else { continue }
+                guard currentUser != nil else { continue }
             }
 
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))

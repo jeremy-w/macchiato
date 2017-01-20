@@ -3,9 +3,9 @@ import UIKit
 class ComposePostViewController: UIViewController {
     var postRepository: PostRepository?
     var action: ComposePostAction = .newThread
-    var author = ""
+    var author: Account?
 
-    func configure(postRepository: PostRepository, action: ComposePostAction, author: String) {
+    func configure(postRepository: PostRepository, action: ComposePostAction, author: Account) {
         self.postRepository = postRepository
         self.action = action
         self.author = author
@@ -26,7 +26,8 @@ class ComposePostViewController: UIViewController {
     }
 
     func loadTextFromAction() {
-        textView?.text = action.template(notMentioning: [author])
+        let authorsUsername = [author?.username].flatMap({ $0 })
+        textView?.text = action.template(notMentioning: authorsUsername)
     }
 
 

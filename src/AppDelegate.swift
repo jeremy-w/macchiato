@@ -28,7 +28,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         return true
     }
 
-    var currentUser: Account?
+
+    // MARK: - Tracks the current user's account info
+    var currentUser: Account? {
+        didSet {
+            print("ACCOUNT: INFO: Current user did change to:", currentUser as Any)
+            // (jeremy-w/2017-01-20)FIXME: This direct push of |currentUser| changes is kind of questionable.
+            // Should we throw another notification?
+            masterViewController?.currentUser = currentUser
+            streamViewController?.currentUser = currentUser
+        }
+    }
     var loggedInUserDidChangeListener: Any?
 
     func beginFetchingCurrentUserAccount() {
@@ -43,7 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             queue: OperationQueue.main) {
                 [weak self] (notification) in
                 guard let manager = notification.object as? SessionManager, manager.loggedInAccountName != nil else {
-                    // (jeremy-w/2017-01-20)TODO: Propagate this change to interested parties.
                     self?.currentUser = nil
                     return
                 }
@@ -57,9 +66,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             guard case let .success(user) = result else { return }
 
             self.currentUser = user
+            self.masterViewController?.currentUser = user
         }
     }
 
+
+    // MARK: - Wires up the UI
     func configureMasterViewController() {
         guard let master = masterViewController else { return }
 
@@ -74,6 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             Stream.View.pinned,
             Stream.View.starred,
             ].map { Stream(view: $0) }
+        master.currentUser = currentUser
     }
 
     var splitViewController: UISplitViewController? {
