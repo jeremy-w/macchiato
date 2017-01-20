@@ -186,10 +186,15 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parse(mention: JSONDictionary) throws -> Post.Mention {
+        func stripPrefixedAtSign(from string: String) -> String {
+            guard string.hasPrefix("@") else { return string }
+            return string.substring(from: string.index(after: string.startIndex))
+        }
+
         return Post.Mention(
-            name: try unpack(mention, "name"),
+            name: stripPrefixedAtSign(from: try unpack(mention, "name")),
             id: String(describing: try unpack(mention, "id") as Any),
-            current: try unpack(mention, "current"))
+            current: stripPrefixedAtSign(from: try unpack(mention, "current")))
     }
 
 

@@ -22,8 +22,8 @@ class PostParsing: XCTestCase {
         do {
             let post = try subject.parsePost(from: capturedPostWithThreadInfo)
             let expected = [
-                Post.Mention(name: "@skematica", id: "12", current: "@skematica"),
-                Post.Mention(name: "@larand", id: "26", current: "@larand"),
+                Post.Mention(name: "skematica", id: "12", current: "skematica"),
+                Post.Mention(name: "larand", id: "26", current: "larand"),
             ]
             XCTAssertEqual(post.mentions.count, expected.count, "count of mentions doesn't match")
             for (i, (actual, intended)) in zip(post.mentions, expected).enumerated() {

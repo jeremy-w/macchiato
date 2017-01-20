@@ -57,7 +57,7 @@ extension Post {
             return "@\(author) "
         }
 
-        return "@\(author) \n\n// " + bystanders.joined(separator: " ")
+        return "@\(author) \n\n// @" + bystanders.joined(separator: " @")
     }
 }
 
