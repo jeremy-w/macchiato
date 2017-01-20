@@ -4,7 +4,11 @@ import Security
 class TenCenturiesSessionManager {
     let session: URLSession
     let clientGUID: String
-    fileprivate(set) var user: User?
+    fileprivate(set) var user: User? {
+        didSet {
+            NotificationCenter.default.post(name: .loggedInAccountDidChange, object: self)
+        }
+    }
 
     /// You will need to define a `static var appClientGUID: String` in the ignored file: TenCenturiesSessionManager+AppClientGUID.swift
     /// to provide your client secret to the app.
