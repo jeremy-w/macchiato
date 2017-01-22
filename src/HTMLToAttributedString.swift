@@ -63,6 +63,9 @@ private final class Parser: NSObject, XMLParserDelegate {
         case "strike":
             attributesStack.append(strikethroughAttributes)
 
+        case "a":
+            attributesStack.append(anchorAttributes(href: attributes["href"], title: attributes["title"]))
+
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
             attributesStack.append(paragraphAttributes)
@@ -138,6 +141,12 @@ private final class Parser: NSObject, XMLParserDelegate {
 
     var strikethroughAttributes: [String: Any] {
         return [NSStrikethroughStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue]
+    }
+
+    func anchorAttributes(href: String?, title: String?) -> [String: Any] {
+        // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
+        // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
+        return [NSLinkAttributeName: href ?? "about:blank"]
     }
 }
 

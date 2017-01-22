@@ -64,6 +64,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     }
 
     func testAnchorWord() {
+        let html = "<a target=\"_blank\" href=\"http://example.com\" title=\"ignored\">anchored</a>"
+        let result = makeAttributedString(fromHTML: html)
+        guard let link = result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil) else {
+            return XCTFail("expected to find link attribute at index 0 of attributed string: \(result)")
+        }
+
+        XCTAssertEqual(link as? String, "http://example.com", "failed to correctly populate link attribute, or not a string: \(String(reflecting: link))")
     }
 
     func testHeaders() {
