@@ -21,17 +21,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testItalicWord() {
         let html = "<em>italic</em>"
         let result = makeAttributedString(fromHTML: html)
-        guard let font = result.attribute(NSFontAttributeName, at: 0, effectiveRange: nil) as? UIFont else {
-            return XCTFail("failed to set font attribute in attributed string: \(result)")
-        }
-
-        XCTAssertTrue(
-            font.fontDescriptor.symbolicTraits.contains(.traitItalic),
-            "expected symbolic traits to contain “Italic” for font \(font) with descriptor \(font.fontDescriptor)")
+        assertSymbolicTraits(.traitItalic, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testBoldWord() {
         let html = "<strong>bold</strong>"
+        let result = makeAttributedString(fromHTML: html)
+        assertSymbolicTraits(.traitBold, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testCodeWord() {
@@ -69,5 +65,15 @@ class HTMLToAttributedStringTests: XCTestCase {
     }
 
     func testImage() {
+    }
+
+    func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {
+        guard let font = string.attribute(NSFontAttributeName, at: index, effectiveRange: nil) as? UIFont else {
+            return XCTFail("failed to set font attribute at index \(index) in attributed string: \(string)", file: file, line: line)
+        }
+
+        XCTAssertTrue(
+            font.fontDescriptor.symbolicTraits.contains(trait),
+            "expected symbolic traits to contain \(trait) for font \(font) with descriptor \(font.fontDescriptor)", file: file, line: line)
     }
 }

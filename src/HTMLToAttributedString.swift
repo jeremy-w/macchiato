@@ -48,8 +48,11 @@ private final class Parser: NSObject, XMLParserDelegate {
                 result.append(paragraphSeparator)
             }
 
-            case "em":
+        case "em":
             attributesStack.append(italicAttributes)
+
+        case "strong":
+            attributesStack.append(boldAttributes)
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
@@ -65,6 +68,14 @@ private final class Parser: NSObject, XMLParserDelegate {
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
         let font = UIFont.italicSystemFont(ofSize: descriptor.pointSize)
+        return [NSFontAttributeName: font]
+    }
+
+    var boldAttributes: [String: Any] {
+        // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
+        // and use that instead of .body as the text style.
+        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
+        let font = UIFont.boldSystemFont(ofSize: descriptor.pointSize)
         return [NSFontAttributeName: font]
     }
 
