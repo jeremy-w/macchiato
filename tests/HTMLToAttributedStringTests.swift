@@ -74,28 +74,44 @@ class HTMLToAttributedStringTests: XCTestCase {
     }
 
     func testHeaders() {
+        // (jeremy-w/2017-01-22)TODO: Try this in 10C and see what shakes out. Does it handle H1-H6? More?
+    }
+
+    func testMention() {
+        let html = "<span class=\"account\" data-account-id=\"6\">@mention</span>"
+    }
+
+    func testHash() {
+        let html = "<span class=\"hash\" data-hash=\"noagenda\">#noagenda</span>"
+    }
+
+    func testBreak() {
+        // We want a newline but not a new paragraph here. Not sure how to check that, but can check we get a new line.
+        let html = "<p>Freelance tech writer<br /> Author<br /> Practical minimalist</p>"
     }
 
 
     // MARK: - Renders block content
     func testOrderedList() {
+        // Looks like we'll have to render these ourselves. What fun.
     }
 
     func testUnorderedList() {
+        // Looks like we'll have to render these ourselves. What fun.
     }
 
     func testPreFormattedText() {
-    }
-
-    func testPreFormattedCode() {
+        // Should cause us to actually include otherwise-insignificant whitespace.
     }
 
 
     // MARK: - Renders decorations
     func testHorizontalRule() {
+        // Think I'll just use an asterism: ⁂
     }
 
     func testImage() {
+        // Uses the NSAttachmentCharacter U+FFFC aka the replacement character (question mark in a diamond, often) as the text.
     }
 
     func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {
