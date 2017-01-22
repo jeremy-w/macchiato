@@ -57,6 +57,10 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testStrikethroughWord() {
         let html = "<strike>strike</strike>"
+        let result = makeAttributedString(fromHTML: html)
+        XCTAssertNotNil(
+            result.attribute(NSStrikethroughStyleAttributeName, at: 0, effectiveRange: nil),
+            "expected to find strikethrough attribute at index 0 of attributed string: \(result)")
     }
 
     func testAnchorWord() {

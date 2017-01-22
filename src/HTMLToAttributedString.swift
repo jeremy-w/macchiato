@@ -60,13 +60,37 @@ private final class Parser: NSObject, XMLParserDelegate {
         case "sup":
             attributesStack.append(superscriptAttributes)
 
+        case "strike":
+            attributesStack.append(strikethroughAttributes)
+
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
             attributesStack.append(paragraphAttributes)
         }
     }
 
-    var paragraphAttributes = [String: Any]()
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        let attributes = attributesStack.last
+        if attributes == nil {
+            print("HTML: ERROR: Found characters prior to any node:", string)
+        }
+
+        result.append(NSAttributedString(string: string, attributes: attributes ?? [:]))
+    }
+
+    func parser(
+        _ parser: XMLParser,
+        didEndElement element: String,
+        namespaceURI: String?,
+        qualifiedName: String?
+    ) {
+        guard let _ = attributesStack.popLast() else {
+            print("HTML: ERROR: Stack underflow on popping element:", element)
+            return
+        }
+    }
+
+        var paragraphAttributes = [String: Any]()
     var paragraphSeparator = NSAttributedString(string: "\r\n")
 
     var italicAttributes: [String: Any] {
@@ -112,25 +136,8 @@ private final class Parser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font, NSBaselineOffsetAttributeName: descriptor.pointSize / 3]
     }
 
-    func parser(_ parser: XMLParser, foundCharacters string: String) {
-        let attributes = attributesStack.last
-        if attributes == nil {
-            print("HTML: ERROR: Found characters prior to any node:", string)
-        }
-
-        result.append(NSAttributedString(string: string, attributes: attributes ?? [:]))
-    }
-
-    func parser(
-        _ parser: XMLParser,
-        didEndElement element: String,
-        namespaceURI: String?,
-        qualifiedName: String?
-    ) {
-        guard let _ = attributesStack.popLast() else {
-            print("HTML: ERROR: Stack underflow on popping element:", element)
-            return
-        }
+    var strikethroughAttributes: [String: Any] {
+        return [NSStrikethroughStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue]
     }
 }
 
