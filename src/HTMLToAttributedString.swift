@@ -1,7 +1,8 @@
 import UIKit
 
 func makeAttributedString(fromHTML html: String) -> NSAttributedString {
-    guard let utf8 = html.data(using: .utf8) else {
+    let fixed = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
+    guard let utf8 = fixed.data(using: .utf8) else {
         print("HTML: ERROR: Failed to convert string to UTF-8–encoded data: returning as-is")
         return NSAttributedString(string: html)
     }
@@ -10,7 +11,7 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
     do {
         return try parser.parse().unwrap()
     } catch {
-        print("HTML: ERROR: Failed to parse string:", error)
+        print("HTML: ERROR: Failed to parse string with error:", error, "- string:", fixed)
         return NSAttributedString(string: html)
     }
 }
