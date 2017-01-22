@@ -21,6 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        guard NSClassFromString("XCTestCase") == nil else {
+            print("Acting as test host: Bailing out of app-launch behaviors")
+            return true
+        }
         splitViewController?.delegate = self
         streamViewController?.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         configureMasterViewController()
