@@ -38,6 +38,21 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testSuperscriptNumber() {
         let html = "<sup>1</sup>"
+        let result = makeAttributedString(fromHTML: html)
+
+        #if os(macOS)
+            guard let superscript = result.attribute(NSSuperscriptAttributeName, at: 0, effectiveRange: nil) else {
+                return XCTFail("failed to set superscript attribute at index 0 in attributed string: \(result)")
+            }
+            return
+        #endif
+
+        // Workaround for not having the superscript attribute: Raise the text a bit.
+        // See: https://stackoverflow.com/questions/21415963/nsattributedstring-superscript-styling
+        guard let baselineOffset = result.attribute(NSBaselineOffsetAttributeName, at: 0, effectiveRange: nil) as? CGFloat else {
+            return XCTFail("failed to set baseline attribute at index 0 in attributed string: \(result)")
+        }
+        XCTAssertTrue(baselineOffset > 0, "expected baseline offset greater than zero, but found: \(baselineOffset)")
     }
 
     func testStrikethroughWord() {
@@ -45,6 +60,9 @@ class HTMLToAttributedStringTests: XCTestCase {
     }
 
     func testAnchorWord() {
+    }
+
+    func testHeaders() {
     }
 
 

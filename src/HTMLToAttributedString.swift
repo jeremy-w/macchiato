@@ -57,6 +57,9 @@ private final class Parser: NSObject, XMLParserDelegate {
         case "code":
             attributesStack.append(codeAttributes)
 
+        case "sup":
+            attributesStack.append(superscriptAttributes)
+
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
             attributesStack.append(paragraphAttributes)
@@ -95,6 +98,18 @@ private final class Parser: NSObject, XMLParserDelegate {
 
         let font = UIFont(descriptor: codeDescriptor, size: codeDescriptor.pointSize)
         return [NSFontAttributeName: font]
+    }
+
+    var superscriptAttributes: [String: Any] {
+        #if os(macOS)
+            if #available(macOS 10.10, *) {
+                return [NSSuperscriptAttributeName: 1.0]
+            }
+        #endif
+
+        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
+        let font = UIFont(descriptor: descriptor, size: descriptor.pointSize / 2)
+        return [NSFontAttributeName: font, NSBaselineOffsetAttributeName: descriptor.pointSize / 3]
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
