@@ -148,6 +148,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             account: account ?? Account.makeFake(),
             date: Date(timeIntervalSince1970: try unpack(post, "created_unix")),
             content: try unpack(unpack(post, "content"), "text"),
+            html: try unpack(unpack(post, "content"), "html"),
             privacy: try unpack(post, "privacy"),
             thread: thread,
             parentID: parentID,
