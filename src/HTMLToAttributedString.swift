@@ -54,6 +54,9 @@ private final class Parser: NSObject, XMLParserDelegate {
         case "strong":
             attributesStack.append(boldAttributes)
 
+        case "code":
+            attributesStack.append(codeAttributes)
+
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
             attributesStack.append(paragraphAttributes)
@@ -76,6 +79,21 @@ private final class Parser: NSObject, XMLParserDelegate {
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
         let font = UIFont.boldSystemFont(ofSize: descriptor.pointSize)
+        return [NSFontAttributeName: font]
+    }
+
+    var codeAttributes: [String: Any] {
+        // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
+        // and use that instead of .body as the text style.
+        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
+        guard let codeDescriptor = descriptor.withSymbolicTraits(.traitMonoSpace) else {
+            print("HTML: ERROR: Unable to create font descriptor with symbolic trait MonoSpace based on descriptor:",
+                  descriptor, "- defaulting to Menlo")
+            let menlo = UIFontDescriptor(name: "Menlo-Regular", size: descriptor.pointSize)
+            return [NSFontAttributeName: UIFont(descriptor: menlo, size: menlo.pointSize)]
+        }
+
+        let font = UIFont(descriptor: codeDescriptor, size: codeDescriptor.pointSize)
         return [NSFontAttributeName: font]
     }
 

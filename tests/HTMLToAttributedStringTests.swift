@@ -32,6 +32,8 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testCodeWord() {
         let html = "<code>code</code>"
+        let result = makeAttributedString(fromHTML: html)
+        assertSymbolicTraits(.traitMonoSpace, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testSuperscriptNumber() {
