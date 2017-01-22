@@ -54,6 +54,8 @@
 		3F8144F51E31CC13001E25EC /* TenCenturiesServicePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F41E31CC13001E25EC /* TenCenturiesServicePack.swift */; };
 		3F8144F71E31CCEA001E25EC /* FakeServicePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F61E31CCEA001E25EC /* FakeServicePack.swift */; };
 		3F8144F91E31CD2D001E25EC /* FakeSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F81E31CD2D001E25EC /* FakeSessionManager.swift */; };
+		3F8144FD1E34633F001E25EC /* HTMLToAttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144FC1E34633F001E25EC /* HTMLToAttributedString.swift */; };
+		3F8145001E346357001E25EC /* HTMLToAttributedStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144FE1E346354001E25EC /* HTMLToAttributedStringTests.swift */; };
 		3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */; };
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */; };
@@ -123,6 +125,8 @@
 		3F8144F61E31CCEA001E25EC /* FakeServicePack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeServicePack.swift; sourceTree = "<group>"; };
 		3F8144F81E31CD2D001E25EC /* FakeSessionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeSessionManager.swift; sourceTree = "<group>"; };
 		3F8144FB1E331C29001E25EC /* Markdown.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Markdown.playground; sourceTree = "<group>"; };
+		3F8144FC1E34633F001E25EC /* HTMLToAttributedString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLToAttributedString.swift; sourceTree = "<group>"; };
+		3F8144FE1E346354001E25EC /* HTMLToAttributedStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLToAttributedStringTests.swift; sourceTree = "<group>"; };
 		3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+Indexing.swift"; sourceTree = "<group>"; };
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRange+CustomStringConvertible.swift"; sourceTree = "<group>"; };
@@ -238,6 +242,7 @@
 			children = (
 				3F2E292C1DA9DCF200519C9E /* PostCell.swift */,
 				3F2E292A1DA9DC9900519C9E /* StreamViewController.swift */,
+				3F8144FC1E34633F001E25EC /* HTMLToAttributedString.swift */,
 			);
 			name = "Viewing Posts";
 			sourceTree = "<group>";
@@ -257,6 +262,7 @@
 			children = (
 				3F6A075F1E2DA9F200A56072 /* StreamViewControllerTests.swift */,
 				3F6A076D1E3066A100A56072 /* PostTests.swift */,
+				3F8144FE1E346354001E25EC /* HTMLToAttributedStringTests.swift */,
 			);
 			name = "Viewing Posts";
 			sourceTree = "<group>";
@@ -517,6 +523,7 @@
 				3F2E29401DAACF2100519C9E /* TenCenturiesError.swift in Sources */,
 				3F2E29A51DAFC75C00519C9E /* UUID+StringEncoding.swift in Sources */,
 				3F2E29421DAACF4B00519C9E /* TenCenturiesPostRepository.swift in Sources */,
+				3F8144FD1E34633F001E25EC /* HTMLToAttributedString.swift in Sources */,
 				3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */,
 				3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */,
 				3F8144F71E31CCEA001E25EC /* FakeServicePack.swift in Sources */,
@@ -551,6 +558,7 @@
 			files = (
 				3F6A07631E2DB7DA00A56072 /* FormEncodingTests.swift in Sources */,
 				3F2E29AB1DB1933B00519C9E /* KeychainIntegration.swift in Sources */,
+				3F8145001E346357001E25EC /* HTMLToAttributedStringTests.swift in Sources */,
 				3F6A07601E2DA9F200A56072 /* StreamViewControllerTests.swift in Sources */,
 				3F2E295A1DAD243600519C9E /* PostParsing.swift in Sources */,
 				3F6A076E1E3066A100A56072 /* PostTests.swift in Sources */,
