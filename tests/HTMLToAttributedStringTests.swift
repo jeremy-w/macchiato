@@ -146,6 +146,12 @@ class HTMLToAttributedStringTests: XCTestCase {
         #endif
     }
 
+    func testAvoidsDoubleLinebreakDueToParagraphWithinListItem() {
+        let html = "<ul><li><p>Single indent.</p></li></ul>"
+        let expected = Parser.paragraphSeparator + "\t• Single indent."
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
+    }
+
     func testPreFormattedText() {
         let html = "<pre>this is    preformatted text</pre>"
         let expected = "this is    preformatted text"

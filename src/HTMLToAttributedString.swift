@@ -50,6 +50,8 @@ final class Parser: NSObject, XMLParserDelegate {
         return formatter
     }()
 
+    var atStartOfListItem = false
+
     // swiftlint:disable:next cyclomatic_complexity
     func parser(
         _ parser: XMLParser,
@@ -64,9 +66,10 @@ final class Parser: NSObject, XMLParserDelegate {
 
         case "p", "pre":
             attributesStack.append(paragraphAttributes)
-            if result.length > 0 {
+            if result.length > 0 && !atStartOfListItem {
                 result.append(Parser.attributedParagraphSeparator)
             }
+            atStartOfListItem = false
 
         case "hr":
             result.append(Parser.attributedParagraphSeparator)
@@ -137,6 +140,7 @@ final class Parser: NSObject, XMLParserDelegate {
                 listItem.append(NSAttributedString(string: "• "))
             }
             result.append(listItem)
+            atStartOfListItem = true
 
         case "img":
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
@@ -171,6 +175,7 @@ final class Parser: NSObject, XMLParserDelegate {
         namespaceURI: String?,
         qualifiedName: String?
     ) {
+        atStartOfListItem = false
         if element == "ol" || element == "ul", let webList = listStack.popLast() {
             if webList.isOrdered != (element == "ol") {
                 print("HTML: WARNING: OL/UL mismatch: Saw close tag for", element, "but top of list stack was the other flavor!")
