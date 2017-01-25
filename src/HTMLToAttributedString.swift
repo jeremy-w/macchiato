@@ -42,6 +42,11 @@ final class Parser: NSObject, XMLParserDelegate {
         var itemCount: Int
     }
     var listStack = [HTMLList]()
+    lazy var listItemIndexFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
 
     // swiftlint:disable:next cyclomatic_complexity
     func parser(
@@ -116,17 +121,22 @@ final class Parser: NSObject, XMLParserDelegate {
             webList.itemCount += 1
             listStack.append(webList)
 
-            var listItem = webList.itemCount > 1 ? Parser.paragraphSeparator : ""
-
+            let separator = webList.itemCount > 1 ? Parser.paragraphSeparator : ""
             let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
-            listItem += indent
 
+            let listItem = NSMutableAttributedString(string: separator + indent)
             if webList.isOrdered {
-                listItem += String(describing: webList.itemCount) + ". "
+                let number = listItemIndexFormatter.string(from: NSNumber(value: webList.itemCount)) ?? String(describing: webList.itemCount)
+                let isFootnote = (attributes["class"] ?? "") == "footnote"
+                if isFootnote {
+                    listItem.append(NSAttributedString(string: number, attributes: superscriptAttributes))
+                } else {
+                    listItem.append(NSAttributedString(string: number + ". "))
+                }
             } else {
-                listItem += "• "
+                listItem.append(NSAttributedString(string: "• "))
             }
-            result.append(NSAttributedString(string: listItem))
+            result.append(listItem)
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")

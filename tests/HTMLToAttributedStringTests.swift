@@ -125,11 +125,25 @@ class HTMLToAttributedStringTests: XCTestCase {
         // Confirmed by @matigo not to support nested lists: https://10centuries.org/post/106230
     }
 
-    func SKIPPED_testFootnotes() {
+    func testListItemWithFootnoteClassSuperscriptsIndexAndOmitsDot() {
         let html = "<ol><li class=\"footnote\">footnote text</li></ol>"
-        let equivalent = "<ol><sup>1</sup>footnote text</ol>"
-        // Should superscript the number and not insert a dot after.
-        XCTAssertEqual(makeAttributedString(fromHTML: html), makeAttributedString(fromHTML: equivalent))
+        let result = makeAttributedString(fromHTML: html)
+
+        XCTAssertNil(result.string.range(of: "."), "should not insert dot after footnote number, but got: \(result)")
+
+        var encounteredSuperscript = false
+        result.enumerateAttribute(superscriptAttributeName, in: NSRange(location: 0, length: result.length), options: []) { (value, range, done) in
+            encounteredSuperscript = true
+        }
+        XCTAssertTrue(encounteredSuperscript, "should apply the attribute “\(superscriptAttributeName)” to the footnote number, but got: \(result)")
+    }
+
+    var superscriptAttributeName: String {
+        #if os(macOS)
+            return NSSuperscriptAttributeName
+        #else
+            return NSBaselineOffsetAttributeName
+        #endif
     }
 
     func testPreFormattedText() {
@@ -147,9 +161,12 @@ class HTMLToAttributedStringTests: XCTestCase {
         XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 
-    func testImage() {
+    func SKIPPED_testImageFormatsAsBracketedImageColonAndAltTextInItalics() {
         // Uses the NSAttachmentCharacter U+FFFC aka the replacement character (question mark in a diamond, often) as the text, and then injects the image using the attributes.
         // But for now, I think I'll just show the ALT text. We'll have to sort out how to update these as the images arrive…
+        let html = "<img src=\"unused\" alt=\"an image\" />"
+        let expectedHTML = "<em>[Image: an image]</em>"
+        XCTAssertEqual(makeAttributedString(fromHTML: html), makeAttributedString(fromHTML: expectedHTML))
     }
 
     func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {
