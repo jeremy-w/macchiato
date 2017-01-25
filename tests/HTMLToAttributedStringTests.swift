@@ -157,7 +157,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testHorizontalRule() {
         // Think I'll just use an asterism in its own paragraph: ⁂
         let html = "<hr />"
-        let expected = "⁂"
+        let expected = Parser.paragraphSeparator
         XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 
