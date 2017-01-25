@@ -88,6 +88,18 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testBreak() {
         // We want a newline but not a new paragraph here. Not sure how to check that, but can check we get a new line.
         let html = "<p>Freelance tech writer<br /> Author<br /> Practical minimalist</p>"
+        let result = makeAttributedString(fromHTML: html)
+
+        let string = result.string
+        let firstParagraphRange = string.paragraphRange(for: string.startIndex ..< string.index(after: string.startIndex))
+        let wholeParagraphRange = string.startIndex ..< string.endIndex
+        XCTAssertEqual(firstParagraphRange, wholeParagraphRange, "expected to render as a single paragraph")
+
+        var lineCount = 0
+        string.enumerateLines { (line, done) in
+            lineCount += 1
+        }
+        XCTAssertEqual(lineCount, 3, "expected to render the single paragraph broken into 3 lines")
     }
 
 

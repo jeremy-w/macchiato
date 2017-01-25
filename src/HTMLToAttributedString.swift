@@ -90,6 +90,9 @@ final class Parser: NSObject, XMLParserDelegate {
                 }
             }
 
+        case "br":
+            self.parser(parser, foundCharacters: lineSeparator)
+
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
             attributesStack.append(paragraphAttributes)
@@ -119,6 +122,10 @@ final class Parser: NSObject, XMLParserDelegate {
 
     var paragraphAttributes = [String: Any]()
     var paragraphSeparator = NSAttributedString(string: "\r\n")
+    /// Line separator: See: [SO: What is the line separator character used for?](https://stackoverflow.com/questions/3072152/what-is-unicode-character-2028-ls-line-separator-used-for)
+    /// See: [Unicode Newline Guidelines](http://www.unicode.org/standard/reports/tr13/tr13-5.html)
+    /// And the Cocoa take: [String Programming Guide: Words, Paragraphs, and Line Breaks](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Strings/Articles/stringsParagraphBreaks.html#//apple_ref/doc/uid/TP40005016-SW1)
+    var lineSeparator = "\u{2028}"
 
     static var italicAttributes: [String: Any] {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
