@@ -103,7 +103,10 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     // MARK: - Renders decorations
     func testHorizontalRule() {
-        // Think I'll just use an asterism: ⁂
+        // Think I'll just use an asterism in its own paragraph: ⁂
+        let html = "<hr />"
+        let expected = "⁂"
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 
     func testImage() {

@@ -49,6 +49,13 @@ private final class Parser: NSObject, XMLParserDelegate {
                 result.append(paragraphSeparator)
             }
 
+        case "hr":
+            attributesStack.append(paragraphAttributes)
+            if result.length > 0 {
+                result.append(paragraphSeparator)
+            }
+            self.parser(parser, foundCharacters: "⁂")
+
         case "em":
             attributesStack.append(italicAttributes)
 
@@ -94,7 +101,7 @@ private final class Parser: NSObject, XMLParserDelegate {
         }
     }
 
-        var paragraphAttributes = [String: Any]()
+    var paragraphAttributes = [String: Any]()
     var paragraphSeparator = NSAttributedString(string: "\r\n")
 
     var italicAttributes: [String: Any] {
