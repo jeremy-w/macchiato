@@ -75,6 +75,8 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testMention() {
         let html = "<span class=\"account\" data-account-id=\"6\">@mention</span>"
+        let expected = NSAttributedString(string: "@mention", attributes: Parser.mentionAttributes(forAccountID: "6"))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
     func testHash() {

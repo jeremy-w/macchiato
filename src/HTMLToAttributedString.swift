@@ -17,7 +17,7 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
 }
 
 
-private final class Parser: NSObject, XMLParserDelegate {
+final class Parser: NSObject, XMLParserDelegate {
     private let data: Data
     init(data: Data) {
         self.data = data
@@ -60,7 +60,7 @@ private final class Parser: NSObject, XMLParserDelegate {
             attributesStack.append(italicAttributes)
 
         case "strong":
-            attributesStack.append(boldAttributes)
+            attributesStack.append(Parser.boldAttributes)
 
         case "code":
             attributesStack.append(codeAttributes)
@@ -73,6 +73,22 @@ private final class Parser: NSObject, XMLParserDelegate {
 
         case "a":
             attributesStack.append(anchorAttributes(href: attributes["href"], title: attributes["title"]))
+
+        case "span":
+            if let classAttribute = attributes["class"] {
+                switch classAttribute {
+                case "account":
+                    let accountID = attributes["data-account-id"] ?? ""
+                    attributesStack.append(Parser.mentionAttributes(forAccountID: accountID))
+
+                case "hash":
+                    let hashTag = attributes["data-hash"] ?? ""
+                    attributesStack.append(Parser.mentionAttributes(forAccountID: hashTag))
+
+                default:
+                    print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
+                }
+            }
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
@@ -112,7 +128,7 @@ private final class Parser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    var boldAttributes: [String: Any] {
+    static var boldAttributes: [String: Any] {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -155,6 +171,12 @@ private final class Parser: NSObject, XMLParserDelegate {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
         return [NSLinkAttributeName: href ?? "about:blank"]
+    }
+
+    static func mentionAttributes(forAccountID accountID: String) -> [String: Any] {
+        var mentionAttributes = boldAttributes
+        mentionAttributes["macchiato.mention.accountID"] = accountID
+        return mentionAttributes
     }
 }
 
