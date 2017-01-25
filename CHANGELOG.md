@@ -3,6 +3,15 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (4) - 2017-01-25
+Changed:
+
+- Display rich text rather than raw Markdown.
+    - NOTE: Links aren't clickable yet, and images display as their ALT text.
+- Omit mentioning yourself when you reply to a post that mentioned you.
+    - NOTE: The author of the post you're replying to still gets mentioned, though, so if you reply to your own post, you'll still mention yourself.
+
+
 ### 1.0 (3) - 2017-01-18
 Changed:
 
