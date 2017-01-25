@@ -43,7 +43,10 @@ final class Parser: NSObject, XMLParserDelegate {
         attributes: [String: String] = [:]
     ) {
         switch element {
-        case "p":
+        case "body":
+            break
+
+        case "p", "pre":
             attributesStack.append(paragraphAttributes)
             if result.length > 0 {
                 result.append(paragraphSeparator)

@@ -113,7 +113,9 @@ class HTMLToAttributedStringTests: XCTestCase {
     }
 
     func testPreFormattedText() {
-        // Should cause us to actually include otherwise-insignificant whitespace.
+        let html = "<pre>this is    preformatted text</pre>"
+        let expected = "this is    preformatted text"
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 
 
