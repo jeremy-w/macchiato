@@ -60,7 +60,7 @@ final class Parser: NSObject, XMLParserDelegate {
     ) {
         switch element {
         case "body":
-            break
+            attributesStack.append(paragraphAttributes)
 
         case "p", "pre":
             attributesStack.append(paragraphAttributes)
@@ -106,6 +106,8 @@ final class Parser: NSObject, XMLParserDelegate {
 
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
+                    // Append some attributes so we don't throw off our stack.
+                    attributesStack.append(paragraphAttributes)
                 }
             }
 
@@ -151,6 +153,12 @@ final class Parser: NSObject, XMLParserDelegate {
         }
     }
 
+    let elementsWithoutAttributes: Set = [
+        "br",
+        "li",
+        "img",
+    ]
+
     func parser(_ parser: XMLParser, foundCharacters string: String) {
         let attributes = attributesStack.last
         if attributes == nil {
@@ -170,6 +178,10 @@ final class Parser: NSObject, XMLParserDelegate {
             if webList.isOrdered != (element == "ol") {
                 print("HTML: WARNING: OL/UL mismatch: Saw close tag for", element, "but top of list stack was the other flavor!")
             }
+        }
+
+        guard !elementsWithoutAttributes.contains(element) else {
+            return
         }
 
         guard let _ = attributesStack.popLast() else {
