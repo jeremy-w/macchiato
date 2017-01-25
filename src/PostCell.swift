@@ -14,6 +14,7 @@ class PostCell: UITableViewCell {
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
         content?.text = post.content
+        content?.attributedText = makeAttributedString(fromHTML: post.html)
 
         stackUpAdditionalInfo()
     }

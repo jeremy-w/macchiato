@@ -5,6 +5,7 @@ struct Post {
     let account: Account
     let date: Date
     var content: String
+    let html: String
 
     let privacy: String
     let thread: (root: String, replyTo: String)?
@@ -22,11 +23,13 @@ struct Post {
     static func makeFake() -> Post {
         // swiftlint:disable:previous function_body_length
         let now = Date()
+        let text = Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " ")
         return Post(
             id: UUID().uuidString,
             account: Account.makeFake(),
             date: now,
-            content: Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " "),
+            content: text,
+            html: "<p>" + text + "</p>",
             privacy: "visibility.public",
             thread: nil,
             parentID: nil,

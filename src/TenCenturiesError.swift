@@ -12,6 +12,8 @@ enum TenCenturiesError: Error {
     case missingField(field: String, object: JSONDictionary)
     case badFieldType(field: String, expected: Any, found: Any, in: JSONDictionary)
 
+    case other(message: String, info: Any)
+
     /**
      The backend sent us a response like `{ meta: { code: Int, text: String }, data: false }`.
 

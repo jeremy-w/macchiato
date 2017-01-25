@@ -7,7 +7,7 @@ class PostTests: XCTestCase {
         let other = Post.Mention(name: "other", id: "other", current: "other")
         let author = Post.Mention(name: authorHandle, id: "other", current: authorHandle)
         let post = Post(
-            id: "id", account: Account.makeFake(), date: Date(), content: "whatever", privacy: "privacy", thread: nil, parentID: nil, client: "client",
+            id: "id", account: Account.makeFake(), date: Date(), content: "whatever", html: "<p>whatever</p>", privacy: "privacy", thread: nil, parentID: nil, client: "client",
             mentions: [other, author],
             updated: Date(), deleted: false, you: Post.You())
 
