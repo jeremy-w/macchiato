@@ -110,13 +110,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     // MARK: - Renders block content
     func testOrderedList() {
         let html = "<ol><li>1</li><li>2</li></ol>"
-        let expected = "\t1. 1" + Parser.paragraphSeparator + "\t2. 2"
+        let expected = Parser.paragraphSeparator + "\t1. 1" + Parser.paragraphSeparator + "\t2. 2"
         XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 
     func testUnorderedList() {
         let html = "<ul><li>A</li><li>B</li></ul>"
-        let expected = "\t• A" + Parser.paragraphSeparator + "\t• B"
+        let expected = Parser.paragraphSeparator + "\t• A" + Parser.paragraphSeparator + "\t• B"
         XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 

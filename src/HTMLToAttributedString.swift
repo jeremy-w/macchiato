@@ -121,7 +121,7 @@ final class Parser: NSObject, XMLParserDelegate {
             webList.itemCount += 1
             listStack.append(webList)
 
-            let separator = webList.itemCount > 1 ? Parser.paragraphSeparator : ""
+            let separator = Parser.paragraphSeparator
             let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
 
             let listItem = NSMutableAttributedString(string: separator + indent)
