@@ -102,14 +102,34 @@ class HTMLToAttributedStringTests: XCTestCase {
         XCTAssertEqual(lineCount, 3, "expected to render the single paragraph broken into 3 lines")
     }
 
+    func SKIPPED_testHeaders() {
+        // Blurbs don't support headers. Blog posts due, but not blurbs!
+    }
+
 
     // MARK: - Renders block content
     func testOrderedList() {
-        // Looks like we'll have to render these ourselves. What fun.
+        let html = "<ol><li>1</li><li>2</li></ol>"
+        let expected = "\t1. 1" + Parser.paragraphSeparator + "\t2. 2"
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 
     func testUnorderedList() {
-        // Looks like we'll have to render these ourselves. What fun.
+        let html = "<ul><li>A</li><li>B</li></ul>"
+        let expected = "\t• A" + Parser.paragraphSeparator + "\t• B"
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
+    }
+
+    func SKIPPED_testNestedLists() {
+        // AFAICT, Blurbs don't support nested lists. Now I'm curious about 10C blogpost Markdown…
+        // Confirmed by @matigo not to support nested lists: https://10centuries.org/post/106230
+    }
+
+    func SKIPPED_testFootnotes() {
+        let html = "<ol><li class=\"footnote\">footnote text</li></ol>"
+        let equivalent = "<ol><sup>1</sup>footnote text</ol>"
+        // Should superscript the number and not insert a dot after.
+        XCTAssertEqual(makeAttributedString(fromHTML: html), makeAttributedString(fromHTML: equivalent))
     }
 
     func testPreFormattedText() {
@@ -128,7 +148,8 @@ class HTMLToAttributedStringTests: XCTestCase {
     }
 
     func testImage() {
-        // Uses the NSAttachmentCharacter U+FFFC aka the replacement character (question mark in a diamond, often) as the text.
+        // Uses the NSAttachmentCharacter U+FFFC aka the replacement character (question mark in a diamond, often) as the text, and then injects the image using the attributes.
+        // But for now, I think I'll just show the ALT text. We'll have to sort out how to update these as the images arrive…
     }
 
     func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {

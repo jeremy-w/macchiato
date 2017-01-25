@@ -35,6 +35,15 @@ final class Parser: NSObject, XMLParserDelegate {
     }
 
     var attributesStack = [[String: Any]]()
+
+    struct HTMLList {
+        let isOrdered: Bool
+        let indentLevel: Int
+        var itemCount: Int
+    }
+    var listStack = [HTMLList]()
+
+    // swiftlint:disable:next cyclomatic_complexity
     func parser(
         _ parser: XMLParser,
         didStartElement element: String,
@@ -49,13 +58,13 @@ final class Parser: NSObject, XMLParserDelegate {
         case "p", "pre":
             attributesStack.append(paragraphAttributes)
             if result.length > 0 {
-                result.append(paragraphSeparator)
+                result.append(Parser.attributedParagraphSeparator)
             }
 
         case "hr":
             attributesStack.append(paragraphAttributes)
             if result.length > 0 {
-                result.append(paragraphSeparator)
+                result.append(Parser.attributedParagraphSeparator)
             }
             self.parser(parser, foundCharacters: "⁂")
 
@@ -96,6 +105,29 @@ final class Parser: NSObject, XMLParserDelegate {
         case "br":
             self.parser(parser, foundCharacters: lineSeparator)
 
+        case "ol", "ul":
+            let indentLevel = listStack.last.map({ $0.indentLevel + 1 }) ?? 1
+            let webList = HTMLList(isOrdered: (element == "ol"), indentLevel: indentLevel, itemCount: 0)
+            listStack.append(webList)
+            attributesStack.append(Parser.attributes(forListAtIndentLevel: indentLevel))
+
+        case "li":
+            guard var webList = listStack.popLast() else { break }
+            webList.itemCount += 1
+            listStack.append(webList)
+
+            var listItem = webList.itemCount > 1 ? Parser.paragraphSeparator : ""
+
+            let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
+            listItem += indent
+
+            if webList.isOrdered {
+                listItem += String(describing: webList.itemCount) + ". "
+            } else {
+                listItem += "• "
+            }
+            result.append(NSAttributedString(string: listItem))
+
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
             attributesStack.append(paragraphAttributes)
@@ -117,6 +149,12 @@ final class Parser: NSObject, XMLParserDelegate {
         namespaceURI: String?,
         qualifiedName: String?
     ) {
+        if element == "ol" || element == "ul", let webList = listStack.popLast() {
+            if webList.isOrdered != (element == "ol") {
+                print("HTML: WARNING: OL/UL mismatch: Saw close tag for", element, "but top of list stack was the other flavor!")
+            }
+        }
+
         guard let _ = attributesStack.popLast() else {
             print("HTML: ERROR: Stack underflow on popping element:", element)
             return
@@ -124,7 +162,8 @@ final class Parser: NSObject, XMLParserDelegate {
     }
 
     var paragraphAttributes = [String: Any]()
-    var paragraphSeparator = NSAttributedString(string: "\r\n")
+    static var attributedParagraphSeparator = NSAttributedString(string: Parser.paragraphSeparator)
+    static var paragraphSeparator = "\r\n"
     /// Line separator: See: [SO: What is the line separator character used for?](https://stackoverflow.com/questions/3072152/what-is-unicode-character-2028-ls-line-separator-used-for)
     /// See: [Unicode Newline Guidelines](http://www.unicode.org/standard/reports/tr13/tr13-5.html)
     /// And the Cocoa take: [String Programming Guide: Words, Paragraphs, and Line Breaks](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Strings/Articles/stringsParagraphBreaks.html#//apple_ref/doc/uid/TP40005016-SW1)
@@ -193,6 +232,12 @@ final class Parser: NSObject, XMLParserDelegate {
         var hashTagAttributes = italicAttributes
         hashTagAttributes["macchiato.hashTag"] = hashTag
         return hashTagAttributes
+    }
+
+    static func attributes(forListAtIndentLevel indentLevel: Int) -> [String: Any] {
+        // Could muck with indents…
+        var attributes = [String: Any]()
+        return attributes
     }
 }
 
