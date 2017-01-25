@@ -73,10 +73,6 @@ class HTMLToAttributedStringTests: XCTestCase {
         XCTAssertEqual(link as? String, "http://example.com", "failed to correctly populate link attribute, or not a string: \(String(reflecting: link))")
     }
 
-    func testHeaders() {
-        // (jeremy-w/2017-01-22)TODO: Try this in 10C and see what shakes out. Does it handle H1-H6? More?
-    }
-
     func testMention() {
         let html = "<span class=\"account\" data-account-id=\"6\">@mention</span>"
     }
