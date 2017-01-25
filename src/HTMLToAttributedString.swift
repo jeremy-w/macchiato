@@ -7,7 +7,7 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
         return NSAttributedString(string: html)
     }
 
-    let parser = Parser(data: utf8)
+    let parser = Parser(data: utf8, from: fixed)
     do {
         return try parser.parse().unwrap()
     } catch {
@@ -19,8 +19,10 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
 
 final class Parser: NSObject, XMLParserDelegate {
     private let data: Data
-    init(data: Data) {
+    private let source: String
+    init(data: Data, from source: String) {
         self.data = data
+        self.source = source
     }
 
     private var result = NSMutableAttributedString()
@@ -28,7 +30,7 @@ final class Parser: NSObject, XMLParserDelegate {
         let parser = XMLParser(data: data)
         parser.delegate = self
         guard parser.parse() else {
-            let error = parser.parserError ?? TenCenturiesError.other(message: "HTML parsing failed without any parserError", info: data)
+            let error = parser.parserError ?? TenCenturiesError.other(message: "HTML parsing failed without any parserError", info: ["data": data, "source": source])
             return .failure(error)
         }
         return .success(result)
@@ -171,7 +173,7 @@ final class Parser: NSObject, XMLParserDelegate {
         }
 
         guard let _ = attributesStack.popLast() else {
-            print("HTML: ERROR: Stack underflow on popping element:", element)
+            print("HTML: ERROR: Stack underflow on popping element:", element, "- source text:", source)
             return
         }
     }
