@@ -69,11 +69,14 @@ final class Parser: NSObject, XMLParserDelegate {
             }
 
         case "hr":
-            attributesStack.append(paragraphAttributes)
             if result.length > 0 {
                 result.append(Parser.attributedParagraphSeparator)
             }
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+            attributesStack.append([NSParagraphStyleAttributeName: paragraphStyle])
             self.parser(parser, foundCharacters: "⁂")
+            result.append(Parser.attributedParagraphSeparator)
 
         case "em":
             attributesStack.append(Parser.italicAttributes)
