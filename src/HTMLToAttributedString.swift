@@ -138,6 +138,11 @@ final class Parser: NSObject, XMLParserDelegate {
             }
             result.append(listItem)
 
+        case "img":
+            let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
+            let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
+            result.append(NSAttributedString(string: String.localizedStringWithFormat(format, altText), attributes: Parser.italicAttributes))
+
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
             attributesStack.append(paragraphAttributes)

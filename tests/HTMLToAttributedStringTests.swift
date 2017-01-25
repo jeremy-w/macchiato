@@ -161,8 +161,9 @@ class HTMLToAttributedStringTests: XCTestCase {
         XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
     }
 
-    func SKIPPED_testImageFormatsAsBracketedImageColonAndAltTextInItalics() {
+    func testImageFormatsAsBracketedImageColonAndAltTextInItalics() {
         // Uses the NSAttachmentCharacter U+FFFC aka the replacement character (question mark in a diamond, often) as the text, and then injects the image using the attributes.
+        // See: https://developer.apple.com/reference/uikit/nstextattachment#
         // But for now, I think I'll just show the ALT text. We'll have to sort out how to update these as the images arrive…
         let html = "<img src=\"unused\" alt=\"an image\" />"
         let expectedHTML = "<em>[Image: an image]</em>"
