@@ -79,8 +79,10 @@ class HTMLToAttributedStringTests: XCTestCase {
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
-    func testHash() {
+    func testHashTag() {
         let html = "<span class=\"hash\" data-hash=\"noagenda\">#noagenda</span>"
+        let expected = NSAttributedString(string: "#noagenda", attributes: Parser.attributes(forHashTag: "noagenda"))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
     func testBreak() {

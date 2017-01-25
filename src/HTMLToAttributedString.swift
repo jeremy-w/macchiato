@@ -57,7 +57,7 @@ final class Parser: NSObject, XMLParserDelegate {
             self.parser(parser, foundCharacters: "⁂")
 
         case "em":
-            attributesStack.append(italicAttributes)
+            attributesStack.append(Parser.italicAttributes)
 
         case "strong":
             attributesStack.append(Parser.boldAttributes)
@@ -83,7 +83,7 @@ final class Parser: NSObject, XMLParserDelegate {
 
                 case "hash":
                     let hashTag = attributes["data-hash"] ?? ""
-                    attributesStack.append(Parser.mentionAttributes(forAccountID: hashTag))
+                    attributesStack.append(Parser.attributes(forHashTag: hashTag))
 
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
@@ -120,7 +120,7 @@ final class Parser: NSObject, XMLParserDelegate {
     var paragraphAttributes = [String: Any]()
     var paragraphSeparator = NSAttributedString(string: "\r\n")
 
-    var italicAttributes: [String: Any] {
+    static var italicAttributes: [String: Any] {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -177,6 +177,12 @@ final class Parser: NSObject, XMLParserDelegate {
         var mentionAttributes = boldAttributes
         mentionAttributes["macchiato.mention.accountID"] = accountID
         return mentionAttributes
+    }
+
+    static func attributes(forHashTag hashTag: String) -> [String: Any] {
+        var hashTagAttributes = italicAttributes
+        hashTagAttributes["macchiato.hashTag"] = hashTag
+        return hashTagAttributes
     }
 }
 
