@@ -40,37 +40,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             // (jeremy-w/2017-01-20)FIXME: This direct push of |currentUser| changes is kind of questionable.
             // Should we throw another notification?
             masterViewController?.currentUser = currentUser
-            streamViewController?.currentUser = currentUser
+            if let navcon = splitViewController?.viewControllers.last as? UINavigationController {
+                for vc in navcon.viewControllers {
+                    if let streamVC = vc as? StreamViewController {
+                        streamVC.currentUser = currentUser
+                    }
+                }
+            }
         }
     }
     var loggedInUserDidChangeListener: Any?
 
     func beginFetchingCurrentUserAccount() {
-        subscribeForLoggedInUserChanges()
-        fetchCurrentUserAccount()
+        whenLoggedInUserChanges(then: { [weak self] in self?.updateCurrentUser() })
+        updateCurrentUser()
     }
 
-    func subscribeForLoggedInUserChanges() {
+    func whenLoggedInUserChanges(then call: @escaping () -> Void) {
         loggedInUserDidChangeListener = NotificationCenter.default.addObserver(
             forName: .loggedInAccountDidChange,
             object: services.sessionManager,
-            queue: OperationQueue.main) {
-                [weak self] (notification) in
-                guard let manager = notification.object as? SessionManager, manager.loggedInAccountName != nil else {
-                    self?.currentUser = nil
-                    return
-                }
-
-                self?.fetchCurrentUserAccount()
+            queue: OperationQueue.main) { _ in
+                call()
         }
     }
 
-    func fetchCurrentUserAccount() {
+    func updateCurrentUser() {
+        guard services.sessionManager.loggedInAccountName != nil else {
+            currentUser = nil
+            return
+        }
+
         services.accountRepository.account(id: "me") { (result) in
             guard case let .success(user) = result else { return }
 
             self.currentUser = user
-            self.masterViewController?.currentUser = user
         }
     }
 
