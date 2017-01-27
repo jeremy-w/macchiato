@@ -25,6 +25,7 @@ class StreamViewController: UITableViewController {
     @IBOutlet var newPostButton: UIBarButtonItem?
     override func viewDidLoad() {
         super.viewDidLoad()
+        canSendPostDidChange()
         refreshControl = makeRefreshControl()
         if let stream = stream, stream.lastFetched == nil {
             refreshAction()
