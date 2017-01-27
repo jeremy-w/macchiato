@@ -178,7 +178,7 @@ class StreamViewController: UITableViewController {
     func canSendPostDidChange() {
         let canSendPost = isLoggedIn
         navigationItem.setRightBarButton(canSendPost ? newPostButton : nil, animated: true)
-        print("STREAMVC/", stream?.view as Any, ": DEBUG: Can send post did change:", canSendPost)
+        print("STREAMVC/", stream?.view as Any, self, ": DEBUG: Can send post did change:", canSendPost, "- right bar button items:", navigationItem.rightBarButtonItems as Any)
     }
 
     enum Segue: String {
