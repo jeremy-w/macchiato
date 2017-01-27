@@ -9,4 +9,8 @@ class FakeSessionManager: SessionManager {
         loggedInAccountName = account
         completion(.success(true))
     }
+
+    init(loggedInAs email: String? = nil) {
+        loggedInAccountName = email
+    }
 }
