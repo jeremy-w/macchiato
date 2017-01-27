@@ -37,16 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var currentUser: Account? {
         didSet {
             print("ACCOUNT: INFO: Current user did change to:", currentUser as Any)
-            // (jeremy-w/2017-01-20)FIXME: This direct push of |currentUser| changes is kind of questionable.
-            // Should we throw another notification?
-            masterViewController?.currentUser = currentUser
-            if let navcon = splitViewController?.viewControllers.last as? UINavigationController {
-                for vc in navcon.viewControllers {
-                    if let streamVC = vc as? StreamViewController {
-                        streamVC.currentUser = currentUser
-                    }
-                }
-            }
+            DispatchQueue.main.async { self.pushCurrentUserToViewControllers() }
         }
     }
     var loggedInUserDidChangeListener: Any?
@@ -75,6 +66,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             guard case let .success(user) = result else { return }
 
             self.currentUser = user
+        }
+    }
+
+    func pushCurrentUserToViewControllers() {
+        // (jeremy-w/2017-01-20)FIXME: This direct push of |currentUser| changes is kind of questionable.
+        // Should we throw another notification?
+        masterViewController?.currentUser = currentUser
+        if let navcon = splitViewController?.viewControllers.last as? UINavigationController {
+            for vc in navcon.viewControllers {
+                if let streamVC = vc as? StreamViewController {
+                    streamVC.currentUser = currentUser
+                }
+            }
         }
     }
 
