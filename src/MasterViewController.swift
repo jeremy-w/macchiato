@@ -56,6 +56,7 @@ class MasterViewController: UITableViewController {
         controller.configure(stream: stream, postRepository: services.postRepository, currentUser: currentUser)
         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
+        print("MASTERVC(", self, "): INFO: Prepared stream VC", controller, "to display stream viewing:", stream.view)
         return true
     }
 
@@ -71,6 +72,7 @@ class MasterViewController: UITableViewController {
         }
 
         settings.configure(sessionManager: services.sessionManager)
+        print("MASTERVC(", self, "): INFO: Prepared settings VC", settings, "for display")
         return true
     }
 
