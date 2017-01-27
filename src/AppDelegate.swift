@@ -57,15 +57,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
 
     func updateCurrentUser() {
-        guard services.sessionManager.loggedInAccountName != nil else {
+        guard let accountEmail = services.sessionManager.loggedInAccountName else {
             currentUser = nil
             return
         }
 
+        print("AUTH: INFO: Fetching user account info for:", accountEmail)
         services.accountRepository.account(id: "me") { (result) in
-            guard case let .success(user) = result else { return }
-
-            self.currentUser = user
+            do {
+                self.currentUser = try result.unwrap()
+            } catch {
+                print("AUTH: ERROR: Failed fetching current user account for", accountEmail, "with error:", error)
+            }
         }
     }
 
