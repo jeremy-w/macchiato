@@ -5,7 +5,11 @@ class StreamViewController: UITableViewController {
     var stream: Stream?
     var postRepository: PostRepository?
 
-    var currentUser: Account?
+    var currentUser: Account? {
+        didSet {
+            canSendPostDidChange()
+        }
+    }
     func configure(stream: Stream, postRepository: PostRepository, currentUser: Account?) {
         self.stream = stream
         self.postRepository = postRepository
@@ -37,10 +41,8 @@ class StreamViewController: UITableViewController {
         canSendPostDidChange()
     }
 
-    // (jws/2016-10-14)TODO: We need access to this.
-    // Probably by way of whatever allows us to interact with posts when logged in.
     var isLoggedIn: Bool {
-        return true
+        return currentUser != nil
     }
 
 
@@ -163,7 +165,9 @@ class StreamViewController: UITableViewController {
 
     // MARK: - Allows to post a new post
     func canSendPostDidChange() {
-        navigationItem.rightBarButtonItem = isLoggedIn ? newPostButton : nil
+        let canSendPost = isLoggedIn
+        print("STREAMVC: DEBUG: Can send post did change:", canSendPost)
+        navigationItem.rightBarButtonItem = canSendPost ? newPostButton : nil
     }
 
     enum Segue: String {
