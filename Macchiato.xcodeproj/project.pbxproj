@@ -50,6 +50,7 @@
 		3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07741E30690400A56072 /* ComposePostAction.swift */; };
 		3F6A07771E306A1200A56072 /* ComposePostActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */; };
 		3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */; };
+		3F7D757F1E3D377800AB8C4A /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */; };
 		3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144EB1E31C17F001E25EC /* AccountRepository.swift */; };
 		3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */; };
 		3F8144F31E31C9B9001E25EC /* FakeAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */; };
@@ -122,6 +123,7 @@
 		3F6A07741E30690400A56072 /* ComposePostAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostAction.swift; sourceTree = "<group>"; };
 		3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostActionTests.swift; sourceTree = "<group>"; };
 		3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
+		3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
 		3F8144EB1E31C17F001E25EC /* AccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
 		3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TenCenturiesAccountRepository.swift; sourceTree = "<group>"; };
 		3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountRepository.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F7D757F1E3D377800AB8C4A /* Kingfisher.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,6 +173,7 @@
 				3F2E28FF1DA9B9F200519C9E /* Products */,
 				3F2E29171DA9B9F200519C9E /* tests */,
 				3F2E29001DA9B9F200519C9E /* src */,
+				3F7D757D1E3D377800AB8C4A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -297,6 +301,14 @@
 			name = "Composing Posts";
 			sourceTree = "<group>";
 		};
+		3F7D757D1E3D377800AB8C4A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3F8144E61E31BA81001E25EC /* MacchiatoKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -408,6 +420,7 @@
 				3F2E28FA1DA9B9F200519C9E /* Sources */,
 				3F2E28FB1DA9B9F200519C9E /* Frameworks */,
 				3F2E28FC1DA9B9F200519C9E /* Resources */,
+				3F7D75801E3D37A000AB8C4A /* Copy Carthage Frameworks */,
 			);
 			buildRules = (
 			);
@@ -514,6 +527,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "source scripts/run-script-build-phase/run-swiftlint.sh";
+			showEnvVarsInLog = 0;
+		};
+		3F7D75801E3D37A000AB8C4A /* Copy Carthage Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework",
+			);
+			name = "Copy Carthage Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -717,6 +746,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 6ZA93RH52B;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = src/Info.plist;
 				INFOPLIST_PREPROCESS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -731,6 +764,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 6ZA93RH52B;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = src/Info.plist;
 				INFOPLIST_PREPROCESS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -64,10 +64,10 @@ final class Parser: NSObject, XMLParserDelegate {
     ) {
         switch element {
         case "body":
-            attributesStack.append(paragraphAttributes)
+            attributesStack.append(Parser.paragraphAttributes)
 
         case "p", "pre":
-            attributesStack.append(paragraphAttributes)
+            attributesStack.append(Parser.paragraphAttributes)
             if result.length > 0 && !atStartOfListItem {
                 result.append(Parser.attributedParagraphSeparator)
             }
@@ -108,7 +108,7 @@ final class Parser: NSObject, XMLParserDelegate {
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
                     // Append some attributes so we don't throw off our stack.
-                    attributesStack.append(paragraphAttributes)
+                    attributesStack.append(Parser.paragraphAttributes)
                 }
             }
 
@@ -129,17 +129,17 @@ final class Parser: NSObject, XMLParserDelegate {
             let separator = Parser.paragraphSeparator
             let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
 
-            let listItem = NSMutableAttributedString(string: separator + indent)
+            let listItem = NSMutableAttributedString(string: separator + indent, attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel))
             if webList.isOrdered {
                 let number = listItemIndexFormatter.string(from: NSNumber(value: webList.itemCount)) ?? String(describing: webList.itemCount)
                 let isFootnote = (attributes["class"] ?? "") == "footnote"
                 if isFootnote {
                     listItem.append(NSAttributedString(string: number, attributes: superscriptAttributes))
                 } else {
-                    listItem.append(NSAttributedString(string: number + ". "))
+                    listItem.append(NSAttributedString(string: number + ". ", attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel)))
                 }
             } else {
-                listItem.append(NSAttributedString(string: "• "))
+                listItem.append(NSAttributedString(string: "• ", attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel)))
             }
             result.append(listItem)
             atStartOfListItem = true
@@ -151,7 +151,7 @@ final class Parser: NSObject, XMLParserDelegate {
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
-            attributesStack.append(paragraphAttributes)
+            attributesStack.append(Parser.paragraphAttributes)
         }
     }
 
@@ -194,8 +194,11 @@ final class Parser: NSObject, XMLParserDelegate {
         }
     }
 
-    var paragraphAttributes = [String: Any]()
-    static var attributedParagraphSeparator = NSAttributedString(string: Parser.paragraphSeparator)
+    static var paragraphAttributes: [String: Any] {
+        return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
+    }
+
+    static var attributedParagraphSeparator = NSAttributedString(string: Parser.paragraphSeparator, attributes: Parser.paragraphAttributes)
     static var paragraphSeparator = "\r\n"
     //swiftlint:disable line_length
     /// Line separator: See: [SO: What is the line separator character used for?](https://stackoverflow.com/questions/3072152/what-is-unicode-character-2028-ls-line-separator-used-for)
@@ -254,7 +257,9 @@ final class Parser: NSObject, XMLParserDelegate {
     func anchorAttributes(href: String?, title: String?) -> [String: Any] {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
-        return [NSLinkAttributeName: href ?? "about:blank"]
+        var attributes = Parser.paragraphAttributes
+        attributes[NSLinkAttributeName] = href ?? "about:blank"
+        return attributes
     }
 
     static func mentionAttributes(forAccountID accountID: String) -> [String: Any] {
@@ -271,8 +276,7 @@ final class Parser: NSObject, XMLParserDelegate {
 
     static func attributes(forListAtIndentLevel indentLevel: Int) -> [String: Any] {
         // Could muck with indents…
-        let attributes = [String: Any]()
-        return attributes
+        return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
 }
 

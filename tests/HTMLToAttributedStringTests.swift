@@ -4,7 +4,7 @@ import XCTest
 class HTMLToAttributedStringTests: XCTestCase {
     func testPlainTextSingleParagraph() {
         let html = "<p>plain text</p>"
-        let expected = NSAttributedString(string: "plain text")
+        let expected = NSAttributedString(string: "plain text", attributes: Parser.paragraphAttributes)
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -14,7 +14,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         let html = "<body><p>one</p><p>two</p></body>"
         let expected = NSAttributedString(string:
             "one\r\n"
-            + "two")
+            + "two", attributes: Parser.paragraphAttributes)
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -111,13 +111,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testOrderedList() {
         let html = "<ol><li>1</li><li>2</li></ol>"
         let expected = Parser.paragraphSeparator + "\t1. 1" + Parser.paragraphSeparator + "\t2. 2"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.attributes(forListAtIndentLevel: 1)))
     }
 
     func testUnorderedList() {
         let html = "<ul><li>A</li><li>B</li></ul>"
         let expected = Parser.paragraphSeparator + "\t• A" + Parser.paragraphSeparator + "\t• B"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.attributes(forListAtIndentLevel: 1)))
     }
 
     func SKIPPED_testNestedLists() {
@@ -149,13 +149,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testAvoidsDoubleLinebreakDueToParagraphWithinListItem() {
         let html = "<ul><li><p>Single indent.</p></li></ul>"
         let expected = Parser.paragraphSeparator + "\t• Single indent."
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.attributes(forListAtIndentLevel: 1)))
     }
 
     func testPreFormattedText() {
         let html = "<pre>this is    preformatted text</pre>"
         let expected = "this is    preformatted text"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.paragraphAttributes))
     }
 
 
@@ -164,7 +164,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         // Think I'll just use an asterism in its own paragraph: ⁂
         let html = "<hr />"
         let expected = Parser.paragraphSeparator
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.paragraphAttributes))
     }
 
     func testImageFormatsAsBracketedImageColonAndAltTextInItalics() {

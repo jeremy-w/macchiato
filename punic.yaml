@@ -1,0 +1,10 @@
+# Punic is a Pythonic Carthage.
+# See: https://github.com/schwa/punic/
+
+defaults:
+    configuration: Debug
+    platform: iOS
+
+skips:
+# Like:
+# - [ platform, dependency, xcodeproj, <optional: scheme; all schemes if omitted> ]

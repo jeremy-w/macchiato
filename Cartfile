@@ -1,0 +1,5 @@
+# Kingfisher: MIT Licensed by Wei Wang.
+# Provides easy image fetching and caching by URL.
+# Supports macOS and iOS.
+# Version 3.0+ supports Swift 3+.
+github "onevcat/Kingfisher" ~> 3.0
