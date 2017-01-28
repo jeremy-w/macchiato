@@ -30,7 +30,9 @@ final class Parser: NSObject, XMLParserDelegate {
         let parser = XMLParser(data: data)
         parser.delegate = self
         guard parser.parse() else {
-            let error = parser.parserError ?? TenCenturiesError.other(message: "HTML parsing failed without any parserError", info: ["data": data, "source": source])
+            let error = parser.parserError ?? TenCenturiesError.other(
+                message: "HTML parsing failed without any parserError",
+                info: ["data": data, "source": source])
             return .failure(error)
         }
         return .success(result)
@@ -195,10 +197,12 @@ final class Parser: NSObject, XMLParserDelegate {
     var paragraphAttributes = [String: Any]()
     static var attributedParagraphSeparator = NSAttributedString(string: Parser.paragraphSeparator)
     static var paragraphSeparator = "\r\n"
+    //swiftlint:disable line_length
     /// Line separator: See: [SO: What is the line separator character used for?](https://stackoverflow.com/questions/3072152/what-is-unicode-character-2028-ls-line-separator-used-for)
     /// See: [Unicode Newline Guidelines](http://www.unicode.org/standard/reports/tr13/tr13-5.html)
     /// And the Cocoa take: [String Programming Guide: Words, Paragraphs, and Line Breaks](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Strings/Articles/stringsParagraphBreaks.html#//apple_ref/doc/uid/TP40005016-SW1)
     var lineSeparator = "\u{2028}"
+    //swiftlint:enable line_length
 
     static var italicAttributes: [String: Any] {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
@@ -267,7 +271,7 @@ final class Parser: NSObject, XMLParserDelegate {
 
     static func attributes(forListAtIndentLevel indentLevel: Int) -> [String: Any] {
         // Could muck with indents…
-        var attributes = [String: Any]()
+        let attributes = [String: Any]()
         return attributes
     }
 }
