@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     override init() {
         session = URLSession(configuration: URLSessionConfiguration.default)
         services = ServicePack.connectingTenCenturies(session: session)
+        identity = Identity(accountRepository: services.accountRepository)
         super.init()
     }
 
@@ -31,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
 
         wireUpUIPostLaunch()
-        beginFetchingCurrentUserAccount()
+        identity.update()
         return true
     }
 
@@ -42,18 +43,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
 
 
-    // MARK: - Tracks the current user's account info
-    var currentUser: Account? {
-        didSet {
-            print("ACCOUNT: INFO: Current user did change to:", currentUser as Any)
-            DispatchQueue.main.async { self.pushCurrentUserToViewControllers() }
-        }
-    }
+    // MARK: - Tracks user's identity
+    let identity: Identity
     var loggedInUserDidChangeListener: Any?
-
     func beginFetchingCurrentUserAccount() {
-        whenLoggedInUserChanges(then: { [weak self] in self?.updateCurrentUser() })
-        updateCurrentUser()
+        whenLoggedInUserChanges(then: { [weak self] in self?.identity.update() })
+        identity.update()
     }
 
     func whenLoggedInUserChanges(then call: @escaping () -> Void) {
@@ -62,35 +57,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             object: services.sessionManager,
             queue: OperationQueue.main) { _ in
                 call()
-        }
-    }
-
-    func updateCurrentUser() {
-        guard let accountEmail = services.sessionManager.loggedInAccountName else {
-            currentUser = nil
-            return
-        }
-
-        print("AUTH: INFO: Fetching user account info for:", accountEmail)
-        services.accountRepository.account(id: "me") { (result) in
-            do {
-                self.currentUser = try result.unwrap()
-            } catch {
-                print("AUTH: ERROR: Failed fetching current user account for", accountEmail, "with error:", error)
-            }
-        }
-    }
-
-    func pushCurrentUserToViewControllers() {
-        // (jeremy-w/2017-01-20)FIXME: This direct push of |currentUser| changes is kind of questionable.
-        // Should we throw another notification?
-        masterViewController?.currentUser = currentUser
-        if let navcon = splitViewController?.viewControllers.last as? UINavigationController {
-            for vc in navcon.viewControllers {
-                if let streamVC = vc as? StreamViewController {
-                    streamVC.currentUser = currentUser
-                }
-            }
         }
     }
 
@@ -110,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             Stream.View.pinned,
             Stream.View.starred,
             ].map { Stream(view: $0) }
-        master.currentUser = currentUser
+//        master.currentUser = currentUser
     }
 
     var splitViewController: UISplitViewController? {
