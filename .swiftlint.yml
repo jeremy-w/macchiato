@@ -33,6 +33,7 @@ excluded:
     # Experiments are quick and dirty proofs of concept or "how do I?" demos.
     # They should not be linted.
     - experiments/
+    - Carthage/
 
 ## Configuration for Inbuilt Rules ##
 file_length:
