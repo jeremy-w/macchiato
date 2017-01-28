@@ -17,7 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     override init() {
         session = URLSession(configuration: URLSessionConfiguration.default)
         services = ServicePack.connectingTenCenturies(session: session)
-        identity = Identity(accountRepository: services.accountRepository)
         super.init()
     }
 
@@ -32,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
 
         wireUpUIPostLaunch()
-        identity.update()
+        identity.update(using: services.accountRepository)
         return true
     }
 
@@ -44,11 +43,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
 
     // MARK: - Tracks user's identity
-    let identity: Identity
+    let identity = Identity()
     var loggedInUserDidChangeListener: Any?
     func beginFetchingCurrentUserAccount() {
-        whenLoggedInUserChanges(then: { [weak self] in self?.identity.update() })
-        identity.update()
+        whenLoggedInUserChanges(then: { [weak self] in
+            guard let my = self else { return }
+
+            my.identity.update(using: my.services.accountRepository)
+        })
+        identity.update(using: services.accountRepository)
     }
 
     func whenLoggedInUserChanges(then call: @escaping () -> Void) {
@@ -65,8 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func configureMasterViewController() {
         guard let master = masterViewController else { return }
 
-        master.services = services
-        master.streams = [
+        let allStreams = [
             Stream.View.global,
             Stream.View.home,
             Stream.View.starters,
@@ -76,7 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             Stream.View.pinned,
             Stream.View.starred,
             ].map { Stream(view: $0) }
-//        master.currentUser = currentUser
+        master.configure(services: services, identity: identity, streams: allStreams)
     }
 
     var splitViewController: UISplitViewController? {

@@ -5,15 +5,22 @@ class StreamViewController: UITableViewController {
     var stream: Stream?
     var postRepository: PostRepository?
 
-    var currentUser: Account? {
+    private var identityChangeListener: Any?
+    private(set) var identity = Identity() {
         didSet {
             canSendPostDidChange()
+            identityChangeListener = NotificationCenter.default.addObserver(
+                forName: .identityDidChange, object: identity, queue: OperationQueue.main,
+                using: { [weak self] _ in
+                    self?.canSendPostDidChange()
+            })
         }
     }
-    func configure(stream: Stream, postRepository: PostRepository, currentUser: Account?) {
+    func configure(stream: Stream, postRepository: PostRepository, identity: Identity) {
+        print("configured:", self)
         self.stream = stream
         self.postRepository = postRepository
-        self.currentUser = currentUser
+        self.identity = identity
 
         title = stream.name
 
@@ -24,6 +31,7 @@ class StreamViewController: UITableViewController {
 
     @IBOutlet var newPostButton: UIBarButtonItem?
     override func viewDidLoad() {
+        print("view loaded:", self)
         super.viewDidLoad()
         canSendPostDidChange()
         refreshControl = makeRefreshControl()
@@ -43,7 +51,7 @@ class StreamViewController: UITableViewController {
     }
 
     var isLoggedIn: Bool {
-        return currentUser != nil
+        return identity.account != nil
     }
 
 
@@ -163,7 +171,7 @@ class StreamViewController: UITableViewController {
         // (match on thread.root)
         let threadStream = post.threadStream
         print("STREAMVC/", stream?.view as Any, ": INFO: Preparing to show thread stream:", threadStream)
-        streamVC.configure(stream: threadStream, postRepository: postRepository, currentUser: currentUser)
+        streamVC.configure(stream: threadStream, postRepository: postRepository, identity: identity)
         return true
     }
 
@@ -176,9 +184,11 @@ class StreamViewController: UITableViewController {
 
     // MARK: - Allows to post a new post
     func canSendPostDidChange() {
+        guard isViewLoaded else { return }
+
         let canSendPost = isLoggedIn
         navigationItem.setRightBarButton(canSendPost ? newPostButton : nil, animated: true)
-        print("STREAMVC/", stream?.view as Any, self, ": DEBUG: Can send post did change:", canSendPost, "- right bar button items:", navigationItem.rightBarButtonItems as Any)
+        print("STREAMVC/", stream?.view as Any, self, ": DEBUG: Can send post did change:", canSendPost)
     }
 
     enum Segue: String {
@@ -187,7 +197,7 @@ class StreamViewController: UITableViewController {
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
-        guard let author = currentUser else {
+        guard let author = identity.account else {
             print("STREAMVC", stream?.view as Any, ": ERROR: No current user - refusing to compose post.")
             return true
         }
@@ -238,7 +248,7 @@ class StreamViewController: UITableViewController {
                 break
 
             default:
-                guard currentUser != nil else { continue }
+                guard isLoggedIn else { continue }
             }
 
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))

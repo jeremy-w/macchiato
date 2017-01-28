@@ -12,10 +12,7 @@ extension Notification.Name {
  Tracks the user's current identity represented by an Account.
  */
 class Identity {
-    let accountRepository: AccountRepository
-    init(accountRepository: AccountRepository) {
-        self.accountRepository = accountRepository
-    }
+    init() {}
 
     // MARK: - Tracks the current user's account info
     private(set) var account: Account? {
@@ -27,7 +24,7 @@ class Identity {
         }
     }
 
-    func update() {
+    func update(using accountRepository: AccountRepository) {
         accountRepository.account(id: "me") { (result) in
             do {
                 self.account = try result.unwrap()

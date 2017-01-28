@@ -9,9 +9,14 @@
 import UIKit
 
 class MasterViewController: UITableViewController {
-    var streams = [Stream]()
-    var services: ServicePack?
-    var currentUser: Account?
+    private(set) var streams = [Stream]()
+    private(set) var services: ServicePack?
+    private(set) var identity = Identity()
+    func configure(services: ServicePack, identity: Identity, streams: [Stream]) {
+        self.services = services
+        self.identity = identity
+        self.streams = streams
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,7 +58,7 @@ class MasterViewController: UITableViewController {
         guard let services = self.services else { return true }
 
         let stream = streams[indexPath.row]
-        controller.configure(stream: stream, postRepository: services.postRepository, currentUser: currentUser)
+        controller.configure(stream: stream, postRepository: services.postRepository, identity: identity)
         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
         print("MASTERVC(", self, "): INFO: Prepared stream VC", controller, "to display stream viewing:", stream.view)
