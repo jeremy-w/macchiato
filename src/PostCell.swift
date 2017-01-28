@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
@@ -12,7 +13,7 @@ class PostCell: UITableViewCell {
     func configure(post: Post) {
         self.post = post
 
-        avatar?.image = nil  // Fetch: post.account.avatarURL
+        avatar?.kf.setImage(with: post.account.avatarURL)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
         content?.text = post.content
