@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F03CA751E3B9FFE000A04B8 /* CurrentUserPropagationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F03CA731E3B9FFA000A04B8 /* CurrentUserPropagationTests.swift */; };
 		3F2E29021DA9B9F200519C9E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29011DA9B9F200519C9E /* AppDelegate.swift */; };
 		3F2E29041DA9B9F200519C9E /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2E29031DA9B9F200519C9E /* MasterViewController.swift */; };
 		3F2E29091DA9B9F200519C9E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F2E29071DA9B9F200519C9E /* Main.storyboard */; };
@@ -48,6 +49,7 @@
 		3F6A07731E30682200A56072 /* EditingPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07721E30682200A56072 /* EditingPost.swift */; };
 		3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07741E30690400A56072 /* ComposePostAction.swift */; };
 		3F6A07771E306A1200A56072 /* ComposePostActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */; };
+		3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */; };
 		3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144EB1E31C17F001E25EC /* AccountRepository.swift */; };
 		3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */; };
 		3F8144F31E31C9B9001E25EC /* FakeAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */; };
@@ -73,6 +75,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3F03CA731E3B9FFA000A04B8 /* CurrentUserPropagationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUserPropagationTests.swift; sourceTree = "<group>"; };
 		3F2E28FE1DA9B9F200519C9E /* Macchiato.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Macchiato.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F2E29011DA9B9F200519C9E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3F2E29031DA9B9F200519C9E /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
@@ -118,6 +121,7 @@
 		3F6A07721E30682200A56072 /* EditingPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditingPost.swift; sourceTree = "<group>"; };
 		3F6A07741E30690400A56072 /* ComposePostAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostAction.swift; sourceTree = "<group>"; };
 		3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostActionTests.swift; sourceTree = "<group>"; };
+		3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
 		3F8144EB1E31C17F001E25EC /* AccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
 		3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TenCenturiesAccountRepository.swift; sourceTree = "<group>"; };
 		3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountRepository.swift; sourceTree = "<group>"; };
@@ -151,6 +155,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3F03CA721E3B9FE6000A04B8 /* Logging In */ = {
+			isa = PBXGroup;
+			children = (
+				3F03CA731E3B9FFA000A04B8 /* CurrentUserPropagationTests.swift */,
+			);
+			name = "Logging In";
+			sourceTree = "<group>";
+		};
 		3F2E28F51DA9B9F200519C9E = {
 			isa = PBXGroup;
 			children = (
@@ -185,6 +197,7 @@
 				3F2E291A1DA9B9F200519C9E /* Info.plist */,
 				3F2E29581DAD23C000519C9E /* PostParsing.swift */,
 				3F2E29AA1DB1933B00519C9E /* KeychainIntegration.swift */,
+				3F03CA721E3B9FE6000A04B8 /* Logging In */,
 				3F6A07611E2DB7B900A56072 /* Accessing Outside Content */,
 				3F6A075E1E2DA9D600A56072 /* Viewing Posts */,
 				3F6A076F1E30674C00A56072 /* Composing Posts */,
@@ -313,6 +326,7 @@
 			isa = PBXGroup;
 			children = (
 				3F2E29011DA9B9F200519C9E /* AppDelegate.swift */,
+				3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */,
 				3F2E290C1DA9B9F200519C9E /* LaunchScreen.storyboard */,
 				3F2E290A1DA9B9F200519C9E /* Assets.xcassets */,
 				3F2E290F1DA9B9F200519C9E /* Info.plist */,
@@ -542,6 +556,7 @@
 				3F2E29551DAB332500519C9E /* TenCenturiesSessionManager.swift in Sources */,
 				3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */,
 				3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */,
+				3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */,
 				3F2E294A1DAB249100519C9E /* SessionManager.swift in Sources */,
 				3F2E29481DAB20AB00519C9E /* LogInViewController.swift in Sources */,
 				3F2E29331DA9EA1800519C9E /* Post.swift in Sources */,
@@ -559,6 +574,7 @@
 				3F6A07631E2DB7DA00A56072 /* FormEncodingTests.swift in Sources */,
 				3F2E29AB1DB1933B00519C9E /* KeychainIntegration.swift in Sources */,
 				3F8145001E346357001E25EC /* HTMLToAttributedStringTests.swift in Sources */,
+				3F03CA751E3B9FFE000A04B8 /* CurrentUserPropagationTests.swift in Sources */,
 				3F6A07601E2DA9F200A56072 /* StreamViewControllerTests.swift in Sources */,
 				3F2E295A1DAD243600519C9E /* PostParsing.swift in Sources */,
 				3F6A076E1E3066A100A56072 /* PostTests.swift in Sources */,

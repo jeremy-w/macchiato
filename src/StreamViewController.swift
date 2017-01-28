@@ -5,11 +5,22 @@ class StreamViewController: UITableViewController {
     var stream: Stream?
     var postRepository: PostRepository?
 
-    var currentUser: Account?
-    func configure(stream: Stream, postRepository: PostRepository, currentUser: Account?) {
+    private var identityChangeListener: Any?
+    private(set) var identity = Identity() {
+        didSet {
+            canSendPostDidChange()
+            identityChangeListener = NotificationCenter.default.addObserver(
+                forName: .identityDidChange, object: identity, queue: OperationQueue.main,
+                using: { [weak self] _ in
+                    self?.canSendPostDidChange()
+            })
+        }
+    }
+    func configure(stream: Stream, postRepository: PostRepository, identity: Identity) {
+        print("configured:", self)
         self.stream = stream
         self.postRepository = postRepository
-        self.currentUser = currentUser
+        self.identity = identity
 
         title = stream.name
 
@@ -20,7 +31,9 @@ class StreamViewController: UITableViewController {
 
     @IBOutlet var newPostButton: UIBarButtonItem?
     override func viewDidLoad() {
+        print("view loaded:", self)
         super.viewDidLoad()
+        canSendPostDidChange()
         refreshControl = makeRefreshControl()
         if let stream = stream, stream.lastFetched == nil {
             refreshAction()
@@ -37,10 +50,8 @@ class StreamViewController: UITableViewController {
         canSendPostDidChange()
     }
 
-    // (jws/2016-10-14)TODO: We need access to this.
-    // Probably by way of whatever allows us to interact with posts when logged in.
     var isLoggedIn: Bool {
-        return true
+        return identity.account != nil
     }
 
 
@@ -128,7 +139,7 @@ class StreamViewController: UITableViewController {
     }
 
     func reportError(_ error: Error) {
-        print("\(self): ERROR: \(error)")
+        print("STREAMVC/", stream?.view as Any, ": ERROR: \(error)")
         if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
             DispatchQueue.main.async {
                 let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
@@ -142,15 +153,25 @@ class StreamViewController: UITableViewController {
     // MARK: - Loads thread on swipe to left
     func prepareToShowThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == "ShowThread" else { return false }
+
         guard let swipe = sender as? UISwipeGestureRecognizer
-        , let post = post(at: swipe.location(in: view)) else { return true }
+        , let post = post(at: swipe.location(in: view)) else {
+            print("STREAMVC/", stream?.view as Any, ": ERROR: No post at swipe location. Unable to show thread.")
+            return true
+        }
 
         guard let streamVC = segue.destination as? StreamViewController
-        , let postRepository = self.postRepository else { return true }
+        , let postRepository = self.postRepository else {
+            print("STREAMVC/", stream?.view as Any, ": ERROR: Seguing to not-a-streamvc", segue.destination,
+                  "or missing our post repository", self.postRepository as Any, "- Unable to show thread.")
+            return true
+        }
 
         // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
         // (match on thread.root)
-        streamVC.configure(stream: post.threadStream, postRepository: postRepository, currentUser: currentUser)
+        let threadStream = post.threadStream
+        print("STREAMVC/", stream?.view as Any, ": INFO: Preparing to show thread stream:", threadStream)
+        streamVC.configure(stream: threadStream, postRepository: postRepository, identity: identity)
         return true
     }
 
@@ -163,7 +184,11 @@ class StreamViewController: UITableViewController {
 
     // MARK: - Allows to post a new post
     func canSendPostDidChange() {
-        navigationItem.rightBarButtonItem = isLoggedIn ? newPostButton : nil
+        guard isViewLoaded else { return }
+
+        let canSendPost = isLoggedIn
+        navigationItem.setRightBarButton(canSendPost ? newPostButton : nil, animated: true)
+        print("STREAMVC/", stream?.view as Any, self, ": DEBUG: Can send post did change:", canSendPost)
     }
 
     enum Segue: String {
@@ -172,8 +197,8 @@ class StreamViewController: UITableViewController {
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
-        guard let author = currentUser else {
-            print("STREAMVC: ERROR: No current user - refusing to compose post.")
+        guard let author = identity.account else {
+            print("STREAMVC", stream?.view as Any, ": ERROR: No current user - refusing to compose post.")
             return true
         }
 
@@ -192,9 +217,13 @@ class StreamViewController: UITableViewController {
     // MARK: - Allows taking actions on posts
     @IBAction func longPressAction(sender: UILongPressGestureRecognizer) {
         let point = sender.location(in: view)
-        guard let target = post(at: point) else { return }
+        guard let target = post(at: point) else {
+            print("STREAMVC/", stream?.view as Any, ": ERROR: No post at long-press location. Unable to find context to show post actions.")
+            return
+        }
 
         let alert = makePostActionAlert(for: target, at: point)
+        print("STREAMVC/", stream?.view as Any, ": INFO: Showing alert with", alert.actions.count, "actions for post:", target.id)
         present(alert, animated: true, completion: nil)
     }
 
@@ -219,7 +248,7 @@ class StreamViewController: UITableViewController {
                 break
 
             default:
-                guard currentUser != nil else { continue }
+                guard isLoggedIn else { continue }
             }
 
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
@@ -236,7 +265,7 @@ class StreamViewController: UITableViewController {
         guard let presenter = alert.popoverPresentationController
         , let tableView = tableView
         else {
-            print("STREAM: WARNING: Unable to provide location info for popover: TableView is not loaded.")
+            print("STREAMVC/", stream?.view as Any, ": WARNING: Unable to provide location info for popover: TableView is not loaded.")
             return
         }
 
@@ -249,6 +278,7 @@ class StreamViewController: UITableViewController {
     }
 
     func take(action: PostAction, on post: Post) {
+        print("STREAMVC/", stream?.view as Any, ": INFO: Taking post action", action, "on post:", post.id)
         switch action {
         case .reply:
             performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: ComposePostAction.newReply(to: post))

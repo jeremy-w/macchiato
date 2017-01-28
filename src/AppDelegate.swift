@@ -21,56 +21,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        guard NSClassFromString("XCTestCase") == nil else {
+        return didFinishLaunching(ignoreTestMode: false)
+    }
+
+    func didFinishLaunching(ignoreTestMode: Bool) -> Bool {
+        guard ignoreTestMode || NSClassFromString("XCTestCase") == nil else {
             print("Acting as test host: Bailing out of app-launch behaviors")
             return true
         }
-        splitViewController?.delegate = self
-        streamViewController?.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-        configureMasterViewController()
-        beginFetchingCurrentUserAccount()
+
+        wireUpUIPostLaunch()
+        identity.update(using: services.accountRepository)
         return true
     }
 
-
-    // MARK: - Tracks the current user's account info
-    var currentUser: Account? {
-        didSet {
-            print("ACCOUNT: INFO: Current user did change to:", currentUser as Any)
-            // (jeremy-w/2017-01-20)FIXME: This direct push of |currentUser| changes is kind of questionable.
-            // Should we throw another notification?
-            masterViewController?.currentUser = currentUser
-            streamViewController?.currentUser = currentUser
-        }
+    func wireUpUIPostLaunch() {
+        splitViewController?.delegate = self
+        streamViewController?.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+        configureMasterViewController()
     }
+
+
+    // MARK: - Tracks user's identity
+    let identity = Identity()
     var loggedInUserDidChangeListener: Any?
-
     func beginFetchingCurrentUserAccount() {
-        subscribeForLoggedInUserChanges()
-        fetchCurrentUserAccount()
+        whenLoggedInUserChanges(then: { [weak self] in
+            guard let my = self else { return }
+
+            my.identity.update(using: my.services.accountRepository)
+        })
+        identity.update(using: services.accountRepository)
     }
 
-    func subscribeForLoggedInUserChanges() {
+    func whenLoggedInUserChanges(then call: @escaping () -> Void) {
         loggedInUserDidChangeListener = NotificationCenter.default.addObserver(
             forName: .loggedInAccountDidChange,
             object: services.sessionManager,
-            queue: OperationQueue.main) {
-                [weak self] (notification) in
-                guard let manager = notification.object as? SessionManager, manager.loggedInAccountName != nil else {
-                    self?.currentUser = nil
-                    return
-                }
-
-                self?.fetchCurrentUserAccount()
-        }
-    }
-
-    func fetchCurrentUserAccount() {
-        services.accountRepository.account(id: "me") { (result) in
-            guard case let .success(user) = result else { return }
-
-            self.currentUser = user
-            self.masterViewController?.currentUser = user
+            queue: OperationQueue.main) { _ in
+                call()
         }
     }
 
@@ -79,8 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func configureMasterViewController() {
         guard let master = masterViewController else { return }
 
-        master.services = services
-        master.streams = [
+        let allStreams = [
             Stream.View.global,
             Stream.View.home,
             Stream.View.starters,
@@ -90,7 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             Stream.View.pinned,
             Stream.View.starred,
             ].map { Stream(view: $0) }
-        master.currentUser = currentUser
+        master.configure(services: services, identity: identity, streams: allStreams)
     }
 
     var splitViewController: UISplitViewController? {
