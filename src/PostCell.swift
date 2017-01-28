@@ -2,6 +2,7 @@ import UIKit
 
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
+    @IBOutlet var avatar: UIImageView?
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
     @IBOutlet var content: UILabel?
@@ -11,6 +12,7 @@ class PostCell: UITableViewCell {
     func configure(post: Post) {
         self.post = post
 
+        avatar?.image = nil  // Fetch: post.account.avatarURL
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
         content?.text = post.content
@@ -25,6 +27,18 @@ class PostCell: UITableViewCell {
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+    }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        roundCorners(of: avatar)
+    }
+
+    func roundCorners(of view: UIView?) {
+        guard let view = view else { return }
+
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = 8
     }
 
     @nonobjc static var dateFormatter: DateFormatter = {
