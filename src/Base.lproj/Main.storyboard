@@ -356,6 +356,7 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="author" destination="CjN-sX-xmO" id="WwV-xY-XYZ"/>
+                                    <outlet property="avatar" destination="nBa-Kd-FT9" id="t0V-lF-ChT"/>
                                     <outlet property="content" destination="tqt-qo-Z8s" id="bOg-B9-wuz"/>
                                     <outlet property="date" destination="xC9-6S-Dc5" id="OPh-sK-kz1"/>
                                     <outlet property="verticalStack" destination="7DO-y4-hqa" id="eW3-B7-Lau"/>
