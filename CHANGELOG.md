@@ -3,6 +3,17 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (5) - 2017-01-30
+New:
+
+- Avatars appear alongside post content. [#33]
+- Settings has a "Third-Party Components" row. Tap to view licenses for third-party components used by Macchiato. [#52]
+
+Fixed:
+
+- Account info percolates to all stream views, so that you shouldn't see a post action list of just "View in WebView" once you're logged in unless you're really fast or your network is really slow. [#50]
+
+
 ### 1.0 (4) - 2017-01-25
 Changed:
 
