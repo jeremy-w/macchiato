@@ -143,7 +143,7 @@ class SettingsViewController: UITableViewController {
 
         case .info:
             guard isLastRow(indexPath) else { return }
-            // push display of licenses and stuff
+            performSegue(withIdentifier: "ShowAcks", sender: self)
             return
         }
     }
@@ -166,15 +166,25 @@ class SettingsViewController: UITableViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        super.prepare(for: segue, sender: sender)
+        switch segue.identifier {
+        case "LogIn"?:
+            guard let target = segue.destination as? LogInViewController else {
+                preconditionFailure("expected destination to be LogInViewController, found: \(segue.destination)")
+            }
 
-        guard segue.identifier == "LogIn" else { return }
-        guard let target = segue.destination as? LogInViewController else {
-            preconditionFailure("expected destination to be LogInViewController, found: \(segue.destination)")
-        }
+            target.configure { [weak self] (item) in
+                self?.logInWithCredentials(account: item.0, password: item.1)
+            }
 
-        target.configure { [weak self] (item) in
-            self?.logInWithCredentials(account: item.0, password: item.1)
+        case "ShowAcks"?:
+            guard let textView = segue.destination.view.viewWithTag(1234) as? UITextView else {
+                preconditionFailure("expected to find text view at tag 1234")
+            }
+
+            textView.text = try! String(contentsOf: Bundle.main.url(forResource: "ThirdPartyLicenses", withExtension: "txt")!, encoding: .utf8)
+
+        default:
+            super.prepare(for: segue, sender: sender)
         }
     }
 
