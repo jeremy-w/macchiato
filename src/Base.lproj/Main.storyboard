@@ -133,6 +133,10 @@
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fcs-Xx-z3s">
                                             <rect key="frame" x="8" y="12" width="359" height="19.5"/>
+                                            <accessibility key="accessibilityConfiguration">
+                                                <accessibilityTraits key="traits" none="YES"/>
+                                                <bool key="isElement" value="NO"/>
+                                            </accessibility>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                             <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -144,9 +148,21 @@
                                         <constraint firstItem="fcs-Xx-z3s" firstAttribute="leading" secondItem="rAD-pT-yum" secondAttribute="leadingMargin" id="cbY-LV-nwT"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" none="YES"/>
+                                    <bool key="isElement" value="YES"/>
+                                </accessibility>
                                 <connections>
                                     <outlet property="label" destination="fcs-Xx-z3s" id="Dvy-gb-MWP"/>
                                 </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="DetailCell" id="YfV-vT-I3U">
+                                <rect key="frame" x="0.0" y="116" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="YfV-vT-I3U" id="vjP-GI-NGj">
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="44"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <sections/>
@@ -164,6 +180,7 @@
                     </navigationItem>
                     <connections>
                         <segue destination="OCM-Km-qml" kind="show" identifier="LogIn" id="A4U-I3-1yb"/>
+                        <segue destination="r54-xj-oCR" kind="show" identifier="ShowAcks" id="lEq-Ys-433"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mf7-cu-SgJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -436,6 +453,39 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mDQ-9t-Mtd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1517" y="131"/>
+        </scene>
+        <!--Acknowledgments-->
+        <scene sceneID="VE4-AR-Qh3">
+            <objects>
+                <viewController title="Acknowledgments" id="r54-xj-oCR" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="YfF-qW-cPf"/>
+                        <viewControllerLayoutGuide type="bottom" id="8Wg-U8-xBa"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="RwB-fa-N1S">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1234" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" keyboardDismissMode="onDrag" editable="NO" text="Acknowledgments go here" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="nvg-Kp-yX0">
+                                <rect key="frame" x="16" y="0.0" width="343" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <dataDetectorType key="dataDetectorTypes" link="YES" address="YES"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="nvg-Kp-yX0" firstAttribute="leading" secondItem="RwB-fa-N1S" secondAttribute="leadingMargin" id="0rP-Sh-E6K"/>
+                            <constraint firstItem="8Wg-U8-xBa" firstAttribute="top" secondItem="nvg-Kp-yX0" secondAttribute="bottom" id="Ayg-Vv-r27"/>
+                            <constraint firstItem="nvg-Kp-yX0" firstAttribute="top" secondItem="RwB-fa-N1S" secondAttribute="top" id="IU5-Dq-tOs"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="nvg-Kp-yX0" secondAttribute="trailing" id="TO8-rA-8fI"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Skj-60-W5X" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2637.5999999999999" y="127.28635682158921"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>

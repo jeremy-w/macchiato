@@ -63,6 +63,7 @@
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */; };
 		3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E61DBD7C5200E176F4 /* Account.swift */; };
+		3FB501B41E3F972600DC0642 /* ThirdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,7 @@
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRange+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		3F9CE5E61DBD7C5200E176F4 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ThirdPartyLicenses.txt; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -325,6 +327,7 @@
 		3F8144E71E31BAA1001E25EC /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */,
 				3F8144E81E31BAF9001E25EC /* Plumbing */,
 				3F2E294D1DAB250200519C9E /* Logging In */,
 				3F2E294C1DAB24ED00519C9E /* Selecting a Stream */,
@@ -497,6 +500,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F2E290E1DA9B9F200519C9E /* LaunchScreen.storyboard in Resources */,
+				3FB501B41E3F972600DC0642 /* ThirdPartyLicenses.txt in Resources */,
 				3F2E29B01DB1C60E00519C9E /* ComposePost.storyboard in Resources */,
 				3F2E290B1DA9B9F200519C9E /* Assets.xcassets in Resources */,
 				3F2E29531DAB29CF00519C9E /* ToastViewController.xib in Resources */,
