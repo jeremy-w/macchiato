@@ -5,7 +5,10 @@ class ButtonCell: UITableViewCell {
     @IBOutlet var label: UILabel?
 
     func configure(text: String) {
-        label?.text = text
+        guard let label = label else { return }
+
+        label.text = text
+        label.accessibilityTraits = label.accessibilityTraits | UIAccessibilityTraitButton
     }
 
     override var textLabel: UILabel? {

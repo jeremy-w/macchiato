@@ -80,6 +80,7 @@ class SettingsViewController: UITableViewController {
             cell.textLabel?.text = NSLocalizedString("Account", comment: "row title")
             cell.detailTextLabel?.text = account
             cell.selectionStyle = .none
+            cell.isUserInteractionEnabled = false
             return cell
 
         default:
@@ -139,7 +140,7 @@ class SettingsViewController: UITableViewController {
 
         guard segue.identifier == "LogIn" else { return }
         guard let target = segue.destination as? LogInViewController else {
-            preconditionFailure("expected destinatino to be LogInViewController, found: \(segue.destination)")
+            preconditionFailure("expected destination to be LogInViewController, found: \(segue.destination)")
         }
 
         target.configure { [weak self] (item) in
