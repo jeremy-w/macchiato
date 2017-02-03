@@ -129,18 +129,21 @@ final class Parser: NSObject, XMLParserDelegate {
             let separator = Parser.paragraphSeparator
             let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
 
-            let listItem = NSMutableAttributedString(string: separator + indent, attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel))
+            let attributesForIndentation = Parser.attributes(forListAtIndentLevel: webList.indentLevel)
+            let listItem = NSMutableAttributedString(string: separator + indent, attributes: attributesForIndentation)
+
+            let itemLabel: NSAttributedString
             if webList.isOrdered {
                 let number = listItemIndexFormatter.string(from: NSNumber(value: webList.itemCount)) ?? String(describing: webList.itemCount)
                 let isFootnote = (attributes["class"] ?? "") == "footnote"
-                if isFootnote {
-                    listItem.append(NSAttributedString(string: number, attributes: superscriptAttributes))
-                } else {
-                    listItem.append(NSAttributedString(string: number + ". ", attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel)))
-                }
+                itemLabel = isFootnote
+                    ? NSAttributedString(string: number, attributes: superscriptAttributes)
+                    : NSAttributedString(string: number + ". ", attributes: attributesForIndentation)
             } else {
-                listItem.append(NSAttributedString(string: "• ", attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel)))
+                itemLabel = NSAttributedString(string: "• ", attributes: attributesForIndentation)
             }
+
+            listItem.append(itemLabel)
             result.append(listItem)
             atStartOfListItem = true
 
