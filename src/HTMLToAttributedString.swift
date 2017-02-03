@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 func makeAttributedString(fromHTML html: String) -> NSAttributedString {
     let fixed = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
@@ -151,6 +152,45 @@ final class Parser: NSObject, XMLParserDelegate {
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
             let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
             result.append(NSAttributedString(string: String.localizedStringWithFormat(format, altText), attributes: Parser.italicAttributes))
+
+            guard let imageSource = attributes["src"] else {
+                print("HTML: ERROR: Image lacks src attribute, has attributes:", attributes)
+                return
+            }
+
+            let maybeURL: URL?
+            if let urlPossiblyLackingScheme = URL(string: imageSource) {
+                if urlPossiblyLackingScheme.scheme == nil {
+                    maybeURL = URL(string: "https:" + imageSource)
+                } else {
+                    maybeURL = urlPossiblyLackingScheme
+                }
+            } else {
+                maybeURL = nil
+            }
+
+            if let url = maybeURL {
+                let attachment = NSTextAttachment()
+                KingfisherManager.shared.retrieveImage(
+                    with: url,
+                    options: nil,
+                    progressBlock: nil,
+                    completionHandler: { (image, error, cacheType, url) in
+                    if let image = image {
+                        print("HTML: DEBUG: Fetched image for", url as Any, ": image", image)
+                        attachment.image = image
+                        // (jeremy-w/2017-02-03)FIXME: This appears not to actually trigger a re-render. :(
+                        // So you have to scroll away and back to get it in cache to see it.
+                        // And then it winds up too wide anyway. Maybe needs a custom text attachment subclass
+                        // to get proper sizing.
+                    } else {
+                        print("HTML: ERROR: Failed to fetch image for", url as Any, ": error", error as Any)
+                    }
+                })
+                result.append(NSAttributedString(attachment: attachment))
+            } else {
+                print("HTML: ERROR: Failed to convert image source to URL:", imageSource)
+            }
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
