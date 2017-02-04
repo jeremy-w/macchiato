@@ -73,6 +73,10 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             attributesStack.append(styled.paragraph)
             if result.length > 0 && !atStartOfListItem {
                 result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
+                if element == "p" {
+                    // Block paragraph style - full blank line serves as separator.
+                    result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
+                }
             }
             atStartOfListItem = false
 

@@ -13,7 +13,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testPlainTextTwoParagraphs() {
         let html = "<body><p>one</p><p>two</p></body>"
         let expected = NSAttributedString(string:
-            "one\r\n"
+            "one\r\n\r\n"
             + "two", attributes: TenCenturiesHTMLParser.paragraph)
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
