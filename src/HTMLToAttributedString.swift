@@ -39,7 +39,8 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return .success(result)
     }
 
-    var attributesStack = [[String: Any]]()
+    typealias Attributes = [String: Any]
+    var attributesStack = [Attributes]()
 
     struct HTMLList {
         let isOrdered: Bool
@@ -240,7 +241,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         }
     }
 
-    static var paragraphAttributes: [String: Any] {
+    static var paragraphAttributes: Attributes {
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
 
@@ -255,7 +256,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     var lineSeparator = "\u{2028}"
     //swiftlint:enable line_length
 
-    static var italicAttributes: [String: Any] {
+    static var italicAttributes: Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -263,7 +264,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    static var boldAttributes: [String: Any] {
+    static var boldAttributes: Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -271,7 +272,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    var codeAttributes: [String: Any] {
+    var codeAttributes: Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -286,7 +287,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    var superscriptAttributes: [String: Any] {
+    var superscriptAttributes: Attributes {
         #if os(macOS)
             if #available(macOS 10.10, *) {
                 return [NSSuperscriptAttributeName: 1.0]
@@ -298,11 +299,11 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font, NSBaselineOffsetAttributeName: descriptor.pointSize / 3]
     }
 
-    var strikethroughAttributes: [String: Any] {
+    var strikethroughAttributes: Attributes {
         return [NSStrikethroughStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue]
     }
 
-    func anchorAttributes(href: String?, title: String?) -> [String: Any] {
+    func anchorAttributes(href: String?, title: String?) -> Attributes {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
         var attributes = TenCenturiesHTMLParser.paragraphAttributes
@@ -310,19 +311,19 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return attributes
     }
 
-    static func mentionAttributes(forAccountID accountID: String) -> [String: Any] {
+    static func mentionAttributes(forAccountID accountID: String) -> Attributes {
         var mentionAttributes = boldAttributes
         mentionAttributes["macchiato.mention.accountID"] = accountID
         return mentionAttributes
     }
 
-    static func attributes(forHashTag hashTag: String) -> [String: Any] {
+    static func attributes(forHashTag hashTag: String) -> Attributes {
         var hashTagAttributes = italicAttributes
         hashTagAttributes["macchiato.hashTag"] = hashTag
         return hashTagAttributes
     }
 
-    static func attributes(forListAtIndentLevel indentLevel: Int) -> [String: Any] {
+    static func attributes(forListAtIndentLevel indentLevel: Int) -> Attributes {
         // Could muck with indents…
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
