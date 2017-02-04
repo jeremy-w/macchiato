@@ -8,7 +8,7 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
         return NSAttributedString(string: html)
     }
 
-    let parser = Parser(data: utf8, from: fixed)
+    let parser = TenCenturiesHTMLParser(data: utf8, from: fixed)
     do {
         return try parser.parse().unwrap()
     } catch {
@@ -18,7 +18,7 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
 }
 
 
-final class Parser: NSObject, XMLParserDelegate {
+final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     private let data: Data
     private let source: String
     init(data: Data, from source: String) {
@@ -65,23 +65,23 @@ final class Parser: NSObject, XMLParserDelegate {
     ) {
         switch element {
         case "body":
-            attributesStack.append(Parser.paragraphAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
 
         case "p", "pre":
-            attributesStack.append(Parser.paragraphAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
             if result.length > 0 && !atStartOfListItem {
-                result.append(Parser.attributedParagraphSeparator)
+                result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
             }
             atStartOfListItem = false
 
         case "hr":
-            result.append(Parser.attributedParagraphSeparator)
+            result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
 
         case "em":
-            attributesStack.append(Parser.italicAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.italicAttributes)
 
         case "strong":
-            attributesStack.append(Parser.boldAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.boldAttributes)
 
         case "code":
             attributesStack.append(codeAttributes)
@@ -100,16 +100,16 @@ final class Parser: NSObject, XMLParserDelegate {
                 switch classAttribute {
                 case "account":
                     let accountID = attributes["data-account-id"] ?? ""
-                    attributesStack.append(Parser.mentionAttributes(forAccountID: accountID))
+                    attributesStack.append(TenCenturiesHTMLParser.mentionAttributes(forAccountID: accountID))
 
                 case "hash":
                     let hashTag = attributes["data-hash"] ?? ""
-                    attributesStack.append(Parser.attributes(forHashTag: hashTag))
+                    attributesStack.append(TenCenturiesHTMLParser.attributes(forHashTag: hashTag))
 
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
                     // Append some attributes so we don't throw off our stack.
-                    attributesStack.append(Parser.paragraphAttributes)
+                    attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
                 }
             }
 
@@ -120,17 +120,17 @@ final class Parser: NSObject, XMLParserDelegate {
             let indentLevel = listStack.last.map({ $0.indentLevel + 1 }) ?? 1
             let webList = HTMLList(isOrdered: (element == "ol"), indentLevel: indentLevel, itemCount: 0)
             listStack.append(webList)
-            attributesStack.append(Parser.attributes(forListAtIndentLevel: indentLevel))
+            attributesStack.append(TenCenturiesHTMLParser.attributes(forListAtIndentLevel: indentLevel))
 
         case "li":
             guard var webList = listStack.popLast() else { break }
             webList.itemCount += 1
             listStack.append(webList)
 
-            let separator = Parser.paragraphSeparator
+            let separator = TenCenturiesHTMLParser.paragraphSeparator
             let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
 
-            let attributesForIndentation = Parser.attributes(forListAtIndentLevel: webList.indentLevel)
+            let attributesForIndentation = TenCenturiesHTMLParser.attributes(forListAtIndentLevel: webList.indentLevel)
             let listItem = NSMutableAttributedString(string: separator + indent, attributes: attributesForIndentation)
 
             let itemLabel: NSAttributedString
@@ -151,7 +151,10 @@ final class Parser: NSObject, XMLParserDelegate {
         case "img":
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
             let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
-            result.append(NSAttributedString(string: String.localizedStringWithFormat(format, altText), attributes: Parser.italicAttributes))
+            result.append(
+                NSAttributedString(
+                    string: String.localizedStringWithFormat(format, altText),
+                    attributes: TenCenturiesHTMLParser.italicAttributes))
 
             guard let imageSource = attributes["src"] else {
                 print("HTML: ERROR: Image lacks src attribute, has attributes:", attributes)
@@ -194,7 +197,7 @@ final class Parser: NSObject, XMLParserDelegate {
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
-            attributesStack.append(Parser.paragraphAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
         }
     }
 
@@ -241,7 +244,9 @@ final class Parser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
 
-    static var attributedParagraphSeparator = NSAttributedString(string: Parser.paragraphSeparator, attributes: Parser.paragraphAttributes)
+    static var attributedParagraphSeparator = NSAttributedString(
+        string: TenCenturiesHTMLParser.paragraphSeparator,
+        attributes: TenCenturiesHTMLParser.paragraphAttributes)
     static var paragraphSeparator = "\r\n"
     //swiftlint:disable line_length
     /// Line separator: See: [SO: What is the line separator character used for?](https://stackoverflow.com/questions/3072152/what-is-unicode-character-2028-ls-line-separator-used-for)
@@ -300,7 +305,7 @@ final class Parser: NSObject, XMLParserDelegate {
     func anchorAttributes(href: String?, title: String?) -> [String: Any] {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
-        var attributes = Parser.paragraphAttributes
+        var attributes = TenCenturiesHTMLParser.paragraphAttributes
         attributes[NSLinkAttributeName] = href ?? "about:blank"
         return attributes
     }
