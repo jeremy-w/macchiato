@@ -64,12 +64,13 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         qualifiedName: String?,
         attributes: [String: String] = [:]
     ) {
+        let styled = TenCenturiesHTMLParser.self
         switch element {
         case "body":
-            attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
+            attributesStack.append(styled.paragraph)
 
         case "p", "pre":
-            attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
+            attributesStack.append(styled.paragraph)
             if result.length > 0 && !atStartOfListItem {
                 result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
             }
@@ -110,7 +111,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
                     // Append some attributes so we don't throw off our stack.
-                    attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
+                    attributesStack.append(styled.paragraph)
                 }
             }
 
@@ -198,7 +199,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
-            attributesStack.append(TenCenturiesHTMLParser.paragraphAttributes)
+            attributesStack.append(styled.paragraph)
         }
     }
 
@@ -241,13 +242,13 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         }
     }
 
-    static var paragraphAttributes: Attributes {
+    static var paragraph: Attributes {
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
 
     static var attributedParagraphSeparator = NSAttributedString(
         string: TenCenturiesHTMLParser.paragraphSeparator,
-        attributes: TenCenturiesHTMLParser.paragraphAttributes)
+        attributes: TenCenturiesHTMLParser.paragraph)
     static var paragraphSeparator = "\r\n"
     //swiftlint:disable line_length
     /// Line separator: See: [SO: What is the line separator character used for?](https://stackoverflow.com/questions/3072152/what-is-unicode-character-2028-ls-line-separator-used-for)
@@ -306,7 +307,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     func anchorAttributes(href: String?, title: String?) -> Attributes {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
-        var attributes = TenCenturiesHTMLParser.paragraphAttributes
+        var attributes = TenCenturiesHTMLParser.paragraph
         attributes[NSLinkAttributeName] = href ?? "about:blank"
         return attributes
     }

@@ -4,7 +4,7 @@ import XCTest
 class HTMLToAttributedStringTests: XCTestCase {
     func testPlainTextSingleParagraph() {
         let html = "<p>plain text</p>"
-        let expected = NSAttributedString(string: "plain text", attributes: TenCenturiesHTMLParser.paragraphAttributes)
+        let expected = NSAttributedString(string: "plain text", attributes: TenCenturiesHTMLParser.paragraph)
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -14,7 +14,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         let html = "<body><p>one</p><p>two</p></body>"
         let expected = NSAttributedString(string:
             "one\r\n"
-            + "two", attributes: TenCenturiesHTMLParser.paragraphAttributes)
+            + "two", attributes: TenCenturiesHTMLParser.paragraph)
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -155,7 +155,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testPreFormattedText() {
         let html = "<pre>this is    preformatted text</pre>"
         let expected = "this is    preformatted text"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraphAttributes))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
 
@@ -164,7 +164,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         // Think I'll just use an asterism in its own paragraph: ⁂
         let html = "<hr />"
         let expected = TenCenturiesHTMLParser.paragraphSeparator
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraphAttributes))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
     func testImageFormatsAsBracketedImageColonAndAltTextInItalics() {
