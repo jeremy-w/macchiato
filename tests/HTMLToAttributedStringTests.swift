@@ -111,13 +111,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testOrderedList() {
         let html = "<ol><li>1</li><li>2</li></ol>"
         let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t1. 1" + TenCenturiesHTMLParser.paragraphSeparator + "\t2. 2"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.attributes(forListAtIndentLevel: 1)))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func testUnorderedList() {
         let html = "<ul><li>A</li><li>B</li></ul>"
         let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• A" + TenCenturiesHTMLParser.paragraphSeparator + "\t• B"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.attributes(forListAtIndentLevel: 1)))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func SKIPPED_testNestedLists() {
@@ -149,7 +149,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testAvoidsDoubleLinebreakDueToParagraphWithinListItem() {
         let html = "<ul><li><p>Single indent.</p></li></ul>"
         let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• Single indent."
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.attributes(forListAtIndentLevel: 1)))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func testPreFormattedText() {
@@ -172,7 +172,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         // See: https://developer.apple.com/reference/uikit/nstextattachment#
         // But for now, I think I'll just show the ALT text. We'll have to sort out how to update these as the images arrive…
         let html = "<img src=\"unused\" alt=\"an image\" />"
-        let expectedHTML = "<em>[Image: an image]</em>"
+        let expectedHTML = "<em>[Image: an image]\(NSAttachmentCharacter)</em>"
         XCTAssertEqual(makeAttributedString(fromHTML: html), makeAttributedString(fromHTML: expectedHTML))
     }
 

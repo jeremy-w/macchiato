@@ -122,7 +122,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             let indentLevel = listStack.last.map({ $0.indentLevel + 1 }) ?? 1
             let webList = HTMLList(isOrdered: (element == "ol"), indentLevel: indentLevel, itemCount: 0)
             listStack.append(webList)
-            attributesStack.append(TenCenturiesHTMLParser.attributes(forListAtIndentLevel: indentLevel))
+            attributesStack.append(TenCenturiesHTMLParser.list(atIndentLevel: indentLevel))
 
         case "li":
             guard var webList = listStack.popLast() else { break }
@@ -132,7 +132,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             let separator = TenCenturiesHTMLParser.paragraphSeparator
             let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
 
-            let attributesForIndentation = TenCenturiesHTMLParser.attributes(forListAtIndentLevel: webList.indentLevel)
+            let attributesForIndentation = styled.list(atIndentLevel: webList.indentLevel)
             let listItem = NSMutableAttributedString(string: separator + indent, attributes: attributesForIndentation)
 
             let itemLabel: NSAttributedString
@@ -324,7 +324,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return hashTagAttributes
     }
 
-    static func attributes(forListAtIndentLevel indentLevel: Int) -> Attributes {
+    static func list(atIndentLevel indentLevel: Int) -> Attributes {
         // Could muck with indents…
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
