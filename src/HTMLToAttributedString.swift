@@ -153,49 +153,16 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         case "img":
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
             let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
+            var stringAttributes = TenCenturiesHTMLParser.italicAttributes
+            if let url = imageURL(from: attributes) {
+                stringAttributes[TenCenturiesHTMLParser.imageSourceURLAttributeName] = url
+            } else {
+                print("HTML: ERROR: Failed to build URL for image with attributes:", attributes)
+            }
             result.append(
                 NSAttributedString(
                     string: String.localizedStringWithFormat(format, altText),
-                    attributes: TenCenturiesHTMLParser.italicAttributes))
-
-            guard let imageSource = attributes["src"] else {
-                print("HTML: ERROR: Image lacks src attribute, has attributes:", attributes)
-                return
-            }
-
-            let maybeURL: URL?
-            if let urlPossiblyLackingScheme = URL(string: imageSource) {
-                if urlPossiblyLackingScheme.scheme == nil {
-                    maybeURL = URL(string: "https:" + imageSource)
-                } else {
-                    maybeURL = urlPossiblyLackingScheme
-                }
-            } else {
-                maybeURL = nil
-            }
-
-            if let url = maybeURL {
-                let attachment = NSTextAttachment()
-                KingfisherManager.shared.retrieveImage(
-                    with: url,
-                    options: nil,
-                    progressBlock: nil,
-                    completionHandler: { (image, error, cacheType, url) in
-                    if let image = image {
-                        print("HTML: DEBUG: Fetched image for", url as Any, ": image", image)
-                        attachment.image = image
-                        // (jeremy-w/2017-02-03)FIXME: This appears not to actually trigger a re-render. :(
-                        // So you have to scroll away and back to get it in cache to see it.
-                        // And then it winds up too wide anyway. Maybe needs a custom text attachment subclass
-                        // to get proper sizing.
-                    } else {
-                        print("HTML: ERROR: Failed to fetch image for", url as Any, ": error", error as Any)
-                    }
-                })
-                result.append(NSAttributedString(attachment: attachment))
-            } else {
-                print("HTML: ERROR: Failed to convert image source to URL:", imageSource)
-            }
+                    attributes: stringAttributes))
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
@@ -203,6 +170,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         }
     }
 
+    /// The attributes stack is not popped at the end of one of these elements.
     let elementsWithoutAttributes: Set = [
         "br",
         "hr",
@@ -242,6 +210,56 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         }
     }
 
+    func imageURL(from attributes: [String: String]) -> URL? {
+        guard let imageSource = attributes["src"] else {
+            return nil
+        }
+
+        let maybeURL: URL?
+        if let urlPossiblyLackingScheme = URL(string: imageSource) {
+            if urlPossiblyLackingScheme.scheme == nil {
+                maybeURL = URL(string: "https:" + imageSource)
+            } else {
+                maybeURL = urlPossiblyLackingScheme
+            }
+        } else {
+            maybeURL = nil
+        }
+        return maybeURL
+    }
+
+    /**
+     Returns a text attachment whose `image` will eventually be set to the image at `url`.
+
+     - NOTE: Assigning to the `image` does not trigger relayout of an attributed string containing this attachment.
+       The attachment will also be the full size of the image, which might not fit in the rendered container.
+       We might fix this in future by using a custom text attachment subclass aware of its rendering context
+       and of the un/loaded state of its image.
+     */
+    func textAttachment(for url: URL) -> NSTextAttachment {
+        let attachment = NSTextAttachment()
+        KingfisherManager.shared.retrieveImage(
+            with: url,
+            options: nil,
+            progressBlock: nil,
+            completionHandler: { (image, error, cacheType, url) in
+                if let image = image {
+                    print("HTML: DEBUG: Fetched image for", url as Any, ": image", image)
+                    attachment.image = image
+                    // (jeremy-w/2017-02-03)FIXME: This appears not to actually trigger a re-render. :(
+                    // So you have to scroll away and back to get it in cache to see it.
+                    // And then it winds up too wide anyway. Maybe needs a custom text attachment subclass
+                    // to get proper sizing.
+                } else {
+                    print("HTML: ERROR: Failed to fetch image for", url as Any, ": error", error as Any)
+                }
+            })
+        return attachment
+    }
+
+
+    // MARK: - Rich Text Attributes
+    static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
     static var paragraph: Attributes {
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }

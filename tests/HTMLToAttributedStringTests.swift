@@ -161,19 +161,23 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     // MARK: - Renders decorations
     func testHorizontalRule() {
-        // Think I'll just use an asterism in its own paragraph: ⁂
         let html = "<hr />"
         let expected = TenCenturiesHTMLParser.paragraphSeparator
         XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
-    func testImageFormatsAsBracketedImageColonAndAltTextInItalics() {
+    func testImageFormatsAsBracketedImageColonAndAltTextInItalicsWithURLInAttributes() {
         // Uses the NSAttachmentCharacter U+FFFC aka the replacement character (question mark in a diamond, often) as the text, and then injects the image using the attributes.
         // See: https://developer.apple.com/reference/uikit/nstextattachment#
         // But for now, I think I'll just show the ALT text. We'll have to sort out how to update these as the images arrive…
-        let html = "<img src=\"unused\" alt=\"an image\" />"
-        let expectedHTML = "<em>[Image: an image]\(NSAttachmentCharacter)</em>"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), makeAttributedString(fromHTML: expectedHTML))
+        let html = "<img src=\"//example.com\" alt=\"an image\" />"
+
+        let expectedHTML = "<em>[Image: an image]</em>"
+        let renderedString = makeAttributedString(fromHTML: expectedHTML).mutableCopy() as! NSMutableAttributedString
+        renderedString.addAttributes(
+            [TenCenturiesHTMLParser.imageSourceURLAttributeName: URL(string: "https://example.com")!],
+            range: NSRange(location: 0, length: renderedString.length))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), renderedString)
     }
 
     func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {
