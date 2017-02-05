@@ -7,7 +7,7 @@ class PostCell: UITableViewCell {
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
     @IBOutlet var content: UILabel?
-    @IBOutlet var verticalStack: UIStackView?
+    @IBOutlet var infoStack: UIStackView?
 
     private var post: Post?
     func configure(post: Post) {
@@ -54,7 +54,7 @@ class PostCell: UITableViewCell {
 
     // MARK: - Tacks additional info at the end of the cell
     func stackUpAdditionalInfo() {
-        guard let post = self.post, let stack = verticalStack else { return }
+        guard let post = self.post, let stack = infoStack else { return }
 
         let rows = info(from: post)
 
