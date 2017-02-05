@@ -210,6 +210,9 @@ class PostCell: UITableViewCell {
 
     func didLoad(_ image: UIImage?, for imageView: UIImageView?) {
         guard let imageView = imageView, imageView.window != nil else { return }
+        if #available(iOS 10.0, *) {
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+        }
 
         guard let image = image, image.size.height > 0 else {
             print("POSTCELL: DEBUG: Missing image, or image has zero height: Removing image view")
@@ -219,7 +222,7 @@ class PostCell: UITableViewCell {
             return
         }
 
-        print("POSTCELL: DEBUG: Adding aspect-fit constraint for image view:", imageView, "- image:", image, "- size:", image.size)
+        print("POSTCELL: DEBUG: Adding aspect-ratio constraint for image view:", imageView, "- image:", image, "- size:", image.size)
         delegate?.willChangeHeight(of: self)
         let aspectRatio = image.size.width / image.size.height
         NSLayoutConstraint(

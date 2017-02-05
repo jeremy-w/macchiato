@@ -393,11 +393,14 @@ extension StreamViewController: PostCellDelegate {
     }
 
     func willChangeHeight(of cell: PostCell) {
-        tableView.beginUpdates()
     }
 
     func didChangeHeight(of cell: PostCell) {
-        tableView.endUpdates()
+        if tableView.visibleCells.contains(cell) {
+            tableView.beginUpdates()
+            tableView.reloadRows(at: [tableView.indexPath(for: cell)!], with: .none)
+            tableView.endUpdates()
+        }
     }
 }
 
