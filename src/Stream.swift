@@ -11,6 +11,7 @@ class Stream {
         self.name = name
         self.view = view
         self.posts = posts
+        sortPosts()
     }
 
     convenience init(view: View, posts: [Post] = []) {
@@ -21,7 +22,9 @@ class Stream {
     func replacePosts(with posts: [Post], fetchedAt date: Date) {
         self.posts = posts
         lastFetched = date
+        sortPosts()
 
+        // (jeremy-w/2017-02-05)???: Should this be earliest updated, or created? Not sure what 10C feeds us.
         let earliestInBatch = posts.map({ $0.updated }).min()
         maybeUpdateEarliestFetched(with: earliestInBatch)
     }
@@ -40,6 +43,7 @@ class Stream {
     }
 
     func merge(posts merging: [Post], olderThan border: Date) {
+        // (jeremy-w/2017-02-05)???: Should this be earliest updated, or created? Not sure what 10C feeds us.
         guard !merging.isEmpty, let earliestInBatch = merging.map({ $0.updated }).min() else {
             return
         }
@@ -51,7 +55,13 @@ class Stream {
             return didInsert
         }
         posts.append(contentsOf: merging)
-        posts.sort(by: { $0.updated > $1.updated })
+        sortPosts()
+    }
+
+    func sortPosts() {
+        // Sorting by `date` rather than `updated` leaves edited posts in their original place
+        // in the timeline, which is what you want an edit to do, right?
+        posts.sort(by: { $0.date > $1.date })
     }
 
 
