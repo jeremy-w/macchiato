@@ -3,6 +3,19 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (6) - 2017-02-05
+New:
+
+- URLs linked in a post are listed as buttons below the post text. Tap the button to navigate to the URL within the app.
+- Images linked in a post are displayed below any link buttons. They are scaled to fit, so some bits outside the center might have been cropped. Tap the image to see the full image. [#35]
+- An "Edit" action appears in the list of post actions for your own posts. This list is the list that is triggered by long-pressing on a post. [#40]
+- The background of posts that mention you is now a light blue, to make it easier to skim for mentions. [#41]
+
+Changed:
+
+- Paragraphs now display block-style, with a full blank line between them. [#53]
+
+
 ### 1.0 (5) - 2017-01-30
 New:
 
