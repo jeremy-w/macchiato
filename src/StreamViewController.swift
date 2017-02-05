@@ -38,6 +38,15 @@ class StreamViewController: UITableViewController {
         if let stream = stream, stream.lastFetched == nil {
             refreshAction()
         }
+
+        makeNewPostButtonAccessible()
+    }
+
+    func makeNewPostButtonAccessible() {
+        guard let newPostButton = newPostButton else { return }
+
+        newPostButton.accessibilityLabel = NSLocalizedString("New Post", comment: "accessibility label")
+        newPostButton.accessibilityHint = NSLocalizedString("Write a new post", comment: "accessibility hint")
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
