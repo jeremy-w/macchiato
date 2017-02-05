@@ -19,13 +19,13 @@ class PostCell: UITableViewCell {
         self.post = post
         self.delegate = delegate
 
-        avatar?.kf.indicatorType = .activity
         avatar?.kf.setImage(with: post.account.avatarURL)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
         content?.text = post.content
         content?.attributedText = makeAttributedString(fromHTML: post.html)
 
+        highlightIfMention()
         stackUpAdditionalInfo()
     }
     weak var delegate: PostCellDelegate?
@@ -58,6 +58,13 @@ class PostCell: UITableViewCell {
         formatter.doesRelativeDateFormatting = true
         return formatter
     }()
+
+
+    // MARK: - Alters background color to reflect mention status
+    func highlightIfMention() {
+        let isMention = (post?.you.wereMentioned ?? false)
+        backgroundColor = isMention ? #colorLiteral(red: 0.95, green: 0.9866666667, blue: 1, alpha: 1) : UIColor.white
+    }
 
 
     // MARK: - Tacks additional info at the end of the cell
@@ -134,6 +141,8 @@ class PostCell: UITableViewCell {
             button.setTitle(url.absoluteString, for: .normal)
             button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
             objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            button.accessibilityTraits &= ~UIAccessibilityTraitButton
+            button.accessibilityTraits |= UIAccessibilityTraitLink
             stack.addArrangedSubview(button)
         }
     }
@@ -225,9 +234,11 @@ class PostCell: UITableViewCell {
 
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapAction)))
         imageView.isUserInteractionEnabled = true
+
         imageView.isAccessibilityElement = true
         imageView.accessibilityLabel = NSLocalizedString("Image", comment: "accessibility label")
         imageView.accessibilityHint = NSLocalizedString("Tap to view full image", comment: "accessibility hint")
+        imageView.accessibilityTraits |= UIAccessibilityTraitLink
         return imageView
     }
 }
