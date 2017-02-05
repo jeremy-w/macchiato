@@ -54,27 +54,28 @@ class PostCell: UITableViewCell {
 
     // MARK: - Tacks additional info at the end of the cell
     func stackUpAdditionalInfo() {
-        guard let post = self.post, let stack = infoStack else { return }
+        guard let stack = infoStack else { return }
 
-        let rows = info(from: post)
+        emptyOut(stack)
+        addInfoLabels()
+        addLinkButtons()
+        addImageViews()
+    }
 
-        var next = 0
-        let count = rows.count
-        for view in stack.arrangedSubviews {
-            guard let label = view as? UILabel else { continue }
-            if next < count {
-                label.text = rows[next]
-                next += 1
-            } else {
-                stack.removeArrangedSubview(view)
-                view.removeFromSuperview()
-            }
+    func emptyOut(_ view: UIView) {
+        for view in view.subviews {
+            view.removeFromSuperview()
         }
-        for i in next ..< count {
-            stack.addArrangedSubview(makeAdditionalInfoLabel(text: rows[i]))
+    }
+
+
+    // MARK: - Info labels
+    func addInfoLabels() {
+        guard let post = post, let stack = infoStack else { return }
+
+        for text in info(from: post) {
+            stack.addArrangedSubview(makeAdditionalInfoLabel(text: text))
         }
-        assert(stack.arrangedSubviews.count == rows.count,
-               "stack view should have one view per info row, but \(stack.arrangedSubviews.count) in stack vs \(rows.count) expected")
     }
 
     func makeAdditionalInfoLabel(text: String) -> UILabel {
@@ -112,5 +113,97 @@ class PostCell: UITableViewCell {
         if you.muted { info.append("☠️ (you muted this)") }
         if you.cannotSee { info.append("invisible to you! 👻") }
         return info
+    }
+
+
+    // MARK: - Link buttons
+    func addLinkButtons() {
+        guard let text = content?.attributedText, let stack = infoStack else { return }
+
+        let urls = links(in: text)
+        for url in urls {
+            let button = UIButton(type: .system)
+            button.setTitle(url.absoluteString, for: .normal)
+            button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
+            stack.addArrangedSubview(button)
+        }
+    }
+
+    @IBAction func linkButtonAction(sender: UIButton) {
+        guard let absoluteString = sender.title(for: .normal)
+        , let url = URL(string: absoluteString) else {
+            print("POSTCELL: WARNING: Failed to recreate URL for button:", sender, "- in post with ID", post?.id as Any)
+            return
+        }
+
+        // (jeremy-w/2017-02-04)TODO: Shoot the URL over to a delegate.
+        print("POSTCELL: DEBUG: You tapped on URL:", url)
+    }
+
+    func links(in text: NSAttributedString) -> [URL] {
+        var urls = [URL]()
+        text.enumerateAttribute(NSLinkAttributeName, in: NSRange(location: 0, length: text.length), options: []) { (value, range, shouldStop) in
+            // Gets called also for ranges where the attribute is nil.
+            guard let value = value else { return }
+
+            if let url = value as? URL {
+                urls.append(url)
+                return
+            } else if let string = value as? String, let url = URL(string: string) {
+                urls.append(url)
+                return
+            } else {
+                print("POSTCELL: WARNING: Failed to create URL from HREF:", value as Any, "- in post with ID", post?.id as Any)
+                return
+            }
+        }
+        return urls
+    }
+
+
+    // MARK: - Image displays
+    func addImageViews() {
+        guard let text = content?.attributedText, let stack = infoStack else { return }
+
+        let imageURLs = imageLinks(in: text)
+        for url in imageURLs {
+            let imageView = UIImageView()
+            imageView.contentMode = .scaleAspectFit
+            imageView.kf.setImage(with: url, placeholder: nil, options: nil, progressBlock: nil, completionHandler: {
+                [weak imageView]
+                (image, error, cacheType, url) in
+                guard let imageView = imageView else { return }
+                guard let image = image, image.size.height > 0 else {
+                    imageView.removeFromSuperview()
+                    return
+                }
+
+                let aspectRatio = image.size.width / image.size.height
+                NSLayoutConstraint(
+                    item: imageView, attribute: .width,
+                    relatedBy: .equal,
+                    toItem: imageView, attribute: .height,
+                    multiplier: aspectRatio, constant: 0)
+                    .isActive = true
+            })
+            stack.addArrangedSubview(imageView)
+            NSLayoutConstraint.activate([
+                imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 300.0),
+            ])
+        }
+    }
+
+    func imageLinks(in text: NSAttributedString) -> [URL] {
+        var urls = [URL]()
+        text.enumerateAttribute(
+            TenCenturiesHTMLParser.imageSourceURLAttributeName,
+            in: NSRange(location: 0, length: text.length),
+            options: []) {
+                (value, range, shouldStop) in
+                guard let url = value as? URL else { return }
+
+                urls.append(url)
+        }
+        return urls
     }
 }
