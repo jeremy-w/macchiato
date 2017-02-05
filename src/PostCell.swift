@@ -1,6 +1,14 @@
 import UIKit
 import Kingfisher
 
+protocol PostCellDelegate: class {
+    func tapped(link: URL, in cell: PostCell)
+    func tapped(image: UIImage?, from url: URL, in cell: PostCell)
+
+    func willChangeHeight(of cell: PostCell)
+    func didChangeHeight(of cell: PostCell)
+}
+
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
     @IBOutlet var avatar: UIImageView?
@@ -10,9 +18,11 @@ class PostCell: UITableViewCell {
     @IBOutlet var infoStack: UIStackView?
 
     private var post: Post?
-    func configure(post: Post) {
+    func configure(post: Post, delegate: PostCellDelegate? = nil) {
         self.post = post
+        self.delegate = delegate
 
+        avatar?.kf.indicatorType = .activity
         avatar?.kf.setImage(with: post.account.avatarURL)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
@@ -21,6 +31,7 @@ class PostCell: UITableViewCell {
 
         stackUpAdditionalInfo()
     }
+    weak var delegate: PostCellDelegate?
 
     init() {
         super.init(style: .default, reuseIdentifier: PostCell.identifier)
@@ -138,6 +149,7 @@ class PostCell: UITableViewCell {
 
         // (jeremy-w/2017-02-04)TODO: Shoot the URL over to a delegate.
         print("POSTCELL: DEBUG: You tapped on URL:", url)
+        delegate?.tapped(link: url, in: self)
     }
 
     func links(in text: NSAttributedString) -> [URL] {
@@ -169,22 +181,11 @@ class PostCell: UITableViewCell {
         for url in imageURLs {
             let imageView = UIImageView()
             imageView.contentMode = .scaleAspectFit
+            imageView.kf.indicatorType = .activity
             imageView.kf.setImage(with: url, placeholder: nil, options: nil, progressBlock: nil, completionHandler: {
-                [weak imageView]
+                [weak imageView, weak self]
                 (image, error, cacheType, url) in
-                guard let imageView = imageView else { return }
-                guard let image = image, image.size.height > 0 else {
-                    imageView.removeFromSuperview()
-                    return
-                }
-
-                let aspectRatio = image.size.width / image.size.height
-                NSLayoutConstraint(
-                    item: imageView, attribute: .width,
-                    relatedBy: .equal,
-                    toItem: imageView, attribute: .height,
-                    multiplier: aspectRatio, constant: 0)
-                    .isActive = true
+                self?.didLoad(image, for: imageView)
             })
             stack.addArrangedSubview(imageView)
             NSLayoutConstraint.activate([
@@ -205,5 +206,28 @@ class PostCell: UITableViewCell {
                 urls.append(url)
         }
         return urls
+    }
+
+    func didLoad(_ image: UIImage?, for imageView: UIImageView?) {
+        guard let imageView = imageView, imageView.window != nil else { return }
+
+        guard let image = image, image.size.height > 0 else {
+            print("POSTCELL: DEBUG: Missing image, or image has zero height: Removing image view")
+            delegate?.willChangeHeight(of: self)
+            imageView.removeFromSuperview()
+            delegate?.didChangeHeight(of: self)
+            return
+        }
+
+        print("POSTCELL: DEBUG: Adding aspect-fit constraint for image view:", imageView, "- image:", image, "- size:", image.size)
+        delegate?.willChangeHeight(of: self)
+        let aspectRatio = image.size.width / image.size.height
+        NSLayoutConstraint(
+            item: imageView, attribute: .width,
+            relatedBy: .equal,
+            toItem: imageView, attribute: .height,
+            multiplier: aspectRatio, constant: 0)
+            .isActive = true
+        delegate?.didChangeHeight(of: self)
     }
 }
