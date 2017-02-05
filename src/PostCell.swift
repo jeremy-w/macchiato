@@ -19,7 +19,6 @@ class PostCell: UITableViewCell {
         self.post = post
         self.delegate = delegate
 
-        avatar?.kf.indicatorType = .activity
         avatar?.kf.setImage(with: post.account.avatarURL)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
