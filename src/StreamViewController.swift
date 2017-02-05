@@ -250,6 +250,9 @@ class StreamViewController: UITableViewController {
                 ? NSLocalizedString("Pin", comment: "button")
                 : NSLocalizedString("Edit Pin", comment: "button"), .pin(at: point)),
             (NSLocalizedString("Repost", comment: "button"), .repost),
+            (((post.account.id == identity.account?.id)
+                ? NSLocalizedString("Edit", comment: "button")
+                : ""), .edit),
             (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
             switch action {
@@ -260,6 +263,7 @@ class StreamViewController: UITableViewController {
                 guard isLoggedIn else { continue }
             }
 
+            guard !title.isEmpty else { continue }
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
         }
 
@@ -290,7 +294,7 @@ class StreamViewController: UITableViewController {
         print("STREAMVC/", stream?.view as Any, ": INFO: Taking post action", action, "on post:", post.id)
         switch action {
         case .reply:
-            performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: ComposePostAction.newReply(to: post))
+            composePost(as: .newReply(to: post))
 
         case .star:
             postRepository?.star(post: post) { result in
@@ -329,9 +333,17 @@ class StreamViewController: UITableViewController {
                 }
             })
 
+        case .edit:
+            // (jeremy-w/2017-02-05)FIXME: Use .updateReply if this is a reply (has a parentID).
+            composePost(as: .update(post))
+
         case .webView:
             displayInWebView(URL(string: "https://10centuries.org/post/\(post.id)")!)
         }
+    }
+
+    func composePost(as action: ComposePostAction) {
+        performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: action)
     }
 
     func displayInWebView(_ url: URL) {
@@ -387,6 +399,7 @@ class StreamViewController: UITableViewController {
         case star
         case pin(at: CGPoint)
         case repost
+        case edit
         case webView
     }
 }
