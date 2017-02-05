@@ -133,13 +133,13 @@ class PostCell: UITableViewCell {
             let button = UIButton(type: .system)
             button.setTitle(url.absoluteString, for: .normal)
             button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
-            objc_setAssociatedObject(button, associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             stack.addArrangedSubview(button)
         }
     }
 
     @IBAction func linkButtonAction(sender: UIButton) {
-        guard let url = objc_getAssociatedObject(sender, associatedURL) as? URL else {
+        guard let url = objc_getAssociatedObject(sender, &PostCell.associatedURL) as? URL else {
             print("POSTCELL: WARNING: Failed to retrieve URL for button:", sender, "- in post with ID", post?.id as Any)
             return
         }
@@ -194,14 +194,14 @@ class PostCell: UITableViewCell {
         return urls
     }
 
-    let associatedURL = "com.jeremywsherman.Macchiato.PostCell.associatedURL"
+    static var associatedURL = "com.jeremywsherman.Macchiato.PostCell.associatedURL"
     @IBAction func imageTapAction(sender: UITapGestureRecognizer) {
         guard let imageView = sender.view as? UIImageView else {
             print("POSTCELL: ERROR: Image tapped, but gesture recognizer is not tied to an image view:", sender)
             return
         }
 
-        guard let url = objc_getAssociatedObject(imageView, associatedURL) as? URL else {
+        guard let url = objc_getAssociatedObject(imageView, &PostCell.associatedURL) as? URL else {
             print("POSTCELL: ERROR: Image tapped, but no URL associated with the image view:", imageView)
             return
         }
@@ -220,8 +220,8 @@ class PostCell: UITableViewCell {
 
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(with: url)
-        objc_setAssociatedObject(imageView, associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        assert(objc_getAssociatedObject(imageView, associatedURL) as? URL == url, "set and get failed")
+        objc_setAssociatedObject(imageView, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        assert(objc_getAssociatedObject(imageView, &PostCell.associatedURL) as? URL == url, "set and get failed")
 
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapAction)))
         imageView.isUserInteractionEnabled = true
