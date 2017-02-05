@@ -25,6 +25,7 @@ class PostCell: UITableViewCell {
         content?.text = post.content
         content?.attributedText = makeAttributedString(fromHTML: post.html)
 
+        highlightIfMention()
         stackUpAdditionalInfo()
     }
     weak var delegate: PostCellDelegate?
@@ -57,6 +58,13 @@ class PostCell: UITableViewCell {
         formatter.doesRelativeDateFormatting = true
         return formatter
     }()
+
+
+    // MARK: - Alters background color to reflect mention status
+    func highlightIfMention() {
+        let isMention = (post?.you.wereMentioned ?? false)
+        backgroundColor = isMention ? #colorLiteral(red: 0.95, green: 0.9866666667, blue: 1, alpha: 1) : UIColor.white
+    }
 
 
     // MARK: - Tacks additional info at the end of the cell
