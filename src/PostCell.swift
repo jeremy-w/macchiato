@@ -179,18 +179,10 @@ class PostCell: UITableViewCell {
 
         let imageURLs = imageLinks(in: text)
         for url in imageURLs {
-            let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFit
-            imageView.kf.indicatorType = .activity
-            imageView.kf.setImage(with: url, placeholder: nil, options: nil, progressBlock: nil, completionHandler: {
-                [weak imageView, weak self]
-                (image, error, cacheType, url) in
-                self?.didLoad(image, for: imageView)
-            })
+            let imageView = makeImageView(loading: url)
             stack.addArrangedSubview(imageView)
-            NSLayoutConstraint.activate([
-                imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 300.0),
-            ])
+
+            imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapAction)))
         }
     }
 
@@ -208,29 +200,21 @@ class PostCell: UITableViewCell {
         return urls
     }
 
-    func didLoad(_ image: UIImage?, for imageView: UIImageView?) {
-        guard let imageView = imageView, imageView.window != nil else { return }
-        if #available(iOS 10.0, *) {
-            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-        }
+    @IBAction func imageTapAction(sender: UIImageView) {
+        guard let url = sender.kf.webURL else { return }
 
-        guard let image = image, image.size.height > 0 else {
-            print("POSTCELL: DEBUG: Missing image, or image has zero height: Removing image view")
-            delegate?.willChangeHeight(of: self)
-            imageView.removeFromSuperview()
-            delegate?.didChangeHeight(of: self)
-            return
-        }
+        delegate?.tapped(image: sender.image, from: url, in: self)
+    }
 
-        print("POSTCELL: DEBUG: Adding aspect-ratio constraint for image view:", imageView, "- image:", image, "- size:", image.size)
-        delegate?.willChangeHeight(of: self)
-        let aspectRatio = image.size.width / image.size.height
-        NSLayoutConstraint(
-            item: imageView, attribute: .width,
-            relatedBy: .equal,
-            toItem: imageView, attribute: .height,
-            multiplier: aspectRatio, constant: 0)
-            .isActive = true
-        delegate?.didChangeHeight(of: self)
+    func makeImageView(loading url: URL) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(with: url)
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalToConstant: 300.0),
+        ])
+        return imageView
     }
 }

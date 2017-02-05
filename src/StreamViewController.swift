@@ -391,17 +391,6 @@ extension StreamViewController: PostCellDelegate {
     func tapped(image: UIImage?, from url: URL, in cell: PostCell) {
         displayInWebView(url)
     }
-
-    func willChangeHeight(of cell: PostCell) {
-    }
-
-    func didChangeHeight(of cell: PostCell) {
-        if tableView.visibleCells.contains(cell) {
-            tableView.beginUpdates()
-            tableView.reloadRows(at: [tableView.indexPath(for: cell)!], with: .none)
-            tableView.endUpdates()
-        }
-    }
 }
 
 
