@@ -1,18 +1,25 @@
 import UIKit
 import Kingfisher
 
+protocol PostCellDelegate: class {
+    func tapped(link: URL, in cell: PostCell)
+    func tapped(image: UIImage?, from url: URL, in cell: PostCell)
+}
+
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
     @IBOutlet var avatar: UIImageView?
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
     @IBOutlet var content: UILabel?
-    @IBOutlet var verticalStack: UIStackView?
+    @IBOutlet var infoStack: UIStackView?
 
     private var post: Post?
-    func configure(post: Post) {
+    func configure(post: Post, delegate: PostCellDelegate? = nil) {
         self.post = post
+        self.delegate = delegate
 
+        avatar?.kf.indicatorType = .activity
         avatar?.kf.setImage(with: post.account.avatarURL)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.date)
@@ -21,6 +28,7 @@ class PostCell: UITableViewCell {
 
         stackUpAdditionalInfo()
     }
+    weak var delegate: PostCellDelegate?
 
     init() {
         super.init(style: .default, reuseIdentifier: PostCell.identifier)
@@ -54,27 +62,28 @@ class PostCell: UITableViewCell {
 
     // MARK: - Tacks additional info at the end of the cell
     func stackUpAdditionalInfo() {
-        guard let post = self.post, let stack = verticalStack else { return }
+        guard let stack = infoStack else { return }
 
-        let rows = info(from: post)
+        emptyOut(stack)
+        addInfoLabels()
+        addLinkButtons()
+        addImageViews()
+    }
 
-        var next = 0
-        let count = rows.count
-        for view in stack.arrangedSubviews {
-            guard let label = view as? UILabel else { continue }
-            if next < count {
-                label.text = rows[next]
-                next += 1
-            } else {
-                stack.removeArrangedSubview(view)
-                view.removeFromSuperview()
-            }
+    func emptyOut(_ view: UIView) {
+        for view in view.subviews {
+            view.removeFromSuperview()
         }
-        for i in next ..< count {
-            stack.addArrangedSubview(makeAdditionalInfoLabel(text: rows[i]))
+    }
+
+
+    // MARK: - Info labels
+    func addInfoLabels() {
+        guard let post = post, let stack = infoStack else { return }
+
+        for text in info(from: post) {
+            stack.addArrangedSubview(makeAdditionalInfoLabel(text: text))
         }
-        assert(stack.arrangedSubviews.count == rows.count,
-               "stack view should have one view per info row, but \(stack.arrangedSubviews.count) in stack vs \(rows.count) expected")
     }
 
     func makeAdditionalInfoLabel(text: String) -> UILabel {
@@ -112,5 +121,113 @@ class PostCell: UITableViewCell {
         if you.muted { info.append("☠️ (you muted this)") }
         if you.cannotSee { info.append("invisible to you! 👻") }
         return info
+    }
+
+
+    // MARK: - Link buttons
+    func addLinkButtons() {
+        guard let text = content?.attributedText, let stack = infoStack else { return }
+
+        let urls = links(in: text)
+        for url in urls {
+            let button = UIButton(type: .system)
+            button.setTitle(url.absoluteString, for: .normal)
+            button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
+            objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            stack.addArrangedSubview(button)
+        }
+    }
+
+    @IBAction func linkButtonAction(sender: UIButton) {
+        guard let url = objc_getAssociatedObject(sender, &PostCell.associatedURL) as? URL else {
+            print("POSTCELL: WARNING: Failed to retrieve URL for button:", sender, "- in post with ID", post?.id as Any)
+            return
+        }
+
+        print("POSTCELL: INFO: Link button tapped for URL:", url)
+        delegate?.tapped(link: url, in: self)
+    }
+
+    func links(in text: NSAttributedString) -> [URL] {
+        var urls = [URL]()
+        text.enumerateAttribute(NSLinkAttributeName, in: NSRange(location: 0, length: text.length), options: []) { (value, range, shouldStop) in
+            // Gets called also for ranges where the attribute is nil.
+            guard let value = value else { return }
+
+            if let url = value as? URL {
+                urls.append(url)
+                return
+            } else if let string = value as? String, let url = URL(string: string) {
+                urls.append(url)
+                return
+            } else {
+                print("POSTCELL: WARNING: Failed to create URL from HREF:", value as Any, "- in post with ID", post?.id as Any)
+                return
+            }
+        }
+        return urls
+    }
+
+
+    // MARK: - Image displays
+    func addImageViews() {
+        guard let text = content?.attributedText, let stack = infoStack else { return }
+
+        let imageURLs = imageLinks(in: text)
+        for url in imageURLs {
+            let imageView = makeImageView(loading: url)
+            stack.addArrangedSubview(imageView)
+        }
+    }
+
+    func imageLinks(in text: NSAttributedString) -> [URL] {
+        var urls = [URL]()
+        text.enumerateAttribute(
+            TenCenturiesHTMLParser.imageSourceURLAttributeName,
+            in: NSRange(location: 0, length: text.length),
+            options: []) {
+                (value, range, shouldStop) in
+                guard let url = value as? URL else { return }
+
+                urls.append(url)
+        }
+        return urls
+    }
+
+    static var associatedURL = "com.jeremywsherman.Macchiato.PostCell.associatedURL"
+    @IBAction func imageTapAction(sender: UITapGestureRecognizer) {
+        guard let imageView = sender.view as? UIImageView else {
+            print("POSTCELL: ERROR: Image tapped, but gesture recognizer is not tied to an image view:", sender)
+            return
+        }
+
+        guard let url = objc_getAssociatedObject(imageView, &PostCell.associatedURL) as? URL else {
+            print("POSTCELL: ERROR: Image tapped, but no URL associated with the image view:", imageView)
+            return
+        }
+
+        print("POSTCELL: INFO: Image tapped for URL:", url)
+        delegate?.tapped(image: imageView.image, from: url, in: self)
+    }
+
+    func makeImageView(loading url: URL) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalToConstant: 300.0),
+        ])
+
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(with: url)
+        objc_setAssociatedObject(imageView, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        assert(objc_getAssociatedObject(imageView, &PostCell.associatedURL) as? URL == url, "set and get failed")
+
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapAction)))
+        imageView.isUserInteractionEnabled = true
+        imageView.isAccessibilityElement = true
+        imageView.accessibilityLabel = NSLocalizedString("Image", comment: "accessibility label")
+        imageView.accessibilityHint = NSLocalizedString("Tap to view full image", comment: "accessibility hint")
+        return imageView
     }
 }

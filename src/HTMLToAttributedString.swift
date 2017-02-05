@@ -1,32 +1,41 @@
 import UIKit
+import Kingfisher
 
+/**
+ Converts the HTML fragment into an attributed string.
+
+ Images will be displayed using their alt-text.
+ Their corresponding URLs will be set as the value of `TenCenturiesHTMLParser.imageSourceURLAttributeName` attributes.
+ */
 func makeAttributedString(fromHTML html: String) -> NSAttributedString {
-    let fixed = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
-    guard let utf8 = fixed.data(using: .utf8) else {
+    let withRootNode = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
+    guard let utf8 = withRootNode.data(using: .utf8) else {
         print("HTML: ERROR: Failed to convert string to UTF-8–encoded data: returning as-is")
         return NSAttributedString(string: html)
     }
 
-    let parser = Parser(data: utf8, from: fixed)
+    let parser = TenCenturiesHTMLParser(data: utf8, from: withRootNode)
     do {
         return try parser.parse().unwrap()
     } catch {
-        print("HTML: ERROR: Failed to parse string with error:", error, "- string:", fixed)
+        print("HTML: ERROR: Failed to parse string with error:", error, "- string:", withRootNode)
         return NSAttributedString(string: html)
     }
 }
 
 
-final class Parser: NSObject, XMLParserDelegate {
-    private let data: Data
-    private let source: String
-    init(data: Data, from source: String) {
+final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
+    public init(data: Data, from source: String) {
         self.data = data
         self.source = source
     }
 
-    private var result = NSMutableAttributedString()
-    func parse() -> Result<NSAttributedString> {
+    private let data: Data
+    private let source: String
+
+    /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`. Its value is a `URL`.
+    public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
+    public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
         parser.delegate = self
         guard parser.parse() else {
@@ -38,21 +47,33 @@ final class Parser: NSObject, XMLParserDelegate {
         return .success(result)
     }
 
-    var attributesStack = [[String: Any]]()
+    private var result = NSMutableAttributedString()
 
-    struct HTMLList {
+    typealias Attributes = [String: Any]
+    private var attributesStack = [Attributes]()
+
+    /// The attributes stack is not popped at the end of one of these elements.
+    private let elementsWithoutAttributes: Set = [
+        "br",
+        "hr",
+        "li",
+        "img",
+        ]
+
+    // MARK: - List State
+    private struct HTMLList {
         let isOrdered: Bool
         let indentLevel: Int
         var itemCount: Int
     }
-    var listStack = [HTMLList]()
-    lazy var listItemIndexFormatter: NumberFormatter = {
+    private var listStack = [HTMLList]()
+    private lazy var listItemIndexFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return formatter
     }()
 
-    var atStartOfListItem = false
+    private var atStartOfListItem = false
 
     // swiftlint:disable:next cyclomatic_complexity
     func parser(
@@ -62,25 +83,30 @@ final class Parser: NSObject, XMLParserDelegate {
         qualifiedName: String?,
         attributes: [String: String] = [:]
     ) {
+        let styled = TenCenturiesHTMLParser.self
         switch element {
         case "body":
-            attributesStack.append(Parser.paragraphAttributes)
+            attributesStack.append(styled.paragraph)
 
         case "p", "pre":
-            attributesStack.append(Parser.paragraphAttributes)
+            attributesStack.append(styled.paragraph)
             if result.length > 0 && !atStartOfListItem {
-                result.append(Parser.attributedParagraphSeparator)
+                result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
+                if element == "p" {
+                    // Block paragraph style - full blank line serves as separator.
+                    result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
+                }
             }
             atStartOfListItem = false
 
         case "hr":
-            result.append(Parser.attributedParagraphSeparator)
+            result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
 
         case "em":
-            attributesStack.append(Parser.italicAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.italicAttributes)
 
         case "strong":
-            attributesStack.append(Parser.boldAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.boldAttributes)
 
         case "code":
             attributesStack.append(codeAttributes)
@@ -99,16 +125,16 @@ final class Parser: NSObject, XMLParserDelegate {
                 switch classAttribute {
                 case "account":
                     let accountID = attributes["data-account-id"] ?? ""
-                    attributesStack.append(Parser.mentionAttributes(forAccountID: accountID))
+                    attributesStack.append(TenCenturiesHTMLParser.mentionAttributes(forAccountID: accountID))
 
                 case "hash":
                     let hashTag = attributes["data-hash"] ?? ""
-                    attributesStack.append(Parser.attributes(forHashTag: hashTag))
+                    attributesStack.append(TenCenturiesHTMLParser.attributes(forHashTag: hashTag))
 
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
                     // Append some attributes so we don't throw off our stack.
-                    attributesStack.append(Parser.paragraphAttributes)
+                    attributesStack.append(styled.paragraph)
                 }
             }
 
@@ -119,48 +145,53 @@ final class Parser: NSObject, XMLParserDelegate {
             let indentLevel = listStack.last.map({ $0.indentLevel + 1 }) ?? 1
             let webList = HTMLList(isOrdered: (element == "ol"), indentLevel: indentLevel, itemCount: 0)
             listStack.append(webList)
-            attributesStack.append(Parser.attributes(forListAtIndentLevel: indentLevel))
+            attributesStack.append(TenCenturiesHTMLParser.list(atIndentLevel: indentLevel))
 
         case "li":
             guard var webList = listStack.popLast() else { break }
             webList.itemCount += 1
             listStack.append(webList)
 
-            let separator = Parser.paragraphSeparator
+            let separator = TenCenturiesHTMLParser.paragraphSeparator
             let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
 
-            let listItem = NSMutableAttributedString(string: separator + indent, attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel))
+            let attributesForIndentation = styled.list(atIndentLevel: webList.indentLevel)
+            let listItem = NSMutableAttributedString(string: separator + indent, attributes: attributesForIndentation)
+
+            let itemLabel: NSAttributedString
             if webList.isOrdered {
                 let number = listItemIndexFormatter.string(from: NSNumber(value: webList.itemCount)) ?? String(describing: webList.itemCount)
                 let isFootnote = (attributes["class"] ?? "") == "footnote"
-                if isFootnote {
-                    listItem.append(NSAttributedString(string: number, attributes: superscriptAttributes))
-                } else {
-                    listItem.append(NSAttributedString(string: number + ". ", attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel)))
-                }
+                itemLabel = isFootnote
+                    ? NSAttributedString(string: number, attributes: superscriptAttributes)
+                    : NSAttributedString(string: number + ". ", attributes: attributesForIndentation)
             } else {
-                listItem.append(NSAttributedString(string: "• ", attributes: Parser.attributes(forListAtIndentLevel: webList.indentLevel)))
+                itemLabel = NSAttributedString(string: "• ", attributes: attributesForIndentation)
             }
+
+            listItem.append(itemLabel)
             result.append(listItem)
             atStartOfListItem = true
 
         case "img":
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
             let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
-            result.append(NSAttributedString(string: String.localizedStringWithFormat(format, altText), attributes: Parser.italicAttributes))
+            var stringAttributes = TenCenturiesHTMLParser.italicAttributes
+            if let url = imageURL(from: attributes) {
+                stringAttributes[TenCenturiesHTMLParser.imageSourceURLAttributeName] = url
+            } else {
+                print("HTML: ERROR: Failed to build URL for image with attributes:", attributes)
+            }
+            result.append(
+                NSAttributedString(
+                    string: String.localizedStringWithFormat(format, altText),
+                    attributes: stringAttributes))
 
         default:
             print("HTML: WARNING: Unknown element:", element, "- attributes:", attributes, "; treating as <P> tag")
-            attributesStack.append(Parser.paragraphAttributes)
+            attributesStack.append(styled.paragraph)
         }
     }
-
-    let elementsWithoutAttributes: Set = [
-        "br",
-        "hr",
-        "li",
-        "img",
-    ]
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
         let attributes = attributesStack.last
@@ -194,11 +225,62 @@ final class Parser: NSObject, XMLParserDelegate {
         }
     }
 
-    static var paragraphAttributes: [String: Any] {
+    func imageURL(from attributes: [String: String]) -> URL? {
+        guard let imageSource = attributes["src"] else {
+            return nil
+        }
+
+        let maybeURL: URL?
+        if let urlPossiblyLackingScheme = URL(string: imageSource) {
+            if urlPossiblyLackingScheme.scheme == nil {
+                maybeURL = URL(string: "https:" + imageSource)
+            } else {
+                maybeURL = urlPossiblyLackingScheme
+            }
+        } else {
+            maybeURL = nil
+        }
+        return maybeURL
+    }
+
+    /**
+     Returns a text attachment whose `image` will eventually be set to the image at `url`.
+
+     - NOTE: Assigning to the `image` does not trigger relayout of an attributed string containing this attachment.
+       The attachment will also be the full size of the image, which might not fit in the rendered container.
+       We might fix this in future by using a custom text attachment subclass aware of its rendering context
+       and of the un/loaded state of its image.
+     */
+    func textAttachment(for url: URL) -> NSTextAttachment {
+        let attachment = NSTextAttachment()
+        KingfisherManager.shared.retrieveImage(
+            with: url,
+            options: nil,
+            progressBlock: nil,
+            completionHandler: { (image, error, cacheType, url) in
+                if let image = image {
+                    print("HTML: DEBUG: Fetched image for", url as Any, ": image", image)
+                    attachment.image = image
+                    // (jeremy-w/2017-02-03)FIXME: This appears not to actually trigger a re-render. :(
+                    // So you have to scroll away and back to get it in cache to see it.
+                    // And then it winds up too wide anyway. Maybe needs a custom text attachment subclass
+                    // to get proper sizing.
+                } else {
+                    print("HTML: ERROR: Failed to fetch image for", url as Any, ": error", error as Any)
+                }
+            })
+        return attachment
+    }
+
+
+    // MARK: - Rich Text Attributes
+    static var paragraph: Attributes {
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
 
-    static var attributedParagraphSeparator = NSAttributedString(string: Parser.paragraphSeparator, attributes: Parser.paragraphAttributes)
+    static var attributedParagraphSeparator = NSAttributedString(
+        string: TenCenturiesHTMLParser.paragraphSeparator,
+        attributes: TenCenturiesHTMLParser.paragraph)
     static var paragraphSeparator = "\r\n"
     //swiftlint:disable line_length
     /// Line separator: See: [SO: What is the line separator character used for?](https://stackoverflow.com/questions/3072152/what-is-unicode-character-2028-ls-line-separator-used-for)
@@ -207,7 +289,7 @@ final class Parser: NSObject, XMLParserDelegate {
     var lineSeparator = "\u{2028}"
     //swiftlint:enable line_length
 
-    static var italicAttributes: [String: Any] {
+    static var italicAttributes: Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -215,7 +297,7 @@ final class Parser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    static var boldAttributes: [String: Any] {
+    static var boldAttributes: Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -223,7 +305,7 @@ final class Parser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    var codeAttributes: [String: Any] {
+    var codeAttributes: Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -238,7 +320,7 @@ final class Parser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    var superscriptAttributes: [String: Any] {
+    var superscriptAttributes: Attributes {
         #if os(macOS)
             if #available(macOS 10.10, *) {
                 return [NSSuperscriptAttributeName: 1.0]
@@ -250,31 +332,31 @@ final class Parser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font, NSBaselineOffsetAttributeName: descriptor.pointSize / 3]
     }
 
-    var strikethroughAttributes: [String: Any] {
+    var strikethroughAttributes: Attributes {
         return [NSStrikethroughStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue]
     }
 
-    func anchorAttributes(href: String?, title: String?) -> [String: Any] {
+    func anchorAttributes(href: String?, title: String?) -> Attributes {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
-        var attributes = Parser.paragraphAttributes
+        var attributes = TenCenturiesHTMLParser.paragraph
         attributes[NSLinkAttributeName] = href ?? "about:blank"
         return attributes
     }
 
-    static func mentionAttributes(forAccountID accountID: String) -> [String: Any] {
+    static func mentionAttributes(forAccountID accountID: String) -> Attributes {
         var mentionAttributes = boldAttributes
         mentionAttributes["macchiato.mention.accountID"] = accountID
         return mentionAttributes
     }
 
-    static func attributes(forHashTag hashTag: String) -> [String: Any] {
+    static func attributes(forHashTag hashTag: String) -> Attributes {
         var hashTagAttributes = italicAttributes
         hashTagAttributes["macchiato.hashTag"] = hashTag
         return hashTagAttributes
     }
 
-    static func attributes(forListAtIndentLevel indentLevel: Int) -> [String: Any] {
+    static func list(atIndentLevel indentLevel: Int) -> Attributes {
         // Could muck with indents…
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }

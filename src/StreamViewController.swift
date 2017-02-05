@@ -105,7 +105,7 @@ class StreamViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.identifier, for: indexPath) as! PostCell
         // swiftlint:disable:previous force_cast
         let post = stream.posts[indexPath.row]
-        cell.configure(post: post)
+        cell.configure(post: post, delegate: self)
         return cell
     }
 
@@ -321,9 +321,13 @@ class StreamViewController: UITableViewController {
             })
 
         case .webView:
-            let webView = SFSafariViewController(url: URL(string: "https://10centuries.org/post/\(post.id)")!)
-            present(webView, animated: true, completion: nil)
+            displayInWebView(URL(string: "https://10centuries.org/post/\(post.id)")!)
         }
+    }
+
+    func displayInWebView(_ url: URL) {
+        let webView = SFSafariViewController(url: url)
+        present(webView, animated: true, completion: nil)
     }
 
     func makePinAlert(for post: Post, at point: CGPoint) -> UIAlertController {
@@ -375,6 +379,17 @@ class StreamViewController: UITableViewController {
         case pin(at: CGPoint)
         case repost
         case webView
+    }
+}
+
+
+extension StreamViewController: PostCellDelegate {
+    func tapped(link: URL, in cell: PostCell) {
+        displayInWebView(link)
+    }
+
+    func tapped(image: UIImage?, from url: URL, in cell: PostCell) {
+        displayInWebView(url)
     }
 }
 

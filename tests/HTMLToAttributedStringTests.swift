@@ -4,7 +4,7 @@ import XCTest
 class HTMLToAttributedStringTests: XCTestCase {
     func testPlainTextSingleParagraph() {
         let html = "<p>plain text</p>"
-        let expected = NSAttributedString(string: "plain text", attributes: Parser.paragraphAttributes)
+        let expected = NSAttributedString(string: "plain text", attributes: TenCenturiesHTMLParser.paragraph)
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -13,8 +13,8 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testPlainTextTwoParagraphs() {
         let html = "<body><p>one</p><p>two</p></body>"
         let expected = NSAttributedString(string:
-            "one\r\n"
-            + "two", attributes: Parser.paragraphAttributes)
+            "one\r\n\r\n"
+            + "two", attributes: TenCenturiesHTMLParser.paragraph)
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -75,13 +75,13 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testMention() {
         let html = "<span class=\"account\" data-account-id=\"6\">@mention</span>"
-        let expected = NSAttributedString(string: "@mention", attributes: Parser.mentionAttributes(forAccountID: "6"))
+        let expected = NSAttributedString(string: "@mention", attributes: TenCenturiesHTMLParser.mentionAttributes(forAccountID: "6"))
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
     func testHashTag() {
         let html = "<span class=\"hash\" data-hash=\"noagenda\">#noagenda</span>"
-        let expected = NSAttributedString(string: "#noagenda", attributes: Parser.attributes(forHashTag: "noagenda"))
+        let expected = NSAttributedString(string: "#noagenda", attributes: TenCenturiesHTMLParser.attributes(forHashTag: "noagenda"))
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -110,14 +110,14 @@ class HTMLToAttributedStringTests: XCTestCase {
     // MARK: - Renders block content
     func testOrderedList() {
         let html = "<ol><li>1</li><li>2</li></ol>"
-        let expected = Parser.paragraphSeparator + "\t1. 1" + Parser.paragraphSeparator + "\t2. 2"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.attributes(forListAtIndentLevel: 1)))
+        let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t1. 1" + TenCenturiesHTMLParser.paragraphSeparator + "\t2. 2"
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func testUnorderedList() {
         let html = "<ul><li>A</li><li>B</li></ul>"
-        let expected = Parser.paragraphSeparator + "\t• A" + Parser.paragraphSeparator + "\t• B"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.attributes(forListAtIndentLevel: 1)))
+        let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• A" + TenCenturiesHTMLParser.paragraphSeparator + "\t• B"
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func SKIPPED_testNestedLists() {
@@ -148,32 +148,36 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testAvoidsDoubleLinebreakDueToParagraphWithinListItem() {
         let html = "<ul><li><p>Single indent.</p></li></ul>"
-        let expected = Parser.paragraphSeparator + "\t• Single indent."
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.attributes(forListAtIndentLevel: 1)))
+        let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• Single indent."
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func testPreFormattedText() {
         let html = "<pre>this is    preformatted text</pre>"
         let expected = "this is    preformatted text"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.paragraphAttributes))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
 
     // MARK: - Renders decorations
     func testHorizontalRule() {
-        // Think I'll just use an asterism in its own paragraph: ⁂
         let html = "<hr />"
-        let expected = Parser.paragraphSeparator
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: Parser.paragraphAttributes))
+        let expected = TenCenturiesHTMLParser.paragraphSeparator
+        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
-    func testImageFormatsAsBracketedImageColonAndAltTextInItalics() {
+    func testImageFormatsAsBracketedImageColonAndAltTextInItalicsWithURLInAttributes() {
         // Uses the NSAttachmentCharacter U+FFFC aka the replacement character (question mark in a diamond, often) as the text, and then injects the image using the attributes.
         // See: https://developer.apple.com/reference/uikit/nstextattachment#
         // But for now, I think I'll just show the ALT text. We'll have to sort out how to update these as the images arrive…
-        let html = "<img src=\"unused\" alt=\"an image\" />"
+        let html = "<img src=\"//example.com\" alt=\"an image\" />"
+
         let expectedHTML = "<em>[Image: an image]</em>"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), makeAttributedString(fromHTML: expectedHTML))
+        let renderedString = makeAttributedString(fromHTML: expectedHTML).mutableCopy() as! NSMutableAttributedString
+        renderedString.addAttributes(
+            [TenCenturiesHTMLParser.imageSourceURLAttributeName: URL(string: "https://example.com")!],
+            range: NSRange(location: 0, length: renderedString.length))
+        XCTAssertEqual(makeAttributedString(fromHTML: html), renderedString)
     }
 
     func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {
