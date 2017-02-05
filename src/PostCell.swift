@@ -133,6 +133,8 @@ class PostCell: UITableViewCell {
             button.setTitle(url.absoluteString, for: .normal)
             button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
             objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            button.accessibilityTraits &= ~UIAccessibilityTraitButton
+            button.accessibilityTraits |= UIAccessibilityTraitLink
             stack.addArrangedSubview(button)
         }
     }
@@ -224,9 +226,11 @@ class PostCell: UITableViewCell {
 
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapAction)))
         imageView.isUserInteractionEnabled = true
+
         imageView.isAccessibilityElement = true
         imageView.accessibilityLabel = NSLocalizedString("Image", comment: "accessibility label")
         imageView.accessibilityHint = NSLocalizedString("Tap to view full image", comment: "accessibility hint")
+        imageView.accessibilityTraits |= UIAccessibilityTraitLink
         return imageView
     }
 }
