@@ -1,6 +1,12 @@
 import UIKit
 import Kingfisher
 
+/**
+ Converts the HTML fragment into an attributed string.
+
+ Images will be displayed using their alt-text.
+ Their corresponding URLs will be set as the value of `TenCenturiesHTMLParser.imageSourceURLAttributeName` attributes.
+ */
 func makeAttributedString(fromHTML html: String) -> NSAttributedString {
     let withRootNode = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
     guard let utf8 = withRootNode.data(using: .utf8) else {
@@ -19,15 +25,17 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
 
 
 final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
-    private let data: Data
-    private let source: String
-    init(data: Data, from source: String) {
+    public init(data: Data, from source: String) {
         self.data = data
         self.source = source
     }
 
-    private var result = NSMutableAttributedString()
-    func parse() -> Result<NSAttributedString> {
+    private let data: Data
+    private let source: String
+
+    /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`. Its value is a `URL`.
+    public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
+    public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
         parser.delegate = self
         guard parser.parse() else {
@@ -39,22 +47,33 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return .success(result)
     }
 
-    typealias Attributes = [String: Any]
-    var attributesStack = [Attributes]()
+    private var result = NSMutableAttributedString()
 
-    struct HTMLList {
+    typealias Attributes = [String: Any]
+    private var attributesStack = [Attributes]()
+
+    /// The attributes stack is not popped at the end of one of these elements.
+    private let elementsWithoutAttributes: Set = [
+        "br",
+        "hr",
+        "li",
+        "img",
+        ]
+
+    // MARK: - List State
+    private struct HTMLList {
         let isOrdered: Bool
         let indentLevel: Int
         var itemCount: Int
     }
-    var listStack = [HTMLList]()
-    lazy var listItemIndexFormatter: NumberFormatter = {
+    private var listStack = [HTMLList]()
+    private lazy var listItemIndexFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return formatter
     }()
 
-    var atStartOfListItem = false
+    private var atStartOfListItem = false
 
     // swiftlint:disable:next cyclomatic_complexity
     func parser(
@@ -174,14 +193,6 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         }
     }
 
-    /// The attributes stack is not popped at the end of one of these elements.
-    let elementsWithoutAttributes: Set = [
-        "br",
-        "hr",
-        "li",
-        "img",
-    ]
-
     func parser(_ parser: XMLParser, foundCharacters string: String) {
         let attributes = attributesStack.last
         if attributes == nil {
@@ -263,7 +274,6 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
 
     // MARK: - Rich Text Attributes
-    static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
     static var paragraph: Attributes {
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
