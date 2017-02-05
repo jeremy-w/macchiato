@@ -4,9 +4,6 @@ import Kingfisher
 protocol PostCellDelegate: class {
     func tapped(link: URL, in cell: PostCell)
     func tapped(image: UIImage?, from url: URL, in cell: PostCell)
-
-    func willChangeHeight(of cell: PostCell)
-    func didChangeHeight(of cell: PostCell)
 }
 
 class PostCell: UITableViewCell {
@@ -136,19 +133,18 @@ class PostCell: UITableViewCell {
             let button = UIButton(type: .system)
             button.setTitle(url.absoluteString, for: .normal)
             button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
+            objc_setAssociatedObject(button, associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             stack.addArrangedSubview(button)
         }
     }
 
     @IBAction func linkButtonAction(sender: UIButton) {
-        guard let absoluteString = sender.title(for: .normal)
-        , let url = URL(string: absoluteString) else {
-            print("POSTCELL: WARNING: Failed to recreate URL for button:", sender, "- in post with ID", post?.id as Any)
+        guard let url = objc_getAssociatedObject(sender, associatedURL) as? URL else {
+            print("POSTCELL: WARNING: Failed to retrieve URL for button:", sender, "- in post with ID", post?.id as Any)
             return
         }
 
-        // (jeremy-w/2017-02-04)TODO: Shoot the URL over to a delegate.
-        print("POSTCELL: DEBUG: You tapped on URL:", url)
+        print("POSTCELL: INFO: Link button tapped for URL:", url)
         delegate?.tapped(link: url, in: self)
     }
 
@@ -181,8 +177,6 @@ class PostCell: UITableViewCell {
         for url in imageURLs {
             let imageView = makeImageView(loading: url)
             stack.addArrangedSubview(imageView)
-
-            imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapAction)))
         }
     }
 
@@ -200,21 +194,40 @@ class PostCell: UITableViewCell {
         return urls
     }
 
-    @IBAction func imageTapAction(sender: UIImageView) {
-        guard let url = sender.kf.webURL else { return }
+    let associatedURL = "com.jeremywsherman.Macchiato.PostCell.associatedURL"
+    @IBAction func imageTapAction(sender: UITapGestureRecognizer) {
+        guard let imageView = sender.view as? UIImageView else {
+            print("POSTCELL: ERROR: Image tapped, but gesture recognizer is not tied to an image view:", sender)
+            return
+        }
 
-        delegate?.tapped(image: sender.image, from: url, in: self)
+        guard let url = objc_getAssociatedObject(imageView, associatedURL) as? URL else {
+            print("POSTCELL: ERROR: Image tapped, but no URL associated with the image view:", imageView)
+            return
+        }
+
+        print("POSTCELL: INFO: Image tapped for URL:", url)
+        delegate?.tapped(image: imageView.image, from: url, in: self)
     }
 
     func makeImageView(loading url: URL) -> UIImageView {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
-        imageView.kf.indicatorType = .activity
-        imageView.kf.setImage(with: url)
         NSLayoutConstraint.activate([
             imageView.heightAnchor.constraint(equalToConstant: 300.0),
         ])
+
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(with: url)
+        objc_setAssociatedObject(imageView, associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        assert(objc_getAssociatedObject(imageView, associatedURL) as? URL == url, "set and get failed")
+
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapAction)))
+        imageView.isUserInteractionEnabled = true
+        imageView.isAccessibilityElement = true
+        imageView.accessibilityLabel = NSLocalizedString("Image", comment: "accessibility label")
+        imageView.accessibilityHint = NSLocalizedString("Tap to view full image", comment: "accessibility hint")
         return imageView
     }
 }
