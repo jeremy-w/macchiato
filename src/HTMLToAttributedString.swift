@@ -301,8 +301,15 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyItalicAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
-        let font = UIFont.italicSystemFont(ofSize: descriptor.pointSize)
+        let font = { () -> UIFont in
+            let current = (attributes[NSFontAttributeName] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+            let traitsWithItalicToggled = current.fontDescriptor.symbolicTraits.symmetricDifference(.traitItalic)
+            guard let descriptor = current.fontDescriptor.withSymbolicTraits(traitsWithItalicToggled) else {
+                print("HTML: ERROR: Failed to build font descriptor with italic toggled: falling back on just-italics.")
+                return UIFont.italicSystemFont(ofSize: current.pointSize)
+            }
+            return UIFont(descriptor: descriptor, size: current.pointSize)
+        }()
         return [NSFontAttributeName: font]
     }
 

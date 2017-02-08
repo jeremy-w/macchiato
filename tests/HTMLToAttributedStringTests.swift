@@ -115,6 +115,12 @@ class HTMLToAttributedStringTests: XCTestCase {
         assertSymbolicTraits(.traitItalic, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
+    func TODO_testBoldItalicIsSameAsItalicBold() {
+        XCTAssertEqual(
+            makeAttributedString(fromHTML: "<strong><em>bi</em></strong>"),
+            makeAttributedString(fromHTML: "<em><strong>bi</strong></em>"))
+    }
+
     func TODO_testHyperlinkedImage() {
         let html = "<a href=\"https://example.com/\"><img src=\"https://example.com/favicon.ico\" alt=\"alt text\" /></a>"
         let result = makeAttributedString(fromHTML: html)
