@@ -118,7 +118,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             attributesStack.append(TenCenturiesHTMLParser.applyCodeAttributes(to: currentAttributes))
 
         case "sup":
-            attributesStack.append(superscriptAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applySuperscriptAttributes(to: currentAttributes))
 
         case "strike":
             attributesStack.append(TenCenturiesHTMLParser.applyStrikethroughAttributes(to: currentAttributes))
@@ -173,7 +173,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
                 let number = listItemIndexFormatter.string(from: NSNumber(value: webList.itemCount)) ?? String(describing: webList.itemCount)
                 let isFootnote = (attributes["class"] ?? "") == "footnote"
                 itemLabel = isFootnote
-                    ? NSAttributedString(string: number, attributes: superscriptAttributes)
+                    ? NSAttributedString(string: number, attributes: TenCenturiesHTMLParser.applySuperscriptAttributes(to: currentAttributes))
                     : NSAttributedString(string: number + ". ", attributes: attributesForIndentation)
             } else {
                 itemLabel = NSAttributedString(string: "• ", attributes: attributesForIndentation)
@@ -345,20 +345,26 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    var superscriptAttributes: Attributes {
+    static func applySuperscriptAttributes(to attributes: Attributes) -> Attributes {
+        var superscripted = attributes
         #if os(macOS)
             if #available(macOS 10.10, *) {
-                return [NSSuperscriptAttributeName: 1.0]
+                superscripted[NSSuperscriptAttributeName] = 1.0
             }
+        #else
+            let current = (attributes[NSFontAttributeName] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+            let descriptor = current.fontDescriptor
+            let font = UIFont(descriptor: descriptor, size: descriptor.pointSize / 2)
+            superscripted[NSFontAttributeName] = font
+            superscripted[NSBaselineOffsetAttributeName] = descriptor.pointSize / 3
         #endif
-
-        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
-        let font = UIFont(descriptor: descriptor, size: descriptor.pointSize / 2)
-        return [NSFontAttributeName: font, NSBaselineOffsetAttributeName: descriptor.pointSize / 3]
+        return superscripted
     }
 
     static func applyStrikethroughAttributes(to attributes: Attributes) -> Attributes {
-        return [NSStrikethroughStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue]
+        var strikethroughAttributes = attributes
+        strikethroughAttributes[NSStrikethroughStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+        return strikethroughAttributes
     }
 
     static func applyAnchorAttributes(href: String?, title: String?, to attributes: Attributes) -> Attributes {
