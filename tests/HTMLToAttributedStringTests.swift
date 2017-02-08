@@ -127,10 +127,10 @@ class HTMLToAttributedStringTests: XCTestCase {
         assertSymbolicTraits(.traitMonoSpace, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
-    func TODO_testHyperlinkedImage() {
+    func testHyperlinkedImage() {
         let html = "<a href=\"https://example.com/\"><img src=\"https://example.com/favicon.ico\" alt=\"alt text\" /></a>"
         let result = makeAttributedString(fromHTML: html)
-        XCTAssertNotNil(result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil), "should have link")
+        XCTAssertNotNil(result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil), "should have link attribute in: \(result)")
 
         let string = result.string
         XCTAssertTrue(string.hasPrefix("["), "should start with [: \(string)")

@@ -185,7 +185,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
         case "img":
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
-            let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
+            let format = NSLocalizedString("[Image: %@]", comment: "%@ is the alt attribute text from the img tag")
             var stringAttributes = TenCenturiesHTMLParser.applyItalicAttributes(to: currentAttributes)
             if let url = imageURL(from: attributes) {
                 stringAttributes[TenCenturiesHTMLParser.imageSourceURLAttributeName] = url
@@ -304,7 +304,9 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         let current = attributes[NSFontAttributeName] as? UIFont
         let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
         let font = toggle(.traitItalic, of: current) ?? UIFont.italicSystemFont(ofSize: pointSize)
-        return [NSFontAttributeName: font]
+        var italicized = attributes
+        italicized[NSFontAttributeName] = font
+        return italicized
     }
 
     static func toggle(_ trait: UIFontDescriptorSymbolicTraits, of font: UIFont?) -> UIFont? {
@@ -327,7 +329,9 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         let current = attributes[NSFontAttributeName] as? UIFont
         let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
         let font = toggle(.traitBold, of: current) ?? UIFont.boldSystemFont(ofSize: pointSize)
-        return [NSFontAttributeName: font]
+        var bolded = attributes
+        bolded[NSFontAttributeName] = font
+        return bolded
     }
 
     static func applyCodeAttributes(to attributes: Attributes) -> Attributes {
