@@ -65,12 +65,3 @@ custom_rules:
         # This isn't a perfect check, but it should guide folks the right
         # direction for common cases.
         regex: "[^)](TODO|FIXME|XXX|HACK|!{3}|[?]{3}):"
-    enum_case:
-        severity: error
-        message: >
-            Enum cases should have lowercase names, like `case foo`,
-            **not** ~~`case Foo`~~.
-        # Really want to match only in enum decls, otherwise, we risk
-        # switch foo { case Bar.blah: break } tripping.
-        # The "no dots" bit at the end filters that out.
-        regex: "case [A-Z][^.]*"
