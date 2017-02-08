@@ -35,6 +35,12 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
     /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`. Its value is a `URL`.
     public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
+
+    /// Mentions like `@name` have this applied. The ID is a numeric account ID.
+    public static let accountIDAttributeName = "com.jeremywsherman.Macchiato.mention.accountID"
+
+    public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.hashtag"
+
     public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
         parser.delegate = self
@@ -103,33 +109,37 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
 
         case "em":
-            attributesStack.append(TenCenturiesHTMLParser.italicAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyItalicAttributes(to: currentAttributes))
 
         case "strong":
-            attributesStack.append(TenCenturiesHTMLParser.boldAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyBoldAttributes(to: currentAttributes))
 
         case "code":
-            attributesStack.append(codeAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyCodeAttributes(to: currentAttributes))
 
         case "sup":
             attributesStack.append(superscriptAttributes)
 
         case "strike":
-            attributesStack.append(strikethroughAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyStrikethroughAttributes(to: currentAttributes))
 
         case "a":
-            attributesStack.append(anchorAttributes(href: attributes["href"], title: attributes["title"]))
+            attributesStack.append(
+                TenCenturiesHTMLParser.applyAnchorAttributes(
+                    href: attributes["href"],
+                    title: attributes["title"],
+                    to: currentAttributes))
 
         case "span":
             if let classAttribute = attributes["class"] {
                 switch classAttribute {
                 case "account":
                     let accountID = attributes["data-account-id"] ?? ""
-                    attributesStack.append(TenCenturiesHTMLParser.mentionAttributes(forAccountID: accountID))
+                    attributesStack.append(TenCenturiesHTMLParser.applyMentionAttributes(forAccountID: accountID, to: currentAttributes))
 
                 case "hash":
-                    let hashTag = attributes["data-hash"] ?? ""
-                    attributesStack.append(TenCenturiesHTMLParser.attributes(forHashTag: hashTag))
+                    let hashtag = attributes["data-hash"] ?? ""
+                    attributesStack.append(TenCenturiesHTMLParser.applyAttributes(forHashtag: hashtag, to: currentAttributes))
 
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
@@ -176,7 +186,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         case "img":
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
             let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
-            var stringAttributes = TenCenturiesHTMLParser.italicAttributes
+            var stringAttributes = TenCenturiesHTMLParser.applyItalicAttributes(to: currentAttributes)
             if let url = imageURL(from: attributes) {
                 stringAttributes[TenCenturiesHTMLParser.imageSourceURLAttributeName] = url
             } else {
@@ -194,12 +204,11 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        let attributes = attributesStack.last
-        if attributes == nil {
-            print("HTML: ERROR: Found characters prior to any node:", string)
-        }
+        result.append(NSAttributedString(string: string, attributes: currentAttributes))
+    }
 
-        result.append(NSAttributedString(string: string, attributes: attributes ?? [:]))
+    var currentAttributes: Attributes {
+        return attributesStack.last ?? [:]
     }
 
     func parser(
@@ -289,7 +298,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     var lineSeparator = "\u{2028}"
     //swiftlint:enable line_length
 
-    static var italicAttributes: Attributes {
+    static func applyItalicAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -297,7 +306,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    static var boldAttributes: Attributes {
+    static func applyBoldAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -305,7 +314,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font]
     }
 
-    var codeAttributes: Attributes {
+    static func applyCodeAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
         let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
@@ -332,28 +341,28 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: font, NSBaselineOffsetAttributeName: descriptor.pointSize / 3]
     }
 
-    var strikethroughAttributes: Attributes {
+    static func applyStrikethroughAttributes(to attributes: Attributes) -> Attributes {
         return [NSStrikethroughStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue]
     }
 
-    func anchorAttributes(href: String?, title: String?) -> Attributes {
+    static func applyAnchorAttributes(href: String?, title: String?, to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
-        var attributes = TenCenturiesHTMLParser.paragraph
-        attributes[NSLinkAttributeName] = href ?? "about:blank"
-        return attributes
+        var anchorAttributes = attributes
+        anchorAttributes[NSLinkAttributeName] = href ?? "about:blank"
+        return anchorAttributes
     }
 
-    static func mentionAttributes(forAccountID accountID: String) -> Attributes {
-        var mentionAttributes = boldAttributes
-        mentionAttributes["macchiato.mention.accountID"] = accountID
+    static func applyMentionAttributes(forAccountID accountID: String, to attributes: Attributes) -> Attributes {
+        var mentionAttributes = applyBoldAttributes(to: attributes)
+        mentionAttributes[accountIDAttributeName] = accountID
         return mentionAttributes
     }
 
-    static func attributes(forHashTag hashTag: String) -> Attributes {
-        var hashTagAttributes = italicAttributes
-        hashTagAttributes["macchiato.hashTag"] = hashTag
-        return hashTagAttributes
+    static func applyAttributes(forHashtag hashtag: String, to attributes: Attributes) -> Attributes {
+        var hashtagAttributes = applyItalicAttributes(to: attributes)
+        hashtagAttributes[hashtagAttributeName] = hashtag
+        return hashtagAttributes
     }
 
     static func list(atIndentLevel indentLevel: Int) -> Attributes {
