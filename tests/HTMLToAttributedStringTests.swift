@@ -121,9 +121,10 @@ class HTMLToAttributedStringTests: XCTestCase {
             makeAttributedString(fromHTML: "<em><strong>bi</strong></em>"))
     }
 
-    func TODO_testBoldCode() {
+    func testBoldCode() {
         let result = makeAttributedString(fromHTML: "<strong><code>tt</code></strong>")
         assertSymbolicTraits(.traitBold, foundInFontDescriptorAtIndex: 0, of: result)
+        assertSymbolicTraits(.traitMonoSpace, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func TODO_testHyperlinkedImage() {

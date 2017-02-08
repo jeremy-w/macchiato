@@ -333,16 +333,55 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyCodeAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
-        guard let codeDescriptor = descriptor.withSymbolicTraits(.traitMonoSpace) else {
-            print("HTML: ERROR: Unable to create font descriptor with symbolic trait MonoSpace based on descriptor:",
-                  descriptor, "- defaulting to Menlo")
-            let menlo = UIFontDescriptor(name: "Menlo-Regular", size: descriptor.pointSize)
-            return [NSFontAttributeName: UIFont(descriptor: menlo, size: menlo.pointSize)]
+        let current = (attributes[NSFontAttributeName] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+        let font = makeMonospaceByHookOrByCrook(current)
+        var codified = attributes
+        codified[NSFontAttributeName] = font
+        return codified
+    }
+
+    static func makeMonospaceByHookOrByCrook(_ current: UIFont) -> UIFont {
+        let descriptor = current.fontDescriptor
+        if let monospaceDescriptor = descriptor.withSymbolicTraits(.traitMonoSpace) {
+            let font = UIFont(descriptor: monospaceDescriptor, size: monospaceDescriptor.pointSize)
+            return font
         }
 
-        let font = UIFont(descriptor: codeDescriptor, size: codeDescriptor.pointSize)
-        return [NSFontAttributeName: font]
+        // Noticed in testing that, whenever I saw: NSCTFontUIUsageAttribute: UICTFontTextStyleBody,
+        // it'd spit back .SFUIText as the font no matter what, even when I set an explicit name.
+        //
+        // So, I tried canceling it out, but that only fixed the case of regular text,
+        // because the descriptor for bold (.SFUIText-Semibold font name) relied on
+        // NSCTFontUIUsageAttribute = UICTFontTextStyleEmphasizedBody.
+        //
+        // I leave this attempt here against my trying to be clever in future.
+        let menloDescriptor = descriptor.withFamily("Menlo")//.addingAttributes(["NSCTFontUIUsageAttribute": NSNull()])
+        let font = UIFont(descriptor: menloDescriptor, size: menloDescriptor.pointSize)
+        if font.fontDescriptor.symbolicTraits.contains(.traitMonoSpace) {
+            return font
+        }
+
+        let isBold = descriptor.symbolicTraits.contains(.traitBold)
+        let isItalic = descriptor.symbolicTraits.contains(.traitItalic)
+        let name: String
+        switch (isBold, isItalic) {
+        case (true, true):
+            name = "Menlo-BoldItalic"
+
+        case (true, false):
+            name = "Menlo-Bold"
+
+        case (false, true):
+            name = "Menlo-Italic"
+
+        case (false, false):
+            name = "Menlo-Regular"
+        }
+        guard let menlo = UIFont(name: name, size: descriptor.pointSize) else {
+            print("HTML: ERROR: Failed to get font named", name, "of size", descriptor.pointSize, "- falling back to:", current.fontDescriptor)
+            return current
+        }
+        return menlo
     }
 
     static func applySuperscriptAttributes(to attributes: Attributes) -> Attributes {
