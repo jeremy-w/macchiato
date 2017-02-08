@@ -138,11 +138,16 @@ class PostCell: UITableViewCell {
         let urls = links(in: text)
         for url in urls {
             let button = UIButton(type: .system)
+
             button.setTitle(url.absoluteString, for: .normal)
+            button.titleLabel?.textAlignment = .natural
+
             button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
             objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+
             button.accessibilityTraits &= ~UIAccessibilityTraitButton
             button.accessibilityTraits |= UIAccessibilityTraitLink
+
             stack.addArrangedSubview(button)
         }
     }
