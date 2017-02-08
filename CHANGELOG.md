@@ -3,6 +3,13 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (7) - 2017-02-08
+Fixed:
+
+- Load images with non-HTTPS source URLs. These were showing up as a blank square beneath the post before. [#61]
+- Render "stacked" styles, like bold-italics. Before, only the "topmost" style was applied, so bold-italics would be just italics, and italic-bold would be just bold. [#56]
+
+
 ### 1.0 (6) - 2017-02-05
 New:
 
