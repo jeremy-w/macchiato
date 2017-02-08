@@ -35,6 +35,12 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
     /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`. Its value is a `URL`.
     public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
+
+    /// Mentions like `@name` have this applied. The ID is a numeric account ID.
+    public static let accountIDAttributeName = "com.jeremywsherman.Macchiato.mention.accountID"
+
+    public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.hashtag"
+
     public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
         parser.delegate = self
@@ -103,33 +109,37 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
 
         case "em":
-            attributesStack.append(TenCenturiesHTMLParser.italicAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyItalicAttributes(to: currentAttributes))
 
         case "strong":
-            attributesStack.append(TenCenturiesHTMLParser.boldAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyBoldAttributes(to: currentAttributes))
 
         case "code":
-            attributesStack.append(codeAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyCodeAttributes(to: currentAttributes))
 
         case "sup":
-            attributesStack.append(superscriptAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applySuperscriptAttributes(to: currentAttributes))
 
         case "strike":
-            attributesStack.append(strikethroughAttributes)
+            attributesStack.append(TenCenturiesHTMLParser.applyStrikethroughAttributes(to: currentAttributes))
 
         case "a":
-            attributesStack.append(anchorAttributes(href: attributes["href"], title: attributes["title"]))
+            attributesStack.append(
+                TenCenturiesHTMLParser.applyAnchorAttributes(
+                    href: attributes["href"],
+                    title: attributes["title"],
+                    to: currentAttributes))
 
         case "span":
             if let classAttribute = attributes["class"] {
                 switch classAttribute {
                 case "account":
                     let accountID = attributes["data-account-id"] ?? ""
-                    attributesStack.append(TenCenturiesHTMLParser.mentionAttributes(forAccountID: accountID))
+                    attributesStack.append(TenCenturiesHTMLParser.applyMentionAttributes(forAccountID: accountID, to: currentAttributes))
 
                 case "hash":
-                    let hashTag = attributes["data-hash"] ?? ""
-                    attributesStack.append(TenCenturiesHTMLParser.attributes(forHashTag: hashTag))
+                    let hashtag = attributes["data-hash"] ?? ""
+                    attributesStack.append(TenCenturiesHTMLParser.applyAttributes(forHashtag: hashtag, to: currentAttributes))
 
                 default:
                     print("HTML: WARNING: Unknown <span> class encountered:", classAttribute, "- all attributes:", attributes)
@@ -163,7 +173,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
                 let number = listItemIndexFormatter.string(from: NSNumber(value: webList.itemCount)) ?? String(describing: webList.itemCount)
                 let isFootnote = (attributes["class"] ?? "") == "footnote"
                 itemLabel = isFootnote
-                    ? NSAttributedString(string: number, attributes: superscriptAttributes)
+                    ? NSAttributedString(string: number, attributes: TenCenturiesHTMLParser.applySuperscriptAttributes(to: currentAttributes))
                     : NSAttributedString(string: number + ". ", attributes: attributesForIndentation)
             } else {
                 itemLabel = NSAttributedString(string: "• ", attributes: attributesForIndentation)
@@ -175,8 +185,8 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
         case "img":
             let altText = attributes["alt"] ?? NSLocalizedString("«no alt text given»", comment: "image text")
-            let format = NSLocalizedString("[Image: %@]", comment: "%@ is alt text")
-            var stringAttributes = TenCenturiesHTMLParser.italicAttributes
+            let format = NSLocalizedString("[Image: %@]", comment: "%@ is the alt attribute text from the img tag")
+            var stringAttributes = TenCenturiesHTMLParser.applyItalicAttributes(to: currentAttributes)
             if let url = imageURL(from: attributes) {
                 stringAttributes[TenCenturiesHTMLParser.imageSourceURLAttributeName] = url
             } else {
@@ -194,12 +204,11 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        let attributes = attributesStack.last
-        if attributes == nil {
-            print("HTML: ERROR: Found characters prior to any node:", string)
-        }
+        result.append(NSAttributedString(string: string, attributes: currentAttributes))
+    }
 
-        result.append(NSAttributedString(string: string, attributes: attributes ?? [:]))
+    var currentAttributes: Attributes {
+        return attributesStack.last ?? [:]
     }
 
     func parser(
@@ -289,71 +298,136 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     var lineSeparator = "\u{2028}"
     //swiftlint:enable line_length
 
-    static var italicAttributes: Attributes {
+    static func applyItalicAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
-        let font = UIFont.italicSystemFont(ofSize: descriptor.pointSize)
-        return [NSFontAttributeName: font]
+        let current = attributes[NSFontAttributeName] as? UIFont
+        let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
+        let font = toggle(.traitItalic, of: current) ?? UIFont.italicSystemFont(ofSize: pointSize)
+        var italicized = attributes
+        italicized[NSFontAttributeName] = font
+        return italicized
     }
 
-    static var boldAttributes: Attributes {
-        // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
-        // and use that instead of .body as the text style.
-        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
-        let font = UIFont.boldSystemFont(ofSize: descriptor.pointSize)
-        return [NSFontAttributeName: font]
-    }
-
-    var codeAttributes: Attributes {
-        // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
-        // and use that instead of .body as the text style.
-        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
-        guard let codeDescriptor = descriptor.withSymbolicTraits(.traitMonoSpace) else {
-            print("HTML: ERROR: Unable to create font descriptor with symbolic trait MonoSpace based on descriptor:",
-                  descriptor, "- defaulting to Menlo")
-            let menlo = UIFontDescriptor(name: "Menlo-Regular", size: descriptor.pointSize)
-            return [NSFontAttributeName: UIFont(descriptor: menlo, size: menlo.pointSize)]
+    static func toggle(_ trait: UIFontDescriptorSymbolicTraits, of font: UIFont?) -> UIFont? {
+        guard let current = font else {
+            return nil
         }
 
-        let font = UIFont(descriptor: codeDescriptor, size: codeDescriptor.pointSize)
-        return [NSFontAttributeName: font]
+        let traitsWithTraitToggled = current.fontDescriptor.symbolicTraits.symmetricDifference(trait)
+        guard let descriptor = current.fontDescriptor.withSymbolicTraits(traitsWithTraitToggled) else {
+            print("HTML: ERROR: Failed to build font descriptor with trait", trait, "toggled in descriptor:", current.fontDescriptor)
+            return nil
+        }
+
+        return UIFont(descriptor: descriptor, size: current.pointSize)
     }
 
-    var superscriptAttributes: Attributes {
+    static func applyBoldAttributes(to attributes: Attributes) -> Attributes {
+        // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
+        // and use that instead of .body as the text style.
+        let current = attributes[NSFontAttributeName] as? UIFont
+        let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
+        let font = toggle(.traitBold, of: current) ?? UIFont.boldSystemFont(ofSize: pointSize)
+        var bolded = attributes
+        bolded[NSFontAttributeName] = font
+        return bolded
+    }
+
+    static func applyCodeAttributes(to attributes: Attributes) -> Attributes {
+        // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
+        // and use that instead of .body as the text style.
+        let current = (attributes[NSFontAttributeName] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+        let font = makeMonospaceByHookOrByCrook(current)
+        var codified = attributes
+        codified[NSFontAttributeName] = font
+        return codified
+    }
+
+    static func makeMonospaceByHookOrByCrook(_ current: UIFont) -> UIFont {
+        let descriptor = current.fontDescriptor
+        if let monospaceDescriptor = descriptor.withSymbolicTraits(.traitMonoSpace) {
+            let font = UIFont(descriptor: monospaceDescriptor, size: monospaceDescriptor.pointSize)
+            return font
+        }
+
+        // Noticed in testing that, whenever I saw: NSCTFontUIUsageAttribute: UICTFontTextStyleBody,
+        // it'd spit back .SFUIText as the font no matter what, even when I set an explicit name.
+        //
+        // So, I tried canceling it out, but that only fixed the case of regular text,
+        // because the descriptor for bold (.SFUIText-Semibold font name) relied on
+        // NSCTFontUIUsageAttribute = UICTFontTextStyleEmphasizedBody.
+        //
+        // I leave this attempt here against my trying to be clever in future.
+        let menloDescriptor = descriptor.withFamily("Menlo")//.addingAttributes(["NSCTFontUIUsageAttribute": NSNull()])
+        let font = UIFont(descriptor: menloDescriptor, size: menloDescriptor.pointSize)
+        if font.fontDescriptor.symbolicTraits.contains(.traitMonoSpace) {
+            return font
+        }
+
+        let isBold = descriptor.symbolicTraits.contains(.traitBold)
+        let isItalic = descriptor.symbolicTraits.contains(.traitItalic)
+        let name: String
+        switch (isBold, isItalic) {
+        case (true, true):
+            name = "Menlo-BoldItalic"
+
+        case (true, false):
+            name = "Menlo-Bold"
+
+        case (false, true):
+            name = "Menlo-Italic"
+
+        case (false, false):
+            name = "Menlo-Regular"
+        }
+        guard let menlo = UIFont(name: name, size: descriptor.pointSize) else {
+            print("HTML: ERROR: Failed to get font named", name, "of size", descriptor.pointSize, "- falling back to:", current.fontDescriptor)
+            return current
+        }
+        return menlo
+    }
+
+    static func applySuperscriptAttributes(to attributes: Attributes) -> Attributes {
+        var superscripted = attributes
         #if os(macOS)
             if #available(macOS 10.10, *) {
-                return [NSSuperscriptAttributeName: 1.0]
+                superscripted[NSSuperscriptAttributeName] = 1.0
             }
+        #else
+            let current = (attributes[NSFontAttributeName] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+            let descriptor = current.fontDescriptor
+            let font = UIFont(descriptor: descriptor, size: descriptor.pointSize / 2)
+            superscripted[NSFontAttributeName] = font
+            superscripted[NSBaselineOffsetAttributeName] = descriptor.pointSize / 3
         #endif
-
-        let descriptor = UIFont.preferredFont(forTextStyle: .body).fontDescriptor
-        let font = UIFont(descriptor: descriptor, size: descriptor.pointSize / 2)
-        return [NSFontAttributeName: font, NSBaselineOffsetAttributeName: descriptor.pointSize / 3]
+        return superscripted
     }
 
-    var strikethroughAttributes: Attributes {
-        return [NSStrikethroughStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue]
+    static func applyStrikethroughAttributes(to attributes: Attributes) -> Attributes {
+        var strikethroughAttributes = attributes
+        strikethroughAttributes[NSStrikethroughStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+        return strikethroughAttributes
     }
 
-    func anchorAttributes(href: String?, title: String?) -> Attributes {
+    static func applyAnchorAttributes(href: String?, title: String?, to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
-        var attributes = TenCenturiesHTMLParser.paragraph
-        attributes[NSLinkAttributeName] = href ?? "about:blank"
-        return attributes
+        var anchorAttributes = attributes
+        anchorAttributes[NSLinkAttributeName] = href ?? "about:blank"
+        return anchorAttributes
     }
 
-    static func mentionAttributes(forAccountID accountID: String) -> Attributes {
-        var mentionAttributes = boldAttributes
-        mentionAttributes["macchiato.mention.accountID"] = accountID
+    static func applyMentionAttributes(forAccountID accountID: String, to attributes: Attributes) -> Attributes {
+        var mentionAttributes = applyBoldAttributes(to: attributes)
+        mentionAttributes[accountIDAttributeName] = accountID
         return mentionAttributes
     }
 
-    static func attributes(forHashTag hashTag: String) -> Attributes {
-        var hashTagAttributes = italicAttributes
-        hashTagAttributes["macchiato.hashTag"] = hashTag
-        return hashTagAttributes
+    static func applyAttributes(forHashtag hashtag: String, to attributes: Attributes) -> Attributes {
+        var hashtagAttributes = applyItalicAttributes(to: attributes)
+        hashtagAttributes[hashtagAttributeName] = hashtag
+        return hashtagAttributes
     }
 
     static func list(atIndentLevel indentLevel: Int) -> Attributes {

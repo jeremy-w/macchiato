@@ -75,13 +75,13 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testMention() {
         let html = "<span class=\"account\" data-account-id=\"6\">@mention</span>"
-        let expected = NSAttributedString(string: "@mention", attributes: TenCenturiesHTMLParser.mentionAttributes(forAccountID: "6"))
+        let expected = NSAttributedString(string: "@mention", attributes: TenCenturiesHTMLParser.applyMentionAttributes(forAccountID: "6", to: TenCenturiesHTMLParser.paragraph))
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
     func testHashTag() {
         let html = "<span class=\"hash\" data-hash=\"noagenda\">#noagenda</span>"
-        let expected = NSAttributedString(string: "#noagenda", attributes: TenCenturiesHTMLParser.attributes(forHashTag: "noagenda"))
+        let expected = NSAttributedString(string: "#noagenda", attributes: TenCenturiesHTMLParser.applyAttributes(forHashtag: "noagenda", to: TenCenturiesHTMLParser.paragraph))
         XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
     }
 
@@ -103,7 +103,39 @@ class HTMLToAttributedStringTests: XCTestCase {
     }
 
     func SKIPPED_testHeaders() {
-        // Blurbs don't support headers. Blog posts due, but not blurbs!
+        // Blurbs don't support headers. Blog posts do, but not blurbs!
+    }
+
+
+    // MARK: - Handles stacked styles
+    func testBoldItalic() {
+        let html = "<strong><em>bold and italic</em></strong>"
+        let result = makeAttributedString(fromHTML: html)
+        assertSymbolicTraits(.traitBold, foundInFontDescriptorAtIndex: 0, of: result)
+        assertSymbolicTraits(.traitItalic, foundInFontDescriptorAtIndex: 0, of: result)
+    }
+
+    func testBoldItalicIsSameAsItalicBold() {
+        XCTAssertEqual(
+            makeAttributedString(fromHTML: "<strong><em>bi</em></strong>"),
+            makeAttributedString(fromHTML: "<em><strong>bi</strong></em>"))
+    }
+
+    func testBoldCode() {
+        let result = makeAttributedString(fromHTML: "<strong><code>tt</code></strong>")
+        assertSymbolicTraits(.traitBold, foundInFontDescriptorAtIndex: 0, of: result)
+        assertSymbolicTraits(.traitMonoSpace, foundInFontDescriptorAtIndex: 0, of: result)
+    }
+
+    func testHyperlinkedImage() {
+        let html = "<a href=\"https://example.com/\"><img src=\"https://example.com/favicon.ico\" alt=\"alt text\" /></a>"
+        let result = makeAttributedString(fromHTML: html)
+        XCTAssertNotNil(result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil), "should have link attribute in: \(result)")
+
+        let string = result.string
+        XCTAssertTrue(string.hasPrefix("["), "should start with [: \(string)")
+        XCTAssertTrue(string.hasSuffix("]"), "should end with ]: \(string)")
+        XCTAssertTrue(string.contains("alt text"), "should have alt text inside: \(string)")
     }
 
 
