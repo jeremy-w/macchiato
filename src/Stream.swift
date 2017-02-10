@@ -68,7 +68,7 @@ class Stream {
     // MARK: - Knows about well-known streams
     static let global = Stream(view: .global, posts: (0 ..< 10).map { _ in Post.makeFake() })
 
-    enum View {
+    enum View: Equatable {
         case global
         case home
         case starters
@@ -114,6 +114,10 @@ class Stream {
             }
         }
     }
+}
+
+func == (left: Stream.View, right: Stream.View) -> Bool {
+    return left.localizedName == right.localizedName
 }
 
 

@@ -61,6 +61,40 @@ class MasterViewController: UITableViewController {
         case showSettings = "ShowSettings"
     }
 
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        guard let segue = Segue(rawValue: identifier) else {
+            return super.shouldPerformSegue(withIdentifier: identifier, sender: sender)
+        }
+
+        switch segue {
+        case .showSettings:
+            return true
+
+        case .showDetail:
+            return willSelectedStreamActuallyChange
+        }
+    }
+
+    var willSelectedStreamActuallyChange: Bool {
+        guard isViewLoaded, let tableView = tableView, let selected = tableView.indexPathForSelectedRow else { return false }
+
+        // (jeremy-w/2016-02-10)BUG: Clobbers default selection made at launch
+        //
+        // AKA SplitViewControllers are a pain.
+        //
+        // This doesn't seem to catch this scenario:
+        //
+        // - Launch iPhone 6+ landscape, Global displayed
+        // - Scroll Global down
+        // - Rotate to Portrait, Master table displayed
+        // - Tap Global again, expecting to pick up where you left off
+        // - Instead find yourself back at the top.
+        guard let streamViewController = streamViewController, let hasSelected = streamViewController.stream else { return true }
+
+        let willSelect = stream(for: selected)
+        return hasSelected.view != willSelect.view
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if prepareForShowDetail(segue: segue) { return }
         if prepareForShowSettings(segue: segue) { return }
@@ -81,9 +115,12 @@ class MasterViewController: UITableViewController {
             return true
         }
 
-        let stream = streams[indexPath.row]
-        configure(controller, toDisplay: stream)
+        configure(controller, toDisplay: stream(for: indexPath))
         return true
+    }
+
+    func stream(for indexPath: IndexPath) -> Stream {
+        return streams[indexPath.row]
     }
 
     func configure(_ controller: StreamViewController, toDisplay stream: Stream) {
