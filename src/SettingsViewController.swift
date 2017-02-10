@@ -232,7 +232,7 @@ class SettingsViewController: UITableViewController {
         }
 
         let format = NSLocalizedString("Log In Failed: %@", comment: "toast")
-        let body = error.tenCenturiesDescription
+        let body = TenCenturiesError.describe(error)
         toast(title: String(format: format, body))
     }
 }
