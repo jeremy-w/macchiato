@@ -72,6 +72,13 @@ class StreamViewController: UITableViewController {
         guard let stream = stream, let postRepository = postRepository else { return }
 
         refreshControl?.beginRefreshing()
+
+        if isViewLoaded, !view.isHidden, view.window != nil {
+            UIAccessibilityPostNotification(
+                UIAccessibilityLayoutChangedNotification,
+                NSLocalizedString("Loading posts", comment: "accessibility announcement"))
+        }
+
         postRepository.find(stream: stream, options: []) {
             [weak self] (result: Result<[Post]>) -> Void in
             DispatchQueue.main.async {
@@ -85,7 +92,15 @@ class StreamViewController: UITableViewController {
         do {
             let posts = try result.unwrap()
             stream?.replacePosts(with: posts, fetchedAt: date)
-            tableView?.reloadData()
+
+            guard isViewLoaded, let tableView = tableView else { return }
+            if !view.isHidden, view.window != nil {
+                let format = NSLocalizedString("Loaded %ld posts", comment: "accessibility announcement")
+                UIAccessibilityPostNotification(
+                    UIAccessibilityLayoutChangedNotification,
+                    String.localizedStringWithFormat(format, posts.count))
+            }
+            tableView.reloadData()
         } catch {
             reportError(error)
         }
@@ -141,9 +156,13 @@ class StreamViewController: UITableViewController {
             let posts = try result.unwrap()
             stream?.merge(posts: posts, olderThan: date)
             DispatchQueue.main.async {
+                guard self.isViewLoaded, let tableView = self.tableView else { return }
+
                 let format = NSLocalizedString("Loaded %ld older posts", comment: "accessibility announcement")
-                UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, String(format: format, locale: nil, posts.count))
-                self.tableView.reloadData()
+                UIAccessibilityPostNotification(
+                    UIAccessibilityLayoutChangedNotification,
+                    String.localizedStringWithFormat(format, posts.count))
+                tableView.reloadData()
             }
         } catch {
             reportError(error)
