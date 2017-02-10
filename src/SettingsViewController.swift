@@ -151,8 +151,8 @@ class SettingsViewController: UITableViewController {
 
     // MARK: - Confirms log out before executing
     func confirmLogOut() {
-        let alert = UIAlertController(title: NSLocalizedString("Log Out", comment: "title"), message: nil, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("Log Out!", comment: "button"), style: .destructive, handler: { [weak self] _ in
+        let alert = UIAlertController(title: NSLocalizedString("Are you sure you want to log out?", comment: "title"), message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Log Me Out", comment: "button"), style: .destructive, handler: { [weak self] _ in
             self?.didConfirmLogOut()
         }))
         alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "button"), style: .cancel, handler: nil))
