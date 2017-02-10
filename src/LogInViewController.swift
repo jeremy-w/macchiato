@@ -25,15 +25,24 @@ class LogInViewController: UIViewController {
             || (password?.text?.isEmpty ?? true))
         button.isEnabled = !disabled
     }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        updateButtonDisabledWhenTextChanges()
+    }
+
+    func updateButtonDisabledWhenTextChanges() {
+        for textField in [account, password].flatMap({ $0 }) {
+            NotificationCenter.default.addObserver(
+                self, selector: #selector(updateButtonDisabled),
+                name: .UITextFieldTextDidChange, object: textField)
+        }
+    }
 }
 
 extension LogInViewController: UITextFieldDelegate {
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        updateButtonDisabled()
-        return true
-    }
-
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         updateButtonDisabled()
         return true
     }
