@@ -3,6 +3,20 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (8) - 2017-02-10
+Fixed:
+
+- Give initial stream page a stream and an identity when launched in full split-view glory, so that you can post via it. [#57]
+- Log In form no longer stays on screen after log-in succeeds. [#43]
+- No longer thinks you're logged in after you've logged out.
+- If log-in fails, you'll actually see the error message sent by the 10C API, like "bogus credentials", rather than a uselessly vague "operation failed". [#30]
+- Log In button enables as soon as there's text in both the username and password fields. [#49]
+
+Changed:
+
+- New Post button disables rather than vanishing completely when the app doesn't yet know who you are.
+
+
 ### 1.0 (7) - 2017-02-08
 Fixed:
 
