@@ -18,6 +18,8 @@ class LogInViewController: UIViewController {
         delegate((account: user, password: pass))
     }
 
+
+    // MARK: - Updates "Log In" enabled when text changes
     func updateButtonDisabled() {
         guard let button = logIn else { return }
 
@@ -51,6 +53,8 @@ extension LogInViewController: UITextFieldDelegate {
         updateButtonDisabled()
     }
 
+
+    // MARK: - Triggers "Log In" action on Return in password field
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         updateButtonDisabled()
         treatAsLogInButtonPressIfFormFinished(with: textField)

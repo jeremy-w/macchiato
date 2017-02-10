@@ -25,3 +25,12 @@ enum TenCenturiesError: Error {
      */
     case api(code: Int, text: String, comment: String)
 }
+
+extension Error {
+    var tenCenturiesDescription: String {
+        if case let TenCenturiesError.api(code: _, text: text, comment: _)? = self as? TenCenturiesError {
+            return text
+        }
+        return localizedDescription
+    }
+}

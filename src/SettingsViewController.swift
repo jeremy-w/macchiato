@@ -225,7 +225,7 @@ class SettingsViewController: UITableViewController {
         }
 
         let format = NSLocalizedString("Log In Failed: %@", comment: "toast")
-        let body = error.localizedDescription.isEmpty ? String(describing: error) : error.localizedDescription
+        let body = error.tenCenturiesDescription
         toast(title: String(format: format, body))
     }
 }
