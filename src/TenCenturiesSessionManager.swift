@@ -83,6 +83,11 @@ extension TenCenturiesSessionManager {
         print("AUTH: INFO: Last used account updated to: \(name)")
         UserDefaults.standard.set(name, forKey: "lastAccount")
     }
+
+    static func clearLastAccount() {
+        print("AUTH: INFO: Last used account cleared")
+        UserDefaults.standard.removeObject(forKey: "lastAccount")
+    }
 }
 
 
@@ -97,7 +102,17 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     func logOut() {
         var request = URLRequest(url: URL(string: "/auth/logout", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
+        /*
+         If you're already logged out, you'll see:
+
+         API: DEBUG: Optional(https://api.10centuries.org/auth/logout): Extracted response body: success(["meta": {
+                code = 403;
+                more = 0;
+            }, "data": Invalid Authentication Supplied])
+         */
         let _ = send(request: request) { _ in }
+        TenCenturiesSessionManager.clearLastAccount()
+        user = nil
     }
 
     func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void) {

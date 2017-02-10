@@ -153,10 +153,17 @@ class SettingsViewController: UITableViewController {
     func confirmLogOut() {
         let alert = UIAlertController(title: NSLocalizedString("Log Out", comment: "title"), message: nil, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("Log Out!", comment: "button"), style: .destructive, handler: { [weak self] _ in
-            self?.sessionManager?.logOut()
+            self?.didConfirmLogOut()
         }))
         alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "button"), style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
+    }
+
+    func didConfirmLogOut() {
+        guard let sessionManager = sessionManager else { return }
+        sessionManager.logOut()
+        toast(title: NSLocalizedString("Logged Out", comment: "toast text"))
+        tableView.reloadSections(IndexSet(integer: 0), with: .fade)
     }
 
 
