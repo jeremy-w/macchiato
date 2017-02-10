@@ -108,6 +108,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         if topAsDetailController.stream == nil {
             // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
             return true
+        } else if !(masterViewController?.hasUserEverSelectedAStream ?? false) {
+            // No row selected - we must have just launched.
+            //
+            // I didn't see a good way to detect when both views were shown for real
+            // and we should treat it as if they selected and wanted to view something,
+            // so we'll end up collapsing back to just the master view on rotate to portrait
+            // until they legit select a row.
+            return true
         }
         return false
     }

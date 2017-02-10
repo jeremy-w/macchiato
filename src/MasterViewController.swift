@@ -9,6 +9,8 @@
 import UIKit
 
 class MasterViewController: UITableViewController {
+    var hasUserEverSelectedAStream = false
+
     private(set) var streams = [Stream]()
     private(set) var services: ServicePack?
     private(set) var identity = Identity()
@@ -17,41 +19,28 @@ class MasterViewController: UITableViewController {
         self.identity = identity
         self.streams = streams
 
-        defaultToDisplayingFirstStreamIfNotCollapsed()
+        defaultToDisplayingFirstStream()
     }
 
-    func defaultToDisplayingFirstStreamIfNotCollapsed() {
+    func defaultToDisplayingFirstStream() {
         guard let stream = streams.first else {
             print("MASTER: DEBUG: No streams: Nothing to display yet")
             return
         }
-        guard isViewLoaded, let tableView = tableView else {
-            print("MASTER: DEBUG: View not loaded, so nothing to display a stream in.")
-            return
-        }
         guard let streamViewController = streamViewController else {
-            print("MASTER: DEBUG: Split view controller is only displaying the master view, so let's not clobber that.")
+            print("MASTER: DEBUG: No stream view controller to configure, yet.")
             return
         }
 
-        print("MASTER: DEBUG: Defaulting to displaying first stream in", streamViewController)
-        tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .top)
-        // Programmatic |selectRow| does not trigger any associated |selection| segues.
+        print("MASTER: DEBUG: Defaulting to displaying first stream", stream, "in", streamViewController)
         configure(streamViewController, toDisplay: stream)
-
-        if traitCollection.containsTraits(in: UITraitCollection(horizontalSizeClass: .compact)) {
-            print("COLLAPSING - NOT! PSYCH!")
-            // It seems we need both of these. Yay for double-stacked navcons.
-            streamViewController.navigationController?.popViewController(animated: false)
-            navigationController?.popViewController(animated: false)
-        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("Streams", comment: "view title")
 
-        defaultToDisplayingFirstStreamIfNotCollapsed()
+        defaultToDisplayingFirstStream()
     }
 
     var streamViewController: StreamViewController? {
@@ -80,6 +69,7 @@ class MasterViewController: UITableViewController {
 
     func prepareForShowDetail(segue: UIStoryboardSegue) -> Bool {
         guard segue.identifier == Segue.showDetail.rawValue else { return false }
+        hasUserEverSelectedAStream = true
 
         guard let indexPath = self.tableView.indexPathForSelectedRow else {
             print("\(#function): DEBUG: no selection")
