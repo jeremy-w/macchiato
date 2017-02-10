@@ -109,6 +109,19 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
                 code = 403;
                 more = 0;
             }, "data": Invalid Authentication Supplied])
+
+
+         If you're still logged in, then:
+
+        API: DEBUG: Optional(https://api.10centuries.org/auth/logout): Extracted response body: success(["meta": {
+                code = 200;
+                server = "28.114";
+            }, "data": {
+                account = 0;
+                "is_active" = 0;
+                "updated_at" = "2017-02-10T05:33:20Z";
+                "updated_unix" = 1486704800;
+            }])
          */
         let _ = send(request: request) { _ in }
         TenCenturiesSessionManager.clearLastAccount()

@@ -180,7 +180,7 @@ class SettingsViewController: UITableViewController {
             }
 
             target.configure { [weak self] (item) in
-                self?.logInWithCredentials(account: item.0, password: item.1)
+                self?.logInWithCredentials(account: item.0, password: item.1, from: target)
             }
 
         case "ShowAcks"?:
@@ -195,15 +195,18 @@ class SettingsViewController: UITableViewController {
         }
     }
 
-    func logInWithCredentials(account: String, password: String) {
+    func logInWithCredentials(account: String, password: String, from sender: LogInViewController) {
+        sender.logInDidBegin()
         guard let sessionManager = sessionManager else {
             assertionFailure("\(self) was not configured with sessionManager: cannot log in")
+            sender.logInDidEnd()
             return
         }
 
         toast(title: NSLocalizedString("Logging In…", comment: "toast"))
         sessionManager.logIn(account: account, password: password) { [weak self] (result) in
             self?.didLogIn(as: account, result: result)
+            sender.logInDidEnd()
         }
     }
 
@@ -212,13 +215,22 @@ class SettingsViewController: UITableViewController {
             let success = try result.unwrap()
             if success {
                 toastSuccessfulLogin(as: account)
+
+                DispatchQueue.main.async {
+                    _ = self.navigationController?.popToViewController(self, animated: true)
+                }
             } else {
                 toastFailedLogin(error: nil)
             }
         } catch {
             toastFailedLogin(error: error)
         }
-        tableView?.reloadData()
+
+        DispatchQueue.main.async {
+            guard self.isViewLoaded else { return }
+
+            self.tableView.reloadSections(IndexSet(integer: 0), with: .fade)
+        }
     }
 
     private func toastSuccessfulLogin(as account: String) {
