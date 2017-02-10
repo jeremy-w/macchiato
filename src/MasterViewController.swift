@@ -16,11 +16,31 @@ class MasterViewController: UITableViewController {
         self.services = services
         self.identity = identity
         self.streams = streams
+
+        defaultToDisplayingFirstStream()
+    }
+
+    func defaultToDisplayingFirstStream() {
+        guard !streams.isEmpty else {
+            print("MASTER: DEBUG: No streams: Nothing to display yet")
+            return
+        }
+        guard isViewLoaded, let tableView = tableView else {
+            print("MASTER: DEBUG: View not loaded, so nothing to display a stream in.")
+            return
+        }
+
+        print("MASTER: DEBUG: Defaulting to displaying first stream")
+        tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .top)
+        // Programmatic |selectRow| does not trigger any associated |selection| segues. Thanks for nothing, punks.
+        performSegue(withIdentifier: Segue.showDetail.rawValue, sender: nil)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("Streams", comment: "view title")
+
+        defaultToDisplayingFirstStream()
     }
 
     var streamViewController: StreamViewController? {
@@ -36,6 +56,11 @@ class MasterViewController: UITableViewController {
 
 
     // MARK: - Segues
+    enum Segue: String {
+        case showDetail = "showDetail"
+        case showSettings = "ShowSettings"
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if prepareForShowDetail(segue: segue) { return }
         if prepareForShowSettings(segue: segue) { return }
@@ -43,7 +68,7 @@ class MasterViewController: UITableViewController {
     }
 
     func prepareForShowDetail(segue: UIStoryboardSegue) -> Bool {
-        guard segue.identifier == "showDetail" else { return false }
+        guard segue.identifier == Segue.showDetail.rawValue else { return false }
 
         guard let indexPath = self.tableView.indexPathForSelectedRow else {
             print("\(#function): DEBUG: no selection")
@@ -66,7 +91,7 @@ class MasterViewController: UITableViewController {
     }
 
     func prepareForShowSettings(segue: UIStoryboardSegue) -> Bool {
-        guard segue.identifier == "ShowSettings" else { return false }
+        guard segue.identifier == Segue.showSettings.rawValue else { return false }
         guard let settings = (segue.destination as? UINavigationController)?.topViewController as? SettingsViewController else {
             print("destination not as expected: \(segue.destination)")
             return true
