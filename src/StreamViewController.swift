@@ -24,15 +24,18 @@ class StreamViewController: UITableViewController {
 
         title = stream.name
 
-        tableView?.reloadData()
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 44
+        guard isViewLoaded, let tableView = tableView else { return }
+        tableView.reloadData()
     }
 
     @IBOutlet var newPostButton: UIBarButtonItem?
     override func viewDidLoad() {
         print("view loaded:", self)
         super.viewDidLoad()
+
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 44
+
         canSendPostDidChange()
         refreshControl = makeRefreshControl()
         if let stream = stream, stream.lastFetched == nil {
