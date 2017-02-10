@@ -17,11 +17,11 @@ class MasterViewController: UITableViewController {
         self.identity = identity
         self.streams = streams
 
-        defaultToDisplayingFirstStream()
+        defaultToDisplayingFirstStreamIfNotCollapsed()
     }
 
-    func defaultToDisplayingFirstStream() {
-        guard !streams.isEmpty else {
+    func defaultToDisplayingFirstStreamIfNotCollapsed() {
+        guard let stream = streams.first else {
             print("MASTER: DEBUG: No streams: Nothing to display yet")
             return
         }
@@ -29,18 +29,29 @@ class MasterViewController: UITableViewController {
             print("MASTER: DEBUG: View not loaded, so nothing to display a stream in.")
             return
         }
+        guard let streamViewController = streamViewController else {
+            print("MASTER: DEBUG: Split view controller is only displaying the master view, so let's not clobber that.")
+            return
+        }
 
-        print("MASTER: DEBUG: Defaulting to displaying first stream")
+        print("MASTER: DEBUG: Defaulting to displaying first stream in", streamViewController)
         tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .top)
-        // Programmatic |selectRow| does not trigger any associated |selection| segues. Thanks for nothing, punks.
-        performSegue(withIdentifier: Segue.showDetail.rawValue, sender: nil)
+        // Programmatic |selectRow| does not trigger any associated |selection| segues.
+        configure(streamViewController, toDisplay: stream)
+
+        if traitCollection.containsTraits(in: UITraitCollection(horizontalSizeClass: .compact)) {
+            print("COLLAPSING - NOT! PSYCH!")
+            // It seems we need both of these. Yay for double-stacked navcons.
+            streamViewController.navigationController?.popViewController(animated: false)
+            navigationController?.popViewController(animated: false)
+        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("Streams", comment: "view title")
 
-        defaultToDisplayingFirstStream()
+        defaultToDisplayingFirstStreamIfNotCollapsed()
     }
 
     var streamViewController: StreamViewController? {
@@ -80,14 +91,18 @@ class MasterViewController: UITableViewController {
             return true
         }
 
-        guard let services = self.services else { return true }
-
         let stream = streams[indexPath.row]
+        configure(controller, toDisplay: stream)
+        return true
+    }
+
+    func configure(_ controller: StreamViewController, toDisplay stream: Stream) {
+        guard let services = self.services else { return }
+
         controller.configure(stream: stream, postRepository: services.postRepository, identity: identity)
         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
         print("MASTERVC(", self, "): INFO: Prepared stream VC", controller, "to display stream viewing:", stream.view)
-        return true
     }
 
     func prepareForShowSettings(segue: UIStoryboardSegue) -> Bool {
