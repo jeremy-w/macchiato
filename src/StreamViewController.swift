@@ -196,7 +196,7 @@ class StreamViewController: UITableViewController {
         guard isViewLoaded else { return }
 
         let canSendPost = isLoggedIn
-        navigationItem.setRightBarButton(canSendPost ? newPostButton : nil, animated: true)
+        newPostButton?.isEnabled = canSendPost
         print("STREAMVC/", stream?.view as Any, self, ": DEBUG: Can send post did change:", canSendPost)
     }
 
