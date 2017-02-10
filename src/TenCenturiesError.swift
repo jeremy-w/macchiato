@@ -24,4 +24,11 @@ enum TenCenturiesError: Error {
      - NOTE: This should always be shown to the user!
      */
     case api(code: Int, text: String, comment: String)
+
+    static func describe(_ error: Error) -> String {
+        if case let TenCenturiesError.api(code: _, text: text, comment: _)? = error as? TenCenturiesError {
+            return text
+        }
+        return error.localizedDescription
+    }
 }
