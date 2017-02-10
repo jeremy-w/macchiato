@@ -19,13 +19,36 @@ class LogInViewController: UIViewController {
     }
 
 
+    // MARK: - Disables "Log In" while log-in request in flight
+    private(set) var isLoggingIn = false
+    func logInDidBegin() {
+        isLoggingIn = true
+        updateButtonDisabled()
+    }
+
+    func logInDidEnd() {
+        isLoggingIn = false
+        updateButtonDisabled()
+    }
+
+
     // MARK: - Updates "Log In" enabled when text changes
     func updateButtonDisabled() {
         guard let button = logIn else { return }
 
-        let disabled = ((account?.text?.isEmpty ?? true)
-            || (password?.text?.isEmpty ?? true))
-        button.isEnabled = !disabled
+        button.isEnabled = !isLoggingIn && hasUsername && hasPassword
+    }
+
+    var hasUsername: Bool {
+        guard let account = account?.text else { return false }
+
+        return !account.isEmpty
+    }
+
+    var hasPassword: Bool {
+        guard let password = password?.text else { return false }
+
+        return !password.isEmpty
     }
 
     override func viewDidLoad() {
