@@ -93,10 +93,10 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         let styled = TenCenturiesHTMLParser.self
         switch element {
         case "body":
-            attributesStack.append(styled.paragraph)
+            attributesStack.append(TenCenturiesHTMLParser.applyParagraph(to: currentAttributes))
 
         case "p", "pre":
-            attributesStack.append(styled.paragraph)
+            attributesStack.append(TenCenturiesHTMLParser.applyParagraph(to: currentAttributes))
             if result.length > 0 && !atStartOfListItem {
                 result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
                 if element == "p" {
@@ -284,8 +284,17 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
 
     // MARK: - Rich Text Attributes
+    static func applyParagraph(to attributes: Attributes) -> Attributes {
+        var paragraphy = attributes
+        guard paragraphy[NSFontAttributeName] == nil else {
+            return paragraphy
+        }
+
+        paragraphy[NSFontAttributeName] = UIFont.preferredFont(forTextStyle: .body)
+        return paragraphy
+    }
     static var paragraph: Attributes {
-        return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
+        return TenCenturiesHTMLParser.applyParagraph(to: [:])
     }
 
     static var attributedParagraphSeparator = NSAttributedString(
