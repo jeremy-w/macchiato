@@ -190,6 +190,37 @@ class HTMLToAttributedStringTests: XCTestCase {
         XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
+    func testBlockquote() {
+        let html = "<blockquote>quoted</blockquote>"
+        let rendered = makeAttributedString(fromHTML: html)
+        XCTAssertEqual(rendered.string, "quoted")
+
+        guard let style = rendered.attribute(NSParagraphStyleAttributeName, at: 0, effectiveRange: nil) as? NSParagraphStyle else {
+            return XCTFail("expected to find paragraph style at index 0 in: \(rendered)")
+        }
+
+        XCTAssertGreaterThan(style.firstLineHeadIndent, 0, "expected strictly positive first-line head-indent")
+        XCTAssertGreaterThan(style.headIndent, 0, "expected strictly positive head-indent")
+    }
+
+    func testParagraphInBlockquoteIsStillIndented() {
+        // See post: 114047
+        let quoted = "This is a block quote."
+        let html = "<blockquote>  <p>\(quoted)</p></blockquote>"
+        let rendered = makeAttributedString(fromHTML: html)
+        let range = (rendered.string as NSString).range(of: quoted)
+        guard range.location != NSNotFound else {
+            return XCTFail("failed to quoted string “\(quoted)” in: \(rendered)")
+        }
+
+        guard let style = rendered.attribute(NSParagraphStyleAttributeName, at: range.location, effectiveRange: nil) as? NSParagraphStyle else {
+            return XCTFail("expected to find paragraph style in range \(range) of: \(rendered)")
+        }
+
+        XCTAssertGreaterThan(style.firstLineHeadIndent, 0, "expected strictly positive first-line head-indent")
+        XCTAssertGreaterThan(style.headIndent, 0, "expected strictly positive head-indent")
+    }
+
 
     // MARK: - Renders decorations
     func testHorizontalRule() {

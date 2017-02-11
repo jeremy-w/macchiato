@@ -42,6 +42,10 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     /// Text like `#tag` has this applied. The value is a `String` like `"tag"` (i.e., omitting the hashmark).
     public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.Hashtag"
 
+    /// Text like `> quote` has this applied. The value is a strictly positive `Int`.
+    /// In future, we might have a custom renderer stick a vertical bar to its left.
+    public static let blockquoteLevelAttributeName = "com.jeremywsherman.Macchiato.blockquoteLevel"
+
     public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
         parser.delegate = self
@@ -105,6 +109,9 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
                 }
             }
             atStartOfListItem = false
+
+        case "blockquote":
+            attributesStack.append(TenCenturiesHTMLParser.applyBlockquote(to: currentAttributes))
 
         case "hr":
             result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
@@ -447,5 +454,16 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
 
+    static func applyBlockquote(to attributes: Attributes) -> Attributes {
+        var quoted = attributes
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.setParagraphStyle(quoted[NSParagraphStyleAttributeName] as? NSParagraphStyle ?? NSParagraphStyle.default)
+        paragraphStyle.firstLineHeadIndent += 12
+        paragraphStyle.headIndent += 12
+        quoted[NSParagraphStyleAttributeName] = paragraphStyle
+        quoted[NSFontAttributeName] = UIFont.preferredFont(forTextStyle: .callout)
+        quoted[NSForegroundColorAttributeName] = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        quoted[blockquoteLevelAttributeName] = (quoted[blockquoteLevelAttributeName] as? Int ?? 0) + 1
+        return quoted
     }
 }
