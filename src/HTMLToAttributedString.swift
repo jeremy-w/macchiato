@@ -36,10 +36,15 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`. Its value is a `URL`.
     public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
 
-    /// Mentions like `@name` have this applied. The ID is a numeric account ID.
-    public static let accountIDAttributeName = "com.jeremywsherman.Macchiato.mention.accountID"
+    /// Mentions like `@name` have this applied. The value is a numeric `String`.
+    public static let accountIDAttributeName = "com.jeremywsherman.Macchiato.mention.AccountID"
 
-    public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.hashtag"
+    /// Text like `#tag` has this applied. The value is a `String` like `"tag"` (i.e., omitting the hashmark).
+    public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.Hashtag"
+
+    /// Text like `> quote` has this applied. The value is a strictly positive `Int`.
+    /// In future, we might have a custom renderer stick a vertical bar to its left.
+    public static let blockquoteLevelAttributeName = "com.jeremywsherman.Macchiato.blockquoteLevel"
 
     public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
@@ -92,10 +97,10 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         let styled = TenCenturiesHTMLParser.self
         switch element {
         case "body":
-            attributesStack.append(styled.paragraph)
+            attributesStack.append(TenCenturiesHTMLParser.applyParagraph(to: currentAttributes))
 
         case "p", "pre":
-            attributesStack.append(styled.paragraph)
+            attributesStack.append(TenCenturiesHTMLParser.applyParagraph(to: currentAttributes))
             if result.length > 0 && !atStartOfListItem {
                 result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
                 if element == "p" {
@@ -104,6 +109,9 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
                 }
             }
             atStartOfListItem = false
+
+        case "blockquote":
+            attributesStack.append(TenCenturiesHTMLParser.applyBlockquote(to: currentAttributes))
 
         case "hr":
             result.append(TenCenturiesHTMLParser.attributedParagraphSeparator)
@@ -283,8 +291,17 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
 
     // MARK: - Rich Text Attributes
+    static func applyParagraph(to attributes: Attributes) -> Attributes {
+        var paragraphy = attributes
+        guard paragraphy[NSFontAttributeName] == nil else {
+            return paragraphy
+        }
+
+        paragraphy[NSFontAttributeName] = UIFont.preferredFont(forTextStyle: .body)
+        return paragraphy
+    }
     static var paragraph: Attributes {
-        return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
+        return TenCenturiesHTMLParser.applyParagraph(to: [:])
     }
 
     static var attributedParagraphSeparator = NSAttributedString(
@@ -341,6 +358,8 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         let font = makeMonospaceByHookOrByCrook(current)
         var codified = attributes
         codified[NSFontAttributeName] = font
+        codified[NSBackgroundColorAttributeName] = #colorLiteral(red: 0.9764705882, green: 0.9490196078, blue: 0.9568627451, alpha: 1)
+        codified[NSForegroundColorAttributeName] = #colorLiteral(red: 0.7803921569, green: 0.1450980392, blue: 0.1490196078, alpha: 1)
         return codified
     }
 
@@ -434,77 +453,17 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         // Could muck with indents…
         return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
     }
-}
 
-
-private final class TreeParser: NSObject, XMLParserDelegate {
-    private let data: Data
-    init(data: Data) {
-        self.data = data
-    }
-
-    private var result = NSMutableAttributedString()
-    func parse() -> Result<NSAttributedString> {
-        let parser = XMLParser(data: data)
-        parser.delegate = self
-        guard parser.parse() else {
-            let error = parser.parserError ?? TenCenturiesError.other(message: "HTML parsing failed without any parserError", info: data)
-            return .failure(error)
-        }
-        return .success(result)
-    }
-
-    private final class Node {
-        let name: String
-        let attributes: [String: String]
-        var children = [Node]()
-
-        init(name: String, attributes: [String: String], children: [Node] = []) {
-            self.name = name
-            self.attributes = attributes
-            self.children = children
-        }
-    }
-
-    private var stack = [Node]()
-    func parserDidStartDocument(_ parser: XMLParser) {
-        stack.append(Node(name: "root", attributes: [:]))
-    }
-
-    func parser(
-        _ parser: XMLParser,
-        didStartElement element: String,
-        namespaceURI: String?,
-        qualifiedName: String?,
-        attributes: [String: String] = [:]
-    ) {
-        stack.append(Node(name: element, attributes: attributes))
-    }
-
-    func parser(_ parser: XMLParser, foundCharacters string: String) {
-        guard let top = stack.last else {
-            print("HTML: ERROR: Found characters prior to any node:", string)
-            return
-        }
-
-        top.children.append(Node(name: "text", attributes: ["text": string]))
-    }
-
-    func parser(
-        _ parser: XMLParser,
-        didEndElement element: String,
-        namespaceURI: String?,
-        qualifiedName: String?
-    ) {
-        guard let child = stack.popLast(), let parent = stack.last else {
-            print("HTML: ERROR: Expected finished child to always have a parent: stack", stack)
-            return
-        }
-
-        parent.children.append(child)
-    }
-
-    func parserDidEndDocument(_ parser: XMLParser) {
-        // Hmm, why did I build that tree, again?
+    static func applyBlockquote(to attributes: Attributes) -> Attributes {
+        var quoted = attributes
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.setParagraphStyle(quoted[NSParagraphStyleAttributeName] as? NSParagraphStyle ?? NSParagraphStyle.default)
+        paragraphStyle.firstLineHeadIndent += 12
+        paragraphStyle.headIndent += 12
+        quoted[NSParagraphStyleAttributeName] = paragraphStyle
+        quoted[NSFontAttributeName] = UIFont.preferredFont(forTextStyle: .callout)
+        quoted[NSForegroundColorAttributeName] = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        quoted[blockquoteLevelAttributeName] = (quoted[blockquoteLevelAttributeName] as? Int ?? 0) + 1
+        return quoted
     }
 }
