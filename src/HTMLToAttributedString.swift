@@ -36,10 +36,11 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`. Its value is a `URL`.
     public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
 
-    /// Mentions like `@name` have this applied. The ID is a numeric account ID.
-    public static let accountIDAttributeName = "com.jeremywsherman.Macchiato.mention.accountID"
+    /// Mentions like `@name` have this applied. The value is a numeric `String`.
+    public static let accountIDAttributeName = "com.jeremywsherman.Macchiato.mention.AccountID"
 
-    public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.hashtag"
+    /// Text like `#tag` has this applied. The value is a `String` like `"tag"` (i.e., omitting the hashmark).
+    public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.Hashtag"
 
     public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
