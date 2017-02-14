@@ -20,6 +20,25 @@ struct Post {
 
     var you: You
 
+    static func makePrivatePost(id: String, you: You) -> Post {
+        let now = Date()
+        return Post(
+            id: id,
+            account: Account.makePrivate(),
+            date: now,
+            content: NSLocalizedString("*Post Is Private*", comment: "private post Markdown content"),
+            html: NSLocalizedString("<em>Post Is Private</em>", comment: "private post HTML content"),
+            privacy: "visibility.none",
+            // (jeremy-w/2017-02-13)TODO: Test if we can have threaded, private posts!
+            thread: nil,
+            parentID: nil,
+            client: NSLocalizedString("Private", comment: "private client name"),
+            mentions: [],
+            updated: now,
+            deleted: false,
+            you: you)
+    }
+
     static func makeFake() -> Post {
         // swiftlint:disable:previous function_body_length
         let now = Date()
@@ -71,7 +90,11 @@ extension Post {
         var starred: Bool = false
         var pinned: PinColor?
         var reposted: Bool = false
+
+        /// data.is_muted
         var muted: Bool = false
+
+        /// data.is_visible
         var cannotSee: Bool = false
     }
 

@@ -113,6 +113,12 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parsePost(from post: JSONDictionary) throws -> Post {
+        let postID = String(describing: try unpack(post, "id") as Any)
+        let you = try parseYou(from: post)
+        guard !you.cannotSee else {
+            return Post.makePrivatePost(id: postID, you: you)
+        }
+
         let accounts = try unpack(post, "account") as [JSONDictionary]
         let account: Account?
         do {
@@ -144,7 +150,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
         let parentID = try? unpack(post, "parent_id") as String
         return Post(
-            id: String(describing: try unpack(post, "id") as Any),
+            id: postID,
             account: account ?? Account.makeFake(),
             date: Date(timeIntervalSince1970: try unpack(post, "created_unix")),
             content: try unpack(unpack(post, "content"), "text"),
@@ -156,15 +162,16 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             mentions: try parseMentions(from: mentions),
             updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")),
             deleted: try unpack(post, "is_deleted"),
-            you: try parseYou(from: post))
+            you: you)
     }
 
     func parseYou(from post: JSONDictionary) throws -> Post.You {
+        // Invisible posts have only visible, muted, deleted.
         return Post.You(
-            wereMentioned: try unpack(post, "is_mention"),
-            starred: try unpack(post, "you_starred"),
-            pinned: parseYouPinned(try unpack(post, "you_pinned") as Any),
-            reposted: try unpack(post, "you_reposted"),  // docs say "you_reblurbed" but are wrong
+            wereMentioned: try unpack(post, "is_mention", default: false),
+            starred: try unpack(post, "you_starred", default: false),
+            pinned: parseYouPinned(try unpack(post, "you_pinned", default: false) as Any),
+            reposted: try unpack(post, "you_reposted", default: false),  // docs say "you_reblurbed" but are wrong
             muted: try unpack(post, "is_muted"),
             cannotSee: try !unpack(post, "is_visible"))
     }
