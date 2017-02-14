@@ -58,6 +58,30 @@ struct Post {
             deleted: false,
             you: You())
     }
+
+    static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
+        let body = (try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)).flatMap({ String(data: $0, encoding: .utf8) }) ?? String(reflecting: json)
+
+        let now = Date()
+
+        let headerFormat = NSLocalizedString("Post parsing failed: %@", comment: "%@ is error message")
+        let header = String.localizedStringWithFormat(headerFormat, message)
+
+        return Post(
+            id: "—",
+            account: Account.makeFake(),
+            date: now,
+            content: "**" + header + "**\n\n```\n" + body + "```\n",
+            html: "<p><strong>" + header + "</strong></p><pre><code>" + body + "</pre></code>",
+            privacy: "visibility.public",
+            thread: nil,
+            parentID: nil,
+            client: "—",
+            mentions: [],
+            updated: now,
+            deleted: false,
+            you: You())
+    }
 }
 
 
