@@ -184,11 +184,18 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parseYou(from post: JSONDictionary) throws -> Post.You {
-        // Invisible posts have only visible, muted, deleted.
+        // Invisible posts have only visible, muted, and deleted.
+        let pinColor: Post.PinColor?
+        if let pinned = post["you_pinned"] {
+            pinColor = parseYouPinned(pinned)
+        } else {
+            pinColor = nil
+        }
+
         return Post.You(
             wereMentioned: try unpack(post, "is_mention", default: false),
             starred: try unpack(post, "you_starred", default: false),
-            pinned: parseYouPinned(try unpack(post, "you_pinned", default: false) as Any),
+            pinned: pinColor,
             reposted: try unpack(post, "you_reposted", default: false),  // docs say "you_reblurbed" but are wrong
             muted: try unpack(post, "is_muted"),
             cannotSee: try !unpack(post, "is_visible"))
