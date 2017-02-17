@@ -261,7 +261,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Deletes posts
     func delete(post: Post, completion: @escaping (Result<Void>) -> Void) {
-        let url = URL(string: "/content/\(post.id)", relativeTo: TenCenturies.baseURL)!
+        let url = URL(string: "/content", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.attachURLEncodedFormData([URLQueryItem(name: "post_id", value: post.id)])
