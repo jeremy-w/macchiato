@@ -60,7 +60,7 @@ extension TenCenturiesService {
                     guard let dict = object as? JSONDictionary
                         , let meta = dict["meta"] as? JSONDictionary
                         else {
-                            throw TenCenturiesError.badResponse(url: url, data: data, comment: "bogus object in body")
+                            throw TenCenturiesError.badResponse(url: url, data: data, comment: "body is not a dict or meta is missing")
                     }
 
                     if let errorMessage = meta["text"] as? String {

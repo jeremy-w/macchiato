@@ -25,9 +25,41 @@ enum TenCenturiesError: Error {
     case api(code: Int, text: String, comment: String)
 
     static func describe(_ error: Error) -> String {
-        if case let TenCenturiesError.api(code: _, text: text, comment: _)? = error as? TenCenturiesError {
+        guard let ten = error as? TenCenturiesError else {
+            return error.localizedDescription
+        }
+
+        switch ten {
+        case let .notHTTP(url: url):
+            return String.localizedStringWithFormat(
+                NSLocalizedString("Received non-HTTP response from URL: %@", comment: "error text"),
+                url.absoluteString)
+
+        case let .badURL(string: string, info: _):
+            return String.localizedStringWithFormat(
+                NSLocalizedString("Failed to create valid URL with: %@", comment: "error text"),
+                string)
+
+        case let .badResponse(url: url, data: _, comment: comment):
+            return String.localizedStringWithFormat(
+                NSLocalizedString("Incomprehensible 10C API response from URL: %@ - %@", comment: "error text"),
+                url.absoluteString, comment)
+
+        case let .missingField(field: field, object: object):
+            return String.localizedStringWithFormat(
+                NSLocalizedString("Missing field “%@” in: %@", comment: "error text"),
+                field, object)
+
+        case let .badFieldType(field: field, expected: expected, found: found, in: object):
+            return String.localizedStringWithFormat(
+                NSLocalizedString("Expected field “%@” to be a “%@”, but found a “%@” in: %@", comment: "error text"),
+                field, String(describing: expected), String(reflecting: found), object)
+
+        case let .other(message: message, info: info):
+            return String(format: "%@: %@", message, String(reflecting: info))
+
+        case let .api(code: _, text: text, comment: _):
             return text
         }
-        return error.localizedDescription
     }
 }
