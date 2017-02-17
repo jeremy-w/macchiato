@@ -289,6 +289,10 @@ class StreamViewController: UITableViewController {
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
         }
 
+        if post.account.id == identity.account?.id {
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Delete", comment: "delete post action button title"), style: .destructive, handler: perform(.delete)))
+        }
+
         let cancel = makeCancelAction()
         alert.addAction(cancel)
         alert.preferredAction = cancel
@@ -359,6 +363,9 @@ class StreamViewController: UITableViewController {
             // (jeremy-w/2017-02-05)FIXME: Use .updateReply if this is a reply (has a parentID).
             composePost(as: .update(post))
 
+        case .delete:
+            confirmBeforeDeleting(post)
+
         case .webView:
             displayInWebView(URL(string: "https://10centuries.org/post/\(post.id)")!)
         }
@@ -416,12 +423,43 @@ class StreamViewController: UITableViewController {
         }
     }
 
+    func confirmBeforeDeleting(_ post: Post) {
+        guard let postRepository = postRepository else {
+            print("STREAMVC/", stream?.view as Any,
+                  ": ERROR: Refusing to confirm delete post action when no postRepository around to carry it out on it")
+            return
+        }
+
+        let messageFormat = NSLocalizedString(
+            "Deletion cannot be undone. The post beginning, “%@” will be deleted forever.",
+            comment: "alert message - %@ is snippet from post")
+
+        let end = post.content.index(post.content.startIndex, offsetBy: 24, limitedBy: post.content.endIndex) ?? post.content.endIndex
+        let snippet = post.content.substring(to: end)
+        let message = String.localizedStringWithFormat(messageFormat, snippet)
+
+        let alert = UIAlertController(title: NSLocalizedString("Delete Post?", comment: "alert title"), message: message, preferredStyle: .alert)
+        alert.addAction(makeCancelAction())
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Delete", comment: "alert button title"), style: .destructive, handler: { (_) in
+            postRepository.delete(post: post, completion: { (result) in
+                do {
+                    let _ = try result.unwrap()
+                    toast(title: NSLocalizedString("Post Deleted", comment: "toast text"))
+                } catch {
+                    toast(error: error, prefix: NSLocalizedString("Delete Post Failed", comment: "toast error prefix"))
+                }
+            })
+        }))
+        present(alert, animated: true)
+    }
+
     enum PostAction {
         case reply
         case star
         case pin(at: CGPoint)
         case repost
         case edit
+        case delete
         case webView
     }
 }
@@ -439,9 +477,6 @@ extension StreamViewController: PostCellDelegate {
 
 
 func toast(error: Error, prefix: String) {
-    if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
-        toast(title: "\(prefix): \(text)")
-    } else {
-        toast(title: "\(prefix): \(error)")
-    }
+    let text = TenCenturiesError.describe(error)
+    toast(title: "\(prefix): \(text)")
 }

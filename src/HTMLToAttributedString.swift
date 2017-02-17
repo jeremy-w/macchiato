@@ -8,6 +8,7 @@ import Kingfisher
  Their corresponding URLs will be set as the value of `TenCenturiesHTMLParser.imageSourceURLAttributeName` attributes.
  */
 func makeAttributedString(fromHTML html: String) -> NSAttributedString {
+    // (jeremy-w/2017-02-16)FIXME: This should return optional, and then we can fall back to raw Markdown.
     let withRootNode = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
     guard let utf8 = withRootNode.data(using: .utf8) else {
         print("HTML: ERROR: Failed to convert string to UTF-8–encoded data: returning as-is")

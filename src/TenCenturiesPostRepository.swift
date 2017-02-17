@@ -184,11 +184,18 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parseYou(from post: JSONDictionary) throws -> Post.You {
-        // Invisible posts have only visible, muted, deleted.
+        // Invisible posts have only visible, muted, and deleted.
+        let pinColor: Post.PinColor?
+        if let pinned = post["you_pinned"] {
+            pinColor = parseYouPinned(pinned)
+        } else {
+            pinColor = nil
+        }
+
         return Post.You(
             wereMentioned: try unpack(post, "is_mention", default: false),
             starred: try unpack(post, "you_starred", default: false),
-            pinned: parseYouPinned(try unpack(post, "you_pinned", default: false) as Any),
+            pinned: pinColor,
             reposted: try unpack(post, "you_reposted", default: false),  // docs say "you_reblurbed" but are wrong
             muted: try unpack(post, "is_muted"),
             cannotSee: try !unpack(post, "is_visible"))
@@ -254,9 +261,12 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Deletes posts
     func delete(post: Post, completion: @escaping (Result<Void>) -> Void) {
-        let url = URL(string: "/content/\(post.id)", relativeTo: TenCenturies.baseURL)!
+        let url = URL(string: "/content", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
+        request.httpBody = try! JSONSerialization.data(
+            withJSONObject: [ "post_id": post.id ],
+            options: [])
         let _ = send(request: request) { result in
             do {
                 let _ = try result.unwrap()
