@@ -8,7 +8,6 @@ enum TenCenturiesError: Error {
     case badURL(string: String, info: [String: Any])
     case badResponse(url: URL, data: Data?, comment: String)
 
-    case parseError(url: URL, object: Any, comment: String)
     case missingField(field: String, object: JSONDictionary)
     case badFieldType(field: String, expected: Any, found: Any, in: JSONDictionary)
 
