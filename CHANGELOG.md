@@ -3,6 +3,21 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (9) - 2017-02-17
+New:
+
+- "Delete" action appears on own posts. [#69]
+- Blockquote now renders as indented, slightly smaller, slightly gray text. [#51]
+
+Changed:
+
+- "New Post" button now says that, rather than "+". [#45]
+
+Fixed:
+
+- Post data received from the API should now pretty much always display something. [#62]
+
+
 ### 1.0 (8) - 2017-02-10
 Fixed:
 
