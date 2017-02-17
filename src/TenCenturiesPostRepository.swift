@@ -109,11 +109,21 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parsePosts(from posts: [JSONDictionary]) throws -> [Post] {
-        return try posts.map { post in try parsePost(from: post) }
+        return posts.map { post in
+            do {
+                return try parsePost(from: post)
+            } catch {
+                return Post.displayingRawJSON(post, errorMessage: TenCenturiesError.describe(error))
+            }
+        }
     }
 
     func parsePost(from post: JSONDictionary) throws -> Post {
-        let accounts = try unpack(post, "account") as [JSONDictionary]
+        let postID = String(describing: try unpack(post, "id") as Any)
+        let you = try parseYou(from: post)
+        let isPrivate = you.cannotSee
+
+        let accounts = try unpack(post, "account", default: []) as [JSONDictionary]
         let account: Account?
         do {
             account = try accounts.first.map { try TenCenturiesAccountRepository.parseAccount(from: $0) }
@@ -142,29 +152,44 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             mentions = []
         }
 
+        let defaultDate = Date()
+        let markdown: String?
+        let html: String?
+        if let content = try? unpack(post, "content") as JSONDictionary {
+            markdown = try? unpack(content, "text")
+            html = try? unpack(content, "html")
+        } else if isPrivate {
+            markdown = NSLocalizedString("*Post Is Private*", comment: "private post Markdown content")
+            html = NSLocalizedString("<em>Post Is Private</em>", comment: "private post HTML content")
+        } else {
+            markdown = nil
+            html = nil
+        }
+
         let parentID = try? unpack(post, "parent_id") as String
         return Post(
-            id: String(describing: try unpack(post, "id") as Any),
-            account: account ?? Account.makeFake(),
-            date: Date(timeIntervalSince1970: try unpack(post, "created_unix")),
-            content: try unpack(unpack(post, "content"), "text"),
-            html: try unpack(unpack(post, "content"), "html"),
-            privacy: try unpack(post, "privacy"),
+            id: postID,
+            account: account ?? (isPrivate ? Account.makePrivate() : Account.makeFake()),
+            date: Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970),
+            content: markdown ?? "—",
+            html: html ?? "<p>—</p>",
+            privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
             parentID: parentID,
-            client: try unpack(unpack(post, "client"), "name"),
-            mentions: try parseMentions(from: mentions),
-            updated: Date(timeIntervalSince1970: try unpack(post, "updated_unix")),
-            deleted: try unpack(post, "is_deleted"),
-            you: try parseYou(from: post))
+            client: (try? unpack(unpack(post, "client"), "name")) ?? "—",
+            mentions: (try? parseMentions(from: mentions)) ?? [],
+            updated: Date(timeIntervalSince1970: (try? unpack(post, "updated_unix")) ?? defaultDate.timeIntervalSince1970),
+            deleted: (try? unpack(post, "is_deleted")) ?? false,
+            you: you)
     }
 
     func parseYou(from post: JSONDictionary) throws -> Post.You {
+        // Invisible posts have only visible, muted, deleted.
         return Post.You(
-            wereMentioned: try unpack(post, "is_mention"),
-            starred: try unpack(post, "you_starred"),
-            pinned: parseYouPinned(try unpack(post, "you_pinned") as Any),
-            reposted: try unpack(post, "you_reposted"),  // docs say "you_reblurbed" but are wrong
+            wereMentioned: try unpack(post, "is_mention", default: false),
+            starred: try unpack(post, "you_starred", default: false),
+            pinned: parseYouPinned(try unpack(post, "you_pinned", default: false) as Any),
+            reposted: try unpack(post, "you_reposted", default: false),  // docs say "you_reblurbed" but are wrong
             muted: try unpack(post, "is_muted"),
             cannotSee: try !unpack(post, "is_visible"))
     }

@@ -44,4 +44,17 @@ extension Account {
             timezone: "US/Eastern",
             counts: [:])
     }
+
+    static func makePrivate() -> Account {
+        let privateThing = NSLocalizedString("Private", comment: "private thing")
+        return Account(
+            id: privateThing,
+            username: privateThing,
+            name: (first: privateThing, last: privateThing, display: privateThing),
+            avatarURL: Account.defaultAvatarURL,
+            verified: nil,
+            description: "",
+            timezone: "",
+            counts: [:])
+    }
 }
