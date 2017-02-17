@@ -264,6 +264,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let url = URL(string: "/content/\(post.id)", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
+        request.attachURLEncodedFormData([URLQueryItem(name: "post_id", value: post.id)])
         let _ = send(request: request) { result in
             do {
                 let _ = try result.unwrap()
