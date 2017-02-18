@@ -1,16 +1,18 @@
+typealias PostID = String
+
 struct EditingPost {
     var content: String
 
     let channel = 1
-    let updating: String?
-    let replyTo: String?
+    let updating: PostID?
+    let replyTo: PostID?
 }
 
 
 extension EditingPost {
     init(content: String, for action: ComposePostAction) {
-        let updating: String?
-        let replyTo: String?
+        let updating: PostID?
+        let replyTo: PostID?
         switch action {
         case .newThread:
             updating = nil
