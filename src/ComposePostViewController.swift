@@ -55,6 +55,40 @@ class ComposePostViewController: UIViewController {
     }
 
 
+    // MARK: - Attaches an image
+    var photos: PhotoProvider = ImagePickerPhotoProvider()
+    var photoUploader: PhotoUploader = TenCenturiesCDNPhotoUploader()
+    @IBAction func attachImageAction() {
+        photos.requestOne { [weak self] photo in
+            self?.didReceivePhoto(photo)
+        }
+    }
+
+    func didReceivePhoto(_ photo: Photo?) {
+            guard let photo = photo else { return }
+
+            photoUploader.upload(photo) { [weak self] result in
+                self?.didUpload(photo: photo, result: result)
+        }
+    }
+
+    func didUpload(photo: Photo, result: Result<URL>) {
+        do {
+            let location = try result.unwrap()
+            self.insertImageMarkdown(title: photo.title, href: location)
+        } catch {
+            toast(error: error, prefix: NSLocalizedString("Photo Upload Failed", comment: "toast error prefix"))
+        }
+    }
+
+    func insertImageMarkdown(title: String, href: URL) {
+        guard let textView = textView else { return }
+
+        let markdown = "![\(title)](\(href.absoluteString)"
+        textView.insertText(markdown)
+    }
+
+
     // MARK: - Moves out of the way of the keyboard
     @IBOutlet var bottomConstraint: NSLayoutConstraint?
     @objc func keyboardWillChangeFrame(notification note: NSNotification) {
@@ -62,5 +96,34 @@ class ComposePostViewController: UIViewController {
         guard let value = note.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue else { return }
         let topEdgeOfKeyboard = window.convert(value.cgRectValue, from: nil).minY
         constraint.constant = window.bounds.height - topEdgeOfKeyboard
+    }
+}
+
+
+struct Photo {
+    let title: String
+}
+
+
+protocol PhotoProvider {
+    func requestOne(completion: @escaping (Photo?) -> Void)
+}
+
+
+class ImagePickerPhotoProvider: PhotoProvider {
+    func requestOne(completion: @escaping (Photo?) -> Void) {
+        completion(nil)
+    }
+}
+
+
+protocol PhotoUploader {
+    func upload(_ photo: Photo, completion: @escaping (Result<URL>) -> Void)
+}
+
+
+class TenCenturiesCDNPhotoUploader: PhotoUploader {
+    func upload(_ photo: Photo, completion: @escaping (Result<URL>) -> Void) {
+        completion(.failure(notYetImplemented))
     }
 }
