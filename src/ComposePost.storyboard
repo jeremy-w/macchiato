@@ -40,7 +40,7 @@
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                         <state key="normal" title="Upload Image"/>
                                         <connections>
-                                            <action selector="attachImageAction" destination="Qw4-kH-RwE" eventType="touchUpInside" id="lJz-qQ-bY5"/>
+                                            <action selector="uploadImageAction:" destination="Qw4-kH-RwE" eventType="touchUpInside" id="gG1-uX-8ge"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h2N-2B-bip">

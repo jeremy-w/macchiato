@@ -56,23 +56,27 @@ class ComposePostViewController: UIViewController {
 
 
     // MARK: - Attaches an image
-    var photos: PhotoProvider = ImagePickerPhotoProvider()
     var photoUploader: PhotoUploader = TenCenturiesCDNPhotoUploader()
-    @IBAction func attachImageAction() {
-        photos.requestOne { [weak self] photo in
+    @objc(uploadImageAction:)
+    @IBAction func uploadImageAction(sender: UIButton) {
+        print("COMPOSER/IMAGE: INFO: Upload image action invoked")
+        let provider: PhotoProvider = ImagePickerPhotoProvider(controller: self, sender: sender)
+        provider.requestOne { [weak self] photo in
             self?.didReceivePhoto(photo)
         }
     }
 
     func didReceivePhoto(_ photo: Photo?) {
-            guard let photo = photo else { return }
+        print("COMPOSER/IMAGE: INFO: Image provider gave photo:", photo as Any)
+        guard let photo = photo else { return }
 
-            photoUploader.upload(photo) { [weak self] result in
-                self?.didUpload(photo: photo, result: result)
+        photoUploader.upload(photo) { [weak self] result in
+            self?.didUpload(photo: photo, result: result)
         }
     }
 
     func didUpload(photo: Photo, result: Result<URL>) {
+        print("COMPOSER/IMAGE: INFO: Uploading photo", photo, "had result:", result)
         do {
             let location = try result.unwrap()
             self.insertImageMarkdown(title: photo.title, href: location)
@@ -82,7 +86,10 @@ class ComposePostViewController: UIViewController {
     }
 
     func insertImageMarkdown(title: String, href: URL) {
-        guard let textView = textView else { return }
+        guard let textView = textView else {
+            print("COMPOSER/IMAGE: WARNING: No text view, nowhere to stick URL \(href) for image titled \(title)!")
+            return
+        }
 
         let markdown = "![\(title)](\(href.absoluteString)"
         textView.insertText(markdown)
@@ -102,6 +109,7 @@ class ComposePostViewController: UIViewController {
 
 struct Photo {
     let title: String
+    let data: Data
 }
 
 
@@ -110,9 +118,64 @@ protocol PhotoProvider {
 }
 
 
-class ImagePickerPhotoProvider: PhotoProvider {
+class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    let controller: UIViewController
+    let sender: UIButton
+    init(controller: UIViewController, sender: UIButton) {
+        self.controller = controller
+        self.sender = sender
+    }
+
+    var requestCompletion: (Photo?) -> Void = { _ in }
     func requestOne(completion: @escaping (Photo?) -> Void) {
-        completion(nil)
+        guard UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) else {
+            completion(nil)
+            return
+        }
+
+        requestCompletion = completion
+        let picker = UIImagePickerController()
+        picker.allowsEditing = true
+        picker.delegate = self
+        if let presenter = picker.popoverPresentationController {
+            let view = sender.titleLabel ?? sender
+            presenter.sourceView = view
+            presenter.sourceRect = view.bounds
+        }
+        controller.present(picker, animated: true, completion: nil)
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        defer { controller.dismiss(animated: true, completion: nil) }
+        finish(with: nil)
+    }
+
+    func finish(with photo: Photo?) {
+        requestCompletion(photo)
+        requestCompletion = { _ in }
+    }
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String: Any]) {
+        defer { controller.dismiss(animated: true, completion: nil) }
+
+        let edited = info[UIImagePickerControllerEditedImage] as? UIImage
+        let raw = info[UIImagePickerControllerOriginalImage] as? UIImage
+        guard let image = edited ?? raw else {
+            print("IMAGE PICKER: ERROR: Claimed finished picking, but neither edited nor raw image present! info", info)
+            finish(with: nil)
+            return
+        }
+
+        // (jeremy-w/2017-02-22)FIXME: Fish out original data from Photo Library
+        guard let data = UIImageJPEGRepresentation(image, 0.9) ?? UIImagePNGRepresentation(image) else {
+            print("IMAGE PICKER: ERROR: Failed to get data for image", image, "- info", info)
+            finish(with: nil)
+            return
+        }
+
+        let title = NSLocalizedString("Image", comment: "photo title placeholder")
+        let photo = Photo(title: title, data: data)
+        finish(with: photo)
     }
 }
 
