@@ -62,12 +62,12 @@ class ComposePostViewController: UIViewController {
         print("COMPOSER/IMAGE: INFO: Upload image action invoked")
         let provider: PhotoProvider = ImagePickerPhotoProvider(controller: self, sender: sender)
         provider.requestOne { [weak self] photo in
-            self?.didReceivePhoto(photo)
+            self?.didReceivePhoto(photo, from: provider)
         }
     }
 
-    func didReceivePhoto(_ photo: Photo?) {
-        print("COMPOSER/IMAGE: INFO: Image provider gave photo:", photo as Any)
+    func didReceivePhoto(_ photo: Photo?, from provider: PhotoProvider) {
+        print("COMPOSER/IMAGE: INFO: Image provider", provider, "gave photo:", photo as Any)
         guard let photo = photo else { return }
 
         photoUploader.upload(photo) { [weak self] result in
@@ -129,6 +129,7 @@ class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerController
     var requestCompletion: (Photo?) -> Void = { _ in }
     func requestOne(completion: @escaping (Photo?) -> Void) {
         guard UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) else {
+            print("IMAGE PICKER: ERROR: Photos Album unavailable")
             completion(nil)
             return
         }
@@ -142,10 +143,13 @@ class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerController
             presenter.sourceView = view
             presenter.sourceRect = view.bounds
         }
+
+        print("IMAGE PICKER: INFO: Showing picker")
         controller.present(picker, animated: true, completion: nil)
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        print("IMAGE PICKER: INFO: User canceled")
         defer { controller.dismiss(animated: true, completion: nil) }
         finish(with: nil)
     }
@@ -158,6 +162,7 @@ class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerController
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String: Any]) {
         defer { controller.dismiss(animated: true, completion: nil) }
 
+        print("IMAGE PICKER: DEBUG: User picked a photo: info", info)
         let edited = info[UIImagePickerControllerEditedImage] as? UIImage
         let raw = info[UIImagePickerControllerOriginalImage] as? UIImage
         guard let image = edited ?? raw else {
