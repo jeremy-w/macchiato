@@ -135,7 +135,7 @@ class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerController
 
         requestCompletion = completion
         let picker = UIImagePickerController()
-        picker.allowsEditing = true
+        picker.allowsEditing = false  // true shows funky crop-box without any way to change rect!
         picker.delegate = self
         if let presenter = picker.popoverPresentationController {
             let view = sender.titleLabel ?? sender
