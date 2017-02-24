@@ -66,12 +66,16 @@ class ComposePostViewController: UIViewController {
     @IBAction func uploadImageAction(sender: UIButton) {
         print("COMPOSER/IMAGE: INFO: Upload image action invoked")
         delegate?.uploadImage(for: self, sender: sender, then: { [weak self] (result) in
+            guard let me = self else { return }
+
             guard let (title: title, href: href) = result else {
                 print("COMPOSER/IMAGE: INFO: Upload image failed; assuming user already informed")
                 return
             }
 
-            self?.insertImageMarkdown(title: title, href: href)
+            DispatchQueue.main.async {
+                me.insertImageMarkdown(title: title, href: href)
+            }
         })
     }
 
