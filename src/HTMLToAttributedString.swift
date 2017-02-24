@@ -34,7 +34,8 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     private let data: Data
     private let source: String
 
-    /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`. Its value is a `URL`.
+    /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`.
+    /// Its value is a `URL`.
     public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
 
     /// Mentions like `@name` have this applied. The value is a numeric `String`.

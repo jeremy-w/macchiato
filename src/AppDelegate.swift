@@ -123,7 +123,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
 
 extension AppDelegate: ComposePostViewControllerDelegate {
-    func uploadImage(for controller: ComposePostViewController, sender: UIButton, then continuation: @escaping ((title: String, href: URL)?) -> Void) {
+    func uploadImage(
+        for controller: ComposePostViewController,
+        sender: UIButton,
+        then continuation: @escaping ((title: String, href: URL)?) -> Void
+    ) {
         let provider: PhotoProvider = ImagePickerPhotoProvider(controller: controller, sender: sender)
         provider.requestOne { [weak self] photo in
             self?.didReceivePhoto(photo, from: provider, continue: continuation)

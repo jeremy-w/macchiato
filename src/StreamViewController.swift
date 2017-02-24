@@ -298,7 +298,11 @@ class StreamViewController: UITableViewController {
         }
 
         if post.account.id == identity.account?.id {
-            alert.addAction(UIAlertAction(title: NSLocalizedString("Delete", comment: "delete post action button title"), style: .destructive, handler: perform(.delete)))
+            alert.addAction(
+                UIAlertAction(
+                    title: NSLocalizedString("Delete", comment: "delete post action button title"),
+                    style: .destructive,
+                    handler: perform(.delete)))
         }
 
         let cancel = makeCancelAction()
