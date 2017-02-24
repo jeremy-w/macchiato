@@ -194,6 +194,7 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
     func upload(_ photo: Photo, completion: @escaping (Result<URL>) -> Void) {
         let url = URL(string: "https://chat.10centuries.org/uploads.php")!
         var request = URLRequest(url: url)
+        request.httpMethod = "POST"
 
         request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
 
