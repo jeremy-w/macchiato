@@ -120,3 +120,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         return false
     }
 }
+
+
+extension AppDelegate: ComposePostViewControllerDelegate {
+    func uploadImage(for controller: ComposePostViewController, sender: UIButton, then continuation: @escaping ((title: String, href: URL)?) -> Void) {
+        let provider: PhotoProvider = ImagePickerPhotoProvider(controller: controller, sender: sender)
+        provider.requestOne { [weak self] photo in
+            self?.didReceivePhoto(photo, from: provider, continue: continuation)
+        }
+    }
+
+    func didReceivePhoto(_ photo: Photo?, from provider: PhotoProvider, continue continuation: @escaping ((title: String, href: URL)?) -> Void) {
+        print("COMPOSER/IMAGE: INFO: Image provider", provider, "gave photo:", photo as Any)
+        guard let photo = photo else { return }
+
+        services.photoUploader.upload(photo) { [weak self] result in
+            self?.didUpload(photo: photo, result: result, continue: continuation)
+        }
+    }
+
+    func didUpload(photo: Photo, result: Result<URL>, continue continuation: @escaping ((title: String, href: URL)?) -> Void) {
+        print("COMPOSER/IMAGE: INFO: Uploading photo", photo, "had result:", result)
+        do {
+            let location = try result.unwrap()
+            continuation((title: photo.title, href: location))
+        } catch {
+            toast(error: error, prefix: NSLocalizedString("Photo Upload Failed", comment: "toast error prefix"))
+        }
+    }
+}

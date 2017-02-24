@@ -236,7 +236,15 @@ class StreamViewController: UITableViewController {
         let action = (sender as? ComposePostAction) ?? .newThread
 
         guard let postRepository = self.postRepository else { return true }
-        composer.configure(postRepository: postRepository, action: action, author: author)
+
+        // (jeremy-w/2017-02-23)FIXME: This is such singleton abuse.
+        // But piping stuff to the leaves is just exhausting.
+        // The overall design needs to move to directly fire out to where the services are,
+        // and this is one way to do that.
+        //
+        // Really, we should be kicking the "spawn this thing" work out to _our_ delegate!
+        guard let abomination = UIApplication.shared.delegate as? AppDelegate else { return true }
+        composer.configure(delegate: abomination, postRepository: postRepository, action: action, author: author)
         return true
     }
 

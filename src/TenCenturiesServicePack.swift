@@ -7,7 +7,8 @@ extension ServicePack {
             postRepository: TenCenturiesPostRepository(session: session, authenticator: sessionManager),
             accountRepository: TenCenturiesAccountRepository(session: session, authenticator: sessionManager),
             sessionManager: sessionManager,
-            requestAuthenticator: sessionManager
+            requestAuthenticator: sessionManager,
+            photoUploader: TenCenturiesCDNPhotoUploader(session: session, authenticator: sessionManager)
         )
     }
 }

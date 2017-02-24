@@ -1,11 +1,17 @@
 import UIKit
 
+protocol ComposePostViewControllerDelegate {
+    func uploadImage(for controller: ComposePostViewController, sender: UIButton, then continuation: @escaping ((title: String, href: URL)?) -> Void)
+}
+
 class ComposePostViewController: UIViewController {
     var postRepository: PostRepository?
     var action: ComposePostAction = .newThread
     var author: Account?
+    var delegate: ComposePostViewControllerDelegate?
 
-    func configure(postRepository: PostRepository, action: ComposePostAction, author: Account) {
+    func configure(delegate: ComposePostViewControllerDelegate, postRepository: PostRepository, action: ComposePostAction, author: Account) {
+        self.delegate = delegate
         self.postRepository = postRepository
         self.action = action
         self.author = author
@@ -56,33 +62,17 @@ class ComposePostViewController: UIViewController {
 
 
     // MARK: - Attaches an image
-    var photoUploader: PhotoUploader = TenCenturiesCDNPhotoUploader()
     @objc(uploadImageAction:)
     @IBAction func uploadImageAction(sender: UIButton) {
         print("COMPOSER/IMAGE: INFO: Upload image action invoked")
-        let provider: PhotoProvider = ImagePickerPhotoProvider(controller: self, sender: sender)
-        provider.requestOne { [weak self] photo in
-            self?.didReceivePhoto(photo, from: provider)
-        }
-    }
+        delegate?.uploadImage(for: self, sender: sender, then: { [weak self] (result) in
+            guard let (title: title, href: href) = result else {
+                print("COMPOSER/IMAGE: INFO: Upload image failed; assuming user already informed")
+                return
+            }
 
-    func didReceivePhoto(_ photo: Photo?, from provider: PhotoProvider) {
-        print("COMPOSER/IMAGE: INFO: Image provider", provider, "gave photo:", photo as Any)
-        guard let photo = photo else { return }
-
-        photoUploader.upload(photo) { [weak self] result in
-            self?.didUpload(photo: photo, result: result)
-        }
-    }
-
-    func didUpload(photo: Photo, result: Result<URL>) {
-        print("COMPOSER/IMAGE: INFO: Uploading photo", photo, "had result:", result)
-        do {
-            let location = try result.unwrap()
-            self.insertImageMarkdown(title: photo.title, href: location)
-        } catch {
-            toast(error: error, prefix: NSLocalizedString("Photo Upload Failed", comment: "toast error prefix"))
-        }
+            self?.insertImageMarkdown(title: title, href: href)
+        })
     }
 
     func insertImageMarkdown(title: String, href: URL) {
@@ -109,6 +99,7 @@ class ComposePostViewController: UIViewController {
 
 struct Photo {
     let title: String
+    let mime: String
     let data: Data
 }
 
@@ -172,14 +163,16 @@ class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerController
         }
 
         // (jeremy-w/2017-02-22)FIXME: Fish out original data from Photo Library
-        guard let data = UIImageJPEGRepresentation(image, 0.9) ?? UIImagePNGRepresentation(image) else {
+        let jpeg = UIImageJPEGRepresentation(image, 0.9)
+        guard let data = jpeg ?? UIImagePNGRepresentation(image) else {
             print("IMAGE PICKER: ERROR: Failed to get data for image", image, "- info", info)
             finish(with: nil)
             return
         }
 
         let title = NSLocalizedString("Image", comment: "photo title placeholder")
-        let photo = Photo(title: title, data: data)
+        let mime = (jpeg != nil) ? "image/jpeg" : "image/png"
+        let photo = Photo(title: title, mime: mime, data: data)
         finish(with: photo)
     }
 }
@@ -190,8 +183,65 @@ protocol PhotoUploader {
 }
 
 
-class TenCenturiesCDNPhotoUploader: PhotoUploader {
+class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
+    let session: URLSession
+    let authenticator: RequestAuthenticator
+    init(session: URLSession, authenticator: RequestAuthenticator) {
+        self.session = session
+        self.authenticator = authenticator
+    }
+
     func upload(_ photo: Photo, completion: @escaping (Result<URL>) -> Void) {
         completion(.failure(notYetImplemented))
+        let url = URL(string: "https://chat.10centuries.org/uploads.php")!
+        var request = URLRequest(url: url)
+
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+
+        let boundary = multipartBoundary(for: Date())
+        request.setValue("multipart/form-data; boundary=\"\(boundary)\"", forHTTPHeaderField: "Content-Type")
+        request.httpBody = asMultipartEnclosure(photo, boundary: boundary)
+
+        _ = send(request: request) { (result: Result<JSONDictionary>) in
+            do {
+                let dict = try result.unwrap()
+                let isGood = try unpack(dict, "isGood") as String
+                guard isGood == "Y" else {
+                    let result = try? unpack(dict, "result") as String
+                    let text = result ?? NSLocalizedString("Uploaded photo deemed no good by 10C CDN", comment: "error message")
+                    completion(.failure(TenCenturiesError.api(code: -1, text: text, comment: "photo upload deemed NOT GOOD")))
+                    return
+                }
+
+                guard let url = URL(string: try unpack(dict, "cdnurl")) else {
+                    let urlParsingFailed = NSLocalizedString("Failed to parse uploaded photo's CDN URL", comment: "error message")
+                    let error = TenCenturiesError.other(message: urlParsingFailed, info: dict["cdnurl"] as Any)
+                    completion(.failure(error))
+                    return
+                }
+                completion(.success(url))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func asMultipartEnclosure(_ photo: Photo, boundary: String) -> Data {
+        let crlf = "\r\n"
+        let chunkHeader = crlf + "--\(boundary)" + crlf
+            + "Content-Disposition: form-data; name=\"file\"; filename=\"\(photo.title)\"" + crlf
+            + "Content-Transfer-Encoding: binary" + crlf
+            + "Content-Type: \(photo.mime)" + crlf
+            + crlf
+        let chunkFooter = crlf + "--\(boundary)--" + crlf
+        let enclosure = chunkHeader.data(using: .utf8)! + photo.data + chunkFooter.data(using: .utf8)!
+        return enclosure
+    }
+
+    func multipartBoundary(for date: Date) -> String {
+        let maybeTooLong = "com.jeremywsherman.Macchiato-" + String(describing: date.timeIntervalSince1970)
+        let limit = maybeTooLong.index(maybeTooLong.startIndex, offsetBy: 70, limitedBy: maybeTooLong.endIndex)
+        let boundary = limit.map({ maybeTooLong[maybeTooLong.startIndex ..< $0] }) ?? maybeTooLong
+        return boundary
     }
 }
