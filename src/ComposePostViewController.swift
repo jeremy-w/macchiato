@@ -192,7 +192,6 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
     }
 
     func upload(_ photo: Photo, completion: @escaping (Result<URL>) -> Void) {
-        completion(.failure(notYetImplemented))
         let url = URL(string: "https://chat.10centuries.org/uploads.php")!
         var request = URLRequest(url: url)
 
