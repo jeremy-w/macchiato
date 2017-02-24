@@ -226,6 +226,51 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
         }
     }
 
+    func send(request unauthenticated: URLRequest, completion: @escaping (Result<JSONDictionary>) -> Void) -> URLSessionTask {
+        let request = authenticator.authenticate(request: unauthenticated)
+        let url = request.url!  // swiftlint:disable:this
+        print("API: INFO: BEGIN \(request.url) \(request)")
+        print("API: DEBUG: BEGIN:\n\(debugInfo(for: request))")
+        let task = session.dataTask(with: request) { (data, response, error) in
+            let result = Result.of { () throws -> JSONDictionary in
+                do {
+                    guard let response = response as? HTTPURLResponse else {
+                        throw TenCenturiesError.notHTTP(url: url)
+                    }
+                    /*
+                     Rate limit headers look like:
+
+                     X-RateLimit-Limit: 500
+                     X-RateLimit-Remaining: 490
+                     X-RateLimit-Reset: 2866
+                     */
+                    let limits = RateLimit(headers: response.allHeaderFields)
+                    print("API: INFO: END \(url): \(response.statusCode): \(data) \(error) "
+                        + "- RATELIMIT: \(limits.map { String(reflecting: $0) } ?? "(headers not found)")")
+                    print("API: DEBUG: END: \(response)\n\(debugInfo(for: response))")
+
+                    guard let data = data else {
+                        throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
+                    }
+
+                    guard error == nil else {
+                        throw error!
+                    }
+
+                    let object = try JSONSerialization.jsonObject(with: data, options: [])
+                    guard let dict = object as? JSONDictionary else {
+                            throw TenCenturiesError.badResponse(url: url, data: data, comment: "body is not a dict")
+                    }
+                    return dict
+                }
+            }
+            print("API: DEBUG: \(request.url): Extracted response body: \(result)")
+            completion(result)
+        }
+        task.resume()
+        return task
+    }
+
     func asMultipartEnclosure(_ photo: Photo, boundary: String) -> Data {
         let crlf = "\r\n"
         let chunkHeader = crlf + "--\(boundary)" + crlf
