@@ -85,7 +85,7 @@ class ComposePostViewController: UIViewController {
             return
         }
 
-        let markdown = "![\(title)](\(href.absoluteString)"
+        let markdown = "![\(title)](\(href.absoluteString))"
         textView.insertText(markdown)
     }
 
