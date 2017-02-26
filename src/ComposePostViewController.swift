@@ -1,11 +1,17 @@
 import UIKit
 
+protocol ComposePostViewControllerDelegate {
+    func uploadImage(for controller: ComposePostViewController, sender: UIButton, then continuation: @escaping ((title: String, href: URL)?) -> Void)
+}
+
 class ComposePostViewController: UIViewController {
     var postRepository: PostRepository?
     var action: ComposePostAction = .newThread
     var author: Account?
+    var delegate: ComposePostViewControllerDelegate?
 
-    func configure(postRepository: PostRepository, action: ComposePostAction, author: Account) {
+    func configure(delegate: ComposePostViewControllerDelegate, postRepository: PostRepository, action: ComposePostAction, author: Account) {
+        self.delegate = delegate
         self.postRepository = postRepository
         self.action = action
         self.author = author
@@ -52,6 +58,46 @@ class ComposePostViewController: UIViewController {
                 toast(title: NSLocalizedString("Posting Failed: ", comment: "title") + details)
             }
         })
+    }
+
+
+    // MARK: - Attaches an image
+    @objc(uploadImageAction:)
+    @IBAction func uploadImageAction(sender: UIButton) {
+        print("COMPOSER/IMAGE: INFO: Upload image action invoked")
+
+        let previousTitle = sender.currentTitle
+        sender.setTitle(NSLocalizedString("Uploading…", comment: "button title"), for: .normal)
+        sender.isEnabled = false
+        UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, sender)
+
+        delegate?.uploadImage(for: self, sender: sender, then: { [weak self] (result) in
+            DispatchQueue.main.async {
+                sender.setTitle(previousTitle, for: .normal)
+                sender.isEnabled = true
+            }
+
+            guard let me = self else { return }
+
+            guard let (title: title, href: href) = result else {
+                print("COMPOSER/IMAGE: INFO: Upload image failed; assuming user already informed")
+                return
+            }
+
+            DispatchQueue.main.async {
+                me.insertImageMarkdown(title: title, href: href)
+            }
+        })
+    }
+
+    func insertImageMarkdown(title: String, href: URL) {
+        guard let textView = textView else {
+            print("COMPOSER/IMAGE: WARNING: No text view, nowhere to stick URL \(href) for image titled \(title)!")
+            return
+        }
+
+        let markdown = "![\(title)](\(href.absoluteString))"
+        textView.insertText(markdown)
     }
 
 

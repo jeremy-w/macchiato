@@ -41,7 +41,9 @@ struct Post {
     }
 
     static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
-        let body = (try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)).flatMap({ String(data: $0, encoding: .utf8) }) ?? String(reflecting: json)
+        let body = (try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted))
+            .flatMap({ String(data: $0, encoding: .utf8) })
+            ?? String(reflecting: json)
 
         let now = Date()
 

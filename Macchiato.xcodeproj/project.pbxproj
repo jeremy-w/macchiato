@@ -52,6 +52,11 @@
 		3F6A07731E30682200A56072 /* EditingPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07721E30682200A56072 /* EditingPost.swift */; };
 		3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07741E30690400A56072 /* ComposePostAction.swift */; };
 		3F6A07771E306A1200A56072 /* ComposePostActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */; };
+		3F78B8461E6281A600B40B55 /* ImagePickerPhotoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8451E6281A600B40B55 /* ImagePickerPhotoProvider.swift */; };
+		3F78B8481E6281EF00B40B55 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8471E6281EF00B40B55 /* Photo.swift */; };
+		3F78B84A1E6281F800B40B55 /* PhotoUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8491E6281F800B40B55 /* PhotoUploader.swift */; };
+		3F78B84C1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B84B1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift */; };
+		3F78B84E1E62825B00B40B55 /* PhotoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B84D1E62825B00B40B55 /* PhotoProvider.swift */; };
 		3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */; };
 		3F7D757F1E3D377800AB8C4A /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */; };
 		3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144EB1E31C17F001E25EC /* AccountRepository.swift */; };
@@ -129,6 +134,11 @@
 		3F6A07721E30682200A56072 /* EditingPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditingPost.swift; sourceTree = "<group>"; };
 		3F6A07741E30690400A56072 /* ComposePostAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostAction.swift; sourceTree = "<group>"; };
 		3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostActionTests.swift; sourceTree = "<group>"; };
+		3F78B8451E6281A600B40B55 /* ImagePickerPhotoProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerPhotoProvider.swift; sourceTree = "<group>"; };
+		3F78B8471E6281EF00B40B55 /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		3F78B8491E6281F800B40B55 /* PhotoUploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoUploader.swift; sourceTree = "<group>"; };
+		3F78B84B1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TenCenturiesCDNPhotoUploader.swift; sourceTree = "<group>"; };
+		3F78B84D1E62825B00B40B55 /* PhotoProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoProvider.swift; sourceTree = "<group>"; };
 		3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
 		3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
 		3F8144EB1E31C17F001E25EC /* AccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
@@ -279,6 +289,7 @@
 			children = (
 				3F2E29AF1DB1C60E00519C9E /* ComposePost.storyboard */,
 				3F2E29B11DB252D200519C9E /* ComposePostViewController.swift */,
+				3F78B8451E6281A600B40B55 /* ImagePickerPhotoProvider.swift */,
 				3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */,
 			);
 			name = "Composing Posts";
@@ -312,6 +323,17 @@
 			name = "Composing Posts";
 			sourceTree = "<group>";
 		};
+		3F78B84F1E62827B00B40B55 /* Photos */ = {
+			isa = PBXGroup;
+			children = (
+				3F78B8471E6281EF00B40B55 /* Photo.swift */,
+				3F78B84D1E62825B00B40B55 /* PhotoProvider.swift */,
+				3F78B8491E6281F800B40B55 /* PhotoUploader.swift */,
+				3F78B84B1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift */,
+			);
+			name = Photos;
+			sourceTree = "<group>";
+		};
 		3F7D757D1E3D377800AB8C4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -328,6 +350,7 @@
 				3F8144ED1E31C1BB001E25EC /* Accounts */,
 				3F8144E91E31BB9D001E25EC /* Streams */,
 				3F8144EA1E31BBB3001E25EC /* Posts */,
+				3F78B84F1E62827B00B40B55 /* Photos */,
 				3F2E294B1DAB24B900519C9E /* Accessing Outside Content */,
 			);
 			name = MacchiatoKit;
@@ -573,6 +596,7 @@
 				3F2E29041DA9B9F200519C9E /* MasterViewController.swift in Sources */,
 				3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */,
 				3F2E295C1DAD351C00519C9E /* RequestAuthenticator.swift in Sources */,
+				3F78B84C1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift in Sources */,
 				3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */,
 				3F2E29391DA9ED0200519C9E /* ServicePack.swift in Sources */,
 				3F2E29521DAB29CF00519C9E /* ToastViewController.swift in Sources */,
@@ -582,6 +606,7 @@
 				3F2E29421DAACF4B00519C9E /* TenCenturiesPostRepository.swift in Sources */,
 				3F8144FD1E34633F001E25EC /* HTMLToAttributedString.swift in Sources */,
 				3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */,
+				3F78B8461E6281A600B40B55 /* ImagePickerPhotoProvider.swift in Sources */,
 				3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */,
 				3F8144F71E31CCEA001E25EC /* FakeServicePack.swift in Sources */,
 				3F2E29311DA9E9D700519C9E /* Random.swift in Sources */,
@@ -592,12 +617,14 @@
 				3F2E29AD1DB1937500519C9E /* Keychain.swift in Sources */,
 				3F8144F51E31CC13001E25EC /* TenCenturiesServicePack.swift in Sources */,
 				3F2E292B1DA9DC9900519C9E /* StreamViewController.swift in Sources */,
+				3F78B84E1E62825B00B40B55 /* PhotoProvider.swift in Sources */,
 				3F52CF231E46B6EF002D92BC /* PostImageViewController.swift in Sources */,
 				3F8144F31E31C9B9001E25EC /* FakeAccountRepository.swift in Sources */,
 				3F2E292D1DA9DCF200519C9E /* PostCell.swift in Sources */,
 				3F6A07731E30682200A56072 /* EditingPost.swift in Sources */,
 				3F2E29351DA9EB1900519C9E /* PostRepository.swift in Sources */,
 				3F2E29551DAB332500519C9E /* TenCenturiesSessionManager.swift in Sources */,
+				3F78B84A1E6281F800B40B55 /* PhotoUploader.swift in Sources */,
 				3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */,
 				3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */,
 				3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */,
@@ -605,6 +632,7 @@
 				3F2E29481DAB20AB00519C9E /* LogInViewController.swift in Sources */,
 				3F2E29331DA9EA1800519C9E /* Post.swift in Sources */,
 				3F2E29A71DAFC7AA00519C9E /* RateLimit.swift in Sources */,
+				3F78B8481E6281EF00B40B55 /* Photo.swift in Sources */,
 				3F2E292F1DA9E19000519C9E /* Stream.swift in Sources */,
 				3F2E29441DAAF53700519C9E /* ButtonCell.swift in Sources */,
 				3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */,
