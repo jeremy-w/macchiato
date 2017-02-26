@@ -3,7 +3,6 @@ import Foundation
 struct Post {
     let id: String
     let account: Account
-    let date: Date
     var content: String
     let html: String
 
@@ -14,11 +13,24 @@ struct Post {
 
     let mentions: [Mention]
 
+    let created: Date
     /// If the same as `date`, then the post has not been edited.
     var updated: Date
+    var published: Date
     var deleted: Bool
 
     var you: You
+
+    /* STATS */
+    /*
+     stars = [{
+     "avatar_url" = "//cdn.10centuries.org/Wf649r/45ab260697817fad00290ff93980ec4b.jpeg";
+     id = 27;
+     name = "@jws";
+     "starred_at" = "2017-02-18 07:05:15";
+     "starred_unix" = 1487401515;
+     }]
+     */
 
     static func makeFake() -> Post {
         // swiftlint:disable:previous function_body_length
@@ -27,7 +39,6 @@ struct Post {
         return Post(
             id: UUID().uuidString,
             account: Account.makeFake(),
-            date: now,
             content: text,
             html: "<p>" + text + "</p>",
             privacy: "visibility.public",
@@ -35,7 +46,9 @@ struct Post {
             parentID: nil,
             client: "Magicat",
             mentions: [],
+            created: now,
             updated: now,
+            published: now,
             deleted: false,
             you: You())
     }
@@ -53,7 +66,6 @@ struct Post {
         return Post(
             id: "—",
             account: Account.makeFake(),
-            date: now,
             content: "**" + header + "**\n\n```\n" + body + "```\n",
             html: "<p><strong>" + header + "</strong></p><pre><code>" + body + "</pre></code>",
             privacy: "visibility.public",
@@ -61,7 +73,9 @@ struct Post {
             parentID: nil,
             client: "—",
             mentions: [],
+            created: now,
             updated: now,
+            published: now,
             deleted: false,
             you: You())
     }
