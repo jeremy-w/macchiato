@@ -167,10 +167,12 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
 
         let parentID = try? unpack(post, "parent_id") as String
+        let created = Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970)
+        let updated = Date(timeIntervalSince1970: (try? unpack(post, "updated_unix")) ?? defaultDate.timeIntervalSince1970)
+        let published = Date(timeIntervalSince1970: (try? unpack(post, "publish_unix")) ?? defaultDate.timeIntervalSince1970)
         return Post(
             id: postID,
             account: account ?? (isPrivate ? Account.makePrivate() : Account.makeFake()),
-            date: Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970),
             content: markdown ?? "—",
             html: html ?? "<p>—</p>",
             privacy: (try? unpack(post, "privacy")) ?? "—",
@@ -178,7 +180,9 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             parentID: parentID,
             client: (try? unpack(unpack(post, "client"), "name")) ?? "—",
             mentions: (try? parseMentions(from: mentions)) ?? [],
-            updated: Date(timeIntervalSince1970: (try? unpack(post, "updated_unix")) ?? defaultDate.timeIntervalSince1970),
+            created: created,
+            updated: updated,
+            published: published,
             deleted: (try? unpack(post, "is_deleted")) ?? false,
             you: you)
     }
