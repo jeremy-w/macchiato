@@ -6,6 +6,7 @@ class TenCenturiesSessionManager {
     let clientGUID: String
     fileprivate(set) var user: User? {
         didSet {
+            print("SESSION: INFO: Will notify: User did change to:", user as Any)
             NotificationCenter.default.post(name: .loggedInAccountDidChange, object: self)
         }
     }

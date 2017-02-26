@@ -18,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         session = URLSession(configuration: URLSessionConfiguration.default)
         services = ServicePack.connectingTenCenturies(session: session)
         super.init()
+        beginFetchingCurrentUserAccount()
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -46,7 +47,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let identity = Identity()
     var loggedInUserDidChangeListener: Any?
     func beginFetchingCurrentUserAccount() {
+        print("APP: DEBUG: Now listening for user account changes.")
         whenLoggedInUserChanges(then: { [weak self] in
+            print("APP: INFO: Logged-in user changed; will update identity.")
             guard let my = self else { return }
 
             my.identity.update(using: my.services.accountRepository)
