@@ -80,12 +80,7 @@ class ComposePostViewController: UIViewController {
 
             case let .failure(error):
                 // (jws/2016-10-15)FIXME: Save as draft and allow to retry!
-                let details: String
-                if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
-                    details = text
-                } else {
-                    details = "😔"
-                }
+                let details = TenCenturiesError.describe(error)
                 toast(title: NSLocalizedString("Posting Failed: ", comment: "title") + details)
             }
         })
