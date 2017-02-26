@@ -7,7 +7,7 @@ import Kingfisher
  Images will be displayed using their alt-text.
  Their corresponding URLs will be set as the value of `TenCenturiesHTMLParser.imageSourceURLAttributeName` attributes.
  */
-func makeAttributedString(fromHTML html: String) -> NSAttributedString {
+func makeAttributedString(fromHTML html: String) -> NSAttributedString? {
     // (jeremy-w/2017-02-16)FIXME: This should return optional, and then we can fall back to raw Markdown.
     let withRootNode = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
     guard let utf8 = withRootNode.data(using: .utf8) else {
@@ -20,7 +20,7 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString {
         return try parser.parse().unwrap()
     } catch {
         print("HTML: ERROR: Failed to parse string with error:", error, "- string:", withRootNode)
-        return NSAttributedString(string: html)
+        return nil
     }
 }
 

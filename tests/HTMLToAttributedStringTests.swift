@@ -5,7 +5,15 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testPlainTextSingleParagraph() {
         let html = "<p>plain text</p>"
         let expected = NSAttributedString(string: "plain text", attributes: TenCenturiesHTMLParser.paragraph)
-        XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), expected)
+    }
+
+    func shouldMakeAttributedString(fromHTML html: String) -> NSAttributedString {
+        guard let result = makeAttributedString(fromHTML: html) else {
+            XCTFail("failed to build attributed string from: \(html)")
+            return NSAttributedString()
+        }
+        return result
     }
 
 
@@ -15,30 +23,30 @@ class HTMLToAttributedStringTests: XCTestCase {
         let expected = NSAttributedString(string:
             "one\r\n\r\n"
             + "two", attributes: TenCenturiesHTMLParser.paragraph)
-        XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), expected)
     }
 
     func testItalicWord() {
         let html = "<em>italic</em>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
         assertSymbolicTraits(.traitItalic, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testBoldWord() {
         let html = "<strong>bold</strong>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
         assertSymbolicTraits(.traitBold, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testCodeWord() {
         let html = "<code>code</code>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
         assertSymbolicTraits(.traitMonoSpace, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testSuperscriptNumber() {
         let html = "<sup>1</sup>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
 
         #if os(macOS)
             guard let superscript = result.attribute(NSSuperscriptAttributeName, at: 0, effectiveRange: nil) else {
@@ -57,7 +65,7 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testStrikethroughWord() {
         let html = "<strike>strike</strike>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
         XCTAssertNotNil(
             result.attribute(NSStrikethroughStyleAttributeName, at: 0, effectiveRange: nil),
             "expected to find strikethrough attribute at index 0 of attributed string: \(result)")
@@ -65,7 +73,7 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testAnchorWord() {
         let html = "<a target=\"_blank\" href=\"http://example.com\" title=\"ignored\">anchored</a>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
         guard let link = result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil) else {
             return XCTFail("expected to find link attribute at index 0 of attributed string: \(result)")
         }
@@ -76,19 +84,19 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testMention() {
         let html = "<span class=\"account\" data-account-id=\"6\">@mention</span>"
         let expected = NSAttributedString(string: "@mention", attributes: TenCenturiesHTMLParser.applyMentionAttributes(forAccountID: "6", to: TenCenturiesHTMLParser.paragraph))
-        XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), expected)
     }
 
     func testHashTag() {
         let html = "<span class=\"hash\" data-hash=\"noagenda\">#noagenda</span>"
         let expected = NSAttributedString(string: "#noagenda", attributes: TenCenturiesHTMLParser.applyAttributes(forHashtag: "noagenda", to: TenCenturiesHTMLParser.paragraph))
-        XCTAssertEqual(makeAttributedString(fromHTML: html), expected)
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), expected)
     }
 
     func testBreak() {
         // We want a newline but not a new paragraph here. Not sure how to check that, but can check we get a new line.
         let html = "<p>Freelance tech writer<br /> Author<br /> Practical minimalist</p>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
 
         let string = result.string
         let firstParagraphRange = string.paragraphRange(for: string.startIndex ..< string.index(after: string.startIndex))
@@ -110,26 +118,26 @@ class HTMLToAttributedStringTests: XCTestCase {
     // MARK: - Handles stacked styles
     func testBoldItalic() {
         let html = "<strong><em>bold and italic</em></strong>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
         assertSymbolicTraits(.traitBold, foundInFontDescriptorAtIndex: 0, of: result)
         assertSymbolicTraits(.traitItalic, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testBoldItalicIsSameAsItalicBold() {
         XCTAssertEqual(
-            makeAttributedString(fromHTML: "<strong><em>bi</em></strong>"),
-            makeAttributedString(fromHTML: "<em><strong>bi</strong></em>"))
+            shouldMakeAttributedString(fromHTML: "<strong><em>bi</em></strong>"),
+            shouldMakeAttributedString(fromHTML: "<em><strong>bi</strong></em>"))
     }
 
     func testBoldCode() {
-        let result = makeAttributedString(fromHTML: "<strong><code>tt</code></strong>")
+        let result = shouldMakeAttributedString(fromHTML: "<strong><code>tt</code></strong>")
         assertSymbolicTraits(.traitBold, foundInFontDescriptorAtIndex: 0, of: result)
         assertSymbolicTraits(.traitMonoSpace, foundInFontDescriptorAtIndex: 0, of: result)
     }
 
     func testHyperlinkedImage() {
         let html = "<a href=\"https://example.com/\"><img src=\"https://example.com/favicon.ico\" alt=\"alt text\" /></a>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
         XCTAssertNotNil(result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil), "should have link attribute in: \(result)")
 
         let string = result.string
@@ -143,13 +151,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testOrderedList() {
         let html = "<ol><li>1</li><li>2</li></ol>"
         let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t1. 1" + TenCenturiesHTMLParser.paragraphSeparator + "\t2. 2"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func testUnorderedList() {
         let html = "<ul><li>A</li><li>B</li></ul>"
         let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• A" + TenCenturiesHTMLParser.paragraphSeparator + "\t• B"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func SKIPPED_testNestedLists() {
@@ -159,7 +167,7 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testListItemWithFootnoteClassSuperscriptsIndexAndOmitsDot() {
         let html = "<ol><li class=\"footnote\">footnote text</li></ol>"
-        let result = makeAttributedString(fromHTML: html)
+        let result = shouldMakeAttributedString(fromHTML: html)
 
         XCTAssertNil(result.string.range(of: "."), "should not insert dot after footnote number, but got: \(result)")
 
@@ -181,18 +189,18 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testAvoidsDoubleLinebreakDueToParagraphWithinListItem() {
         let html = "<ul><li><p>Single indent.</p></li></ul>"
         let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• Single indent."
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func testPreFormattedText() {
         let html = "<pre>this is    preformatted text</pre>"
         let expected = "this is    preformatted text"
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
     func testBlockquote() {
         let html = "<blockquote>quoted</blockquote>"
-        let rendered = makeAttributedString(fromHTML: html)
+        let rendered = shouldMakeAttributedString(fromHTML: html)
         XCTAssertEqual(rendered.string, "quoted")
 
         guard let style = rendered.attribute(NSParagraphStyleAttributeName, at: 0, effectiveRange: nil) as? NSParagraphStyle else {
@@ -207,7 +215,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         // See post: 114047
         let quoted = "This is a block quote."
         let html = "<blockquote>  <p>\(quoted)</p></blockquote>"
-        let rendered = makeAttributedString(fromHTML: html)
+        let rendered = shouldMakeAttributedString(fromHTML: html)
         let range = (rendered.string as NSString).range(of: quoted)
         guard range.location != NSNotFound else {
             return XCTFail("failed to quoted string “\(quoted)” in: \(rendered)")
@@ -226,7 +234,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testHorizontalRule() {
         let html = "<hr />"
         let expected = TenCenturiesHTMLParser.paragraphSeparator
-        XCTAssertEqual(makeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.paragraph))
     }
 
     func testImageFormatsAsBracketedImageColonAndAltTextInItalicsWithURLInAttributes() {
@@ -236,11 +244,11 @@ class HTMLToAttributedStringTests: XCTestCase {
         let html = "<img src=\"//example.com\" alt=\"an image\" />"
 
         let expectedHTML = "<em>[Image: an image]</em>"
-        let renderedString = makeAttributedString(fromHTML: expectedHTML).mutableCopy() as! NSMutableAttributedString
+        let renderedString = shouldMakeAttributedString(fromHTML: expectedHTML).mutableCopy() as! NSMutableAttributedString
         renderedString.addAttributes(
             [TenCenturiesHTMLParser.imageSourceURLAttributeName: URL(string: "https://example.com")!],
             range: NSRange(location: 0, length: renderedString.length))
-        XCTAssertEqual(makeAttributedString(fromHTML: html), renderedString)
+        XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), renderedString)
     }
 
     func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {

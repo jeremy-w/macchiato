@@ -64,7 +64,7 @@ class PostParsing: XCTestCase {
         }
     }
 
-    func testParsingPostWithVisibilityNone() {
+    func testParsingPostWithVisibilityNoneSkipsPost() {
         guard let exampleHiddenPost = (try? unjson(string: "{\n"
             + "   \"id\": 111724,\n"
             + "   \"is_visible\": false,\n"
@@ -75,12 +75,14 @@ class PostParsing: XCTestCase {
             return XCTFail("failed test setup: not a JSONDictionary")
         }
 
+        var didThrow = false
         do {
             let post = try subject.parsePost(from: exampleHiddenPost)
             XCTAssertEqual(post.id, "111724", "post.id")
         } catch {
-            return XCTFail("failed to parse post: \(error)")
+            didThrow = true
         }
+        XCTAssertTrue(didThrow, "should have thrown an error rather than provide a useless post")
     }
 
     func testParsingPostsWithOneBogusPostStillReturnsTheGoodOnes() {

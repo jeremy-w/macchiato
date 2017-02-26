@@ -22,8 +22,15 @@ class PostCell: UITableViewCell {
         avatar?.kf.setImage(with: post.account.avatarURL)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.published)
-        content?.text = post.content
-        content?.attributedText = makeAttributedString(fromHTML: post.html)
+
+        // Show HTML if parseable, else Markdown.
+        if let richText = makeAttributedString(fromHTML: post.html) {
+            content?.text = nil
+            content?.attributedText = richText
+        } else {
+            content?.attributedText = nil
+            content?.text = post.content
+        }
 
         highlightIfMention()
         stackUpAdditionalInfo()

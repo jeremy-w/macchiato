@@ -109,13 +109,15 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parsePosts(from posts: [JSONDictionary]) throws -> [Post] {
-        return posts.map { post in
-            do {
-                return try parsePost(from: post)
-            } catch {
-                return Post.displayingRawJSON(post, errorMessage: TenCenturiesError.describe(error))
-            }
-        }
+        return posts.map
+            { post in
+                do {
+                    return try parsePost(from: post)
+                } catch {
+                    print("POSTS: WARNING: Caught parse error:", error)
+                    return nil
+                }
+            }.flatMap({ $0 })
     }
 
     func parsePost(from post: JSONDictionary) throws -> Post {
@@ -152,12 +154,13 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             mentions = []
         }
 
-        let defaultDate = Date()
+        var lacksContent = true
         let markdown: String?
         let html: String?
         if let content = try? unpack(post, "content") as JSONDictionary {
             markdown = try? unpack(content, "text")
             html = try? unpack(content, "html")
+            lacksContent = false
         } else if isPrivate {
             markdown = NSLocalizedString("*Post Is Private*", comment: "private post Markdown content")
             html = NSLocalizedString("<em>Post Is Private</em>", comment: "private post HTML content")
@@ -166,7 +169,16 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             html = nil
         }
 
+        if isPrivate && lacksContent {
+            print("POSTS: INFO: Skipping private post without actual content: Post ID", postID)
+            throw TenCenturiesError.other(
+                message: NSLocalizedString("Skipping private post", comment: "error message"),
+                info: post)
+        }
+
         let parentID = try? unpack(post, "parent_id") as String
+
+        let defaultDate = Date()
         let created = Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970)
         let updated = Date(timeIntervalSince1970: (try? unpack(post, "updated_unix")) ?? defaultDate.timeIntervalSince1970)
         let published = Date(timeIntervalSince1970: (try? unpack(post, "publish_unix")) ?? defaultDate.timeIntervalSince1970)
