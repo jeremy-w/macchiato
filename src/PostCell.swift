@@ -6,6 +6,18 @@ protocol PostCellDelegate: class {
     func tapped(image: UIImage?, from url: URL, in cell: PostCell)
 }
 
+func enableAutoContentSizeUpdates(for view: UIView?) {
+    guard let view = view else { return }
+
+    if #available(iOS 10.0, *) {
+        if let adjuster = view as? UIContentSizeCategoryAdjusting {
+            adjuster.adjustsFontForContentSizeCategory = true
+        }
+    } else {
+        return
+    }
+}
+
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
     @IBOutlet var avatar: UIImageView?
@@ -48,6 +60,9 @@ class PostCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         roundCorners(of: avatar)
+        enableAutoContentSizeUpdates(for: author)
+        enableAutoContentSizeUpdates(for: date)
+        enableAutoContentSizeUpdates(for: content)
     }
 
     func roundCorners(of view: UIView?) {
@@ -103,11 +118,7 @@ class PostCell: UITableViewCell {
     func makeAdditionalInfoLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
-        if #available(iOS 10.0, *) {
-            label.adjustsFontForContentSizeCategory = true
-        } else {
-            // Fallback on earlier versions
-        }
+        enableAutoContentSizeUpdates(for: label)
         label.font = UIFont.preferredFont(forTextStyle: .footnote)
         return label
     }
@@ -157,6 +168,8 @@ class PostCell: UITableViewCell {
 
             button.accessibilityTraits &= ~UIAccessibilityTraitButton
             button.accessibilityTraits |= UIAccessibilityTraitLink
+
+            enableAutoContentSizeUpdates(for: button)
 
             stack.addArrangedSubview(button)
         }
