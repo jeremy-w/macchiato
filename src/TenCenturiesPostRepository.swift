@@ -109,13 +109,15 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parsePosts(from posts: [JSONDictionary]) throws -> [Post] {
-        return posts.map { post in
-            do {
-                return try parsePost(from: post)
-            } catch {
-                return Post.displayingRawJSON(post, errorMessage: TenCenturiesError.describe(error))
-            }
-        }
+        return posts.map
+            { post in
+                do {
+                    return try parsePost(from: post)
+                } catch {
+                    print("POSTS: WARNING: Caught parse error:", error)
+                    return nil
+                }
+            }.flatMap({ $0 })
     }
 
     func parsePost(from post: JSONDictionary) throws -> Post {
