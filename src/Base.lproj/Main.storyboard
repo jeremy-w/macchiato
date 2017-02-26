@@ -327,7 +327,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="751" verticalCompressionResistancePriority="752" text="@someone" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CjN-sX-xmO">
-                                            <rect key="frame" x="82" y="8" width="285" height="21"/>
+                                            <rect key="frame" x="86" y="8" width="281" height="21"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -350,15 +350,14 @@
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" text="2016-10-08 22:15" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xC9-6S-Dc5">
-                                            <rect key="frame" x="82" y="29" width="285" height="16"/>
-                                            <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                            <rect key="frame" x="86" y="37" width="281" height="18"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="7DO-y4-hqa" firstAttribute="top" secondItem="tqt-qo-Z8s" secondAttribute="bottom" constant="8" id="55Y-a8-Hd2"/>
-                                        <constraint firstAttribute="topMargin" secondItem="CjN-sX-xmO" secondAttribute="top" id="5wC-Ac-PAa"/>
                                         <constraint firstAttribute="leadingMargin" secondItem="nBa-Kd-FT9" secondAttribute="leading" id="812-4n-s02"/>
                                         <constraint firstItem="7DO-y4-hqa" firstAttribute="leading" secondItem="tqt-qo-Z8s" secondAttribute="leading" id="9IT-28-R8a"/>
                                         <constraint firstItem="tqt-qo-Z8s" firstAttribute="top" relation="greaterThanOrEqual" secondItem="xC9-6S-Dc5" secondAttribute="bottom" constant="8" symbolic="YES" id="CUA-OB-Kwp"/>
@@ -371,8 +370,9 @@
                                         <constraint firstAttribute="trailingMargin" secondItem="xC9-6S-Dc5" secondAttribute="trailing" id="YHE-xd-uah"/>
                                         <constraint firstItem="tqt-qo-Z8s" firstAttribute="leading" secondItem="nYg-wG-Sv5" secondAttribute="leadingMargin" id="aII-lk-VEf"/>
                                         <constraint firstItem="xC9-6S-Dc5" firstAttribute="leading" secondItem="CjN-sX-xmO" secondAttribute="leading" id="gQI-qE-GjV"/>
-                                        <constraint firstItem="xC9-6S-Dc5" firstAttribute="top" secondItem="CjN-sX-xmO" secondAttribute="bottom" id="urh-Na-xAF"/>
-                                        <constraint firstItem="CjN-sX-xmO" firstAttribute="leading" secondItem="nBa-Kd-FT9" secondAttribute="trailing" constant="4" id="vJy-84-UN9"/>
+                                        <constraint firstItem="CjN-sX-xmO" firstAttribute="top" secondItem="nBa-Kd-FT9" secondAttribute="top" id="uqh-0k-g55"/>
+                                        <constraint firstItem="xC9-6S-Dc5" firstAttribute="top" secondItem="CjN-sX-xmO" secondAttribute="bottom" constant="8" symbolic="YES" id="urh-Na-xAF"/>
+                                        <constraint firstItem="CjN-sX-xmO" firstAttribute="leading" secondItem="nBa-Kd-FT9" secondAttribute="trailing" constant="8" symbolic="YES" id="vJy-84-UN9"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="CjN-sX-xmO" secondAttribute="trailing" id="w2i-t4-xmZ"/>
                                     </constraints>
                                 </tableViewCellContentView>
