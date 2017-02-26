@@ -6,10 +6,6 @@ struct Post {
     var content: String
     let html: String
 
-    var date: Date {
-        return published
-    }
-
     let privacy: String
     let thread: (root: String, replyTo: String)?
     let parentID: String?

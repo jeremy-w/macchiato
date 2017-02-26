@@ -26,7 +26,7 @@ class Stream {
 
         // since_unix is relative to PUBLISHED date. See #79.
         // https://gitlab.com/jeremy-w/macchiato/issues/79
-        let earliestInBatch = posts.map({ $0.date }).min()
+        let earliestInBatch = posts.map({ $0.published }).min()
         maybeUpdateEarliestFetched(with: earliestInBatch)
     }
 
@@ -60,9 +60,9 @@ class Stream {
     }
 
     func sortPosts() {
-        // Sorting by `date` rather than `updated` leaves edited posts in their original place
+        // Sorting by `published` rather than `updated` leaves edited posts in their original place
         // in the timeline, which is what you want an edit to do, right?
-        posts.sort(by: { $0.date > $1.date })
+        posts.sort(by: { $0.published > $1.published })
     }
 
 

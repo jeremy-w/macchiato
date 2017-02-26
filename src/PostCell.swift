@@ -21,7 +21,7 @@ class PostCell: UITableViewCell {
 
         avatar?.kf.setImage(with: post.account.avatarURL)
         author?.text = post.author
-        date?.text = PostCell.dateFormatter.string(from: post.date)
+        date?.text = PostCell.dateFormatter.string(from: post.published)
         content?.text = post.content
         content?.attributedText = makeAttributedString(fromHTML: post.html)
 
@@ -107,7 +107,10 @@ class PostCell: UITableViewCell {
 
     func info(from post: Post) -> [String] {
         var info = [String]()
-        if post.updated != post.date {
+        if post.created != post.published {
+            info.append("created: \(PostCell.dateFormatter.string(from: post.created))")
+        }
+        if post.updated != post.created {
             info.append("updated: \(PostCell.dateFormatter.string(from: post.updated))")
         }
         info.append("client: \(post.client)")
