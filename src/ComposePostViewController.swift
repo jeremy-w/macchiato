@@ -65,7 +65,18 @@ class ComposePostViewController: UIViewController {
     @objc(uploadImageAction:)
     @IBAction func uploadImageAction(sender: UIButton) {
         print("COMPOSER/IMAGE: INFO: Upload image action invoked")
+
+        let previousTitle = sender.currentTitle
+        sender.setTitle(NSLocalizedString("Uploading…", comment: "button title"), for: .normal)
+        sender.isEnabled = false
+        UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, sender)
+
         delegate?.uploadImage(for: self, sender: sender, then: { [weak self] (result) in
+            DispatchQueue.main.async {
+                sender.setTitle(previousTitle, for: .normal)
+                sender.isEnabled = true
+            }
+
             guard let me = self else { return }
 
             guard let (title: title, href: href) = result else {
