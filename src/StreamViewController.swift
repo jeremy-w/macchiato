@@ -256,6 +256,10 @@ class StreamViewController: UITableViewController {
     // MARK: - Allows taking actions on posts
     @IBAction func longPressAction(sender: UILongPressGestureRecognizer) {
         let point = sender.location(in: view)
+        presentPostActions(at: point)
+    }
+
+    func presentPostActions(at point: CGPoint) {
         guard let target = post(at: point) else {
             print("STREAMVC/", stream?.view as Any, ": ERROR: No post at long-press location. Unable to find context to show post actions.")
             return
@@ -485,10 +489,19 @@ extension StreamViewController: PostCellDelegate {
     func tapped(image: UIImage?, from url: URL, in cell: PostCell) {
         displayInWebView(url)
     }
-}
 
+    func tapped(actionButton: UIButton, in cell: PostCell) {
+        let rect = actionButton.bounds
 
-func toast(error: Error, prefix: String) {
-    let text = TenCenturiesError.describe(error)
-    toast(title: "\(prefix): \(text)")
+        let direction: UIUserInterfaceLayoutDirection
+        if #available(iOS 10.0, *) {
+            direction = actionButton.effectiveUserInterfaceLayoutDirection
+        } else {
+            direction = UIView.userInterfaceLayoutDirection(for: actionButton.semanticContentAttribute)
+        }
+
+        let leadingEdgeCenteredVertically = CGPoint(x: (direction == .leftToRight) ? rect.minX : rect.maxX, y: rect.midY)
+        let point = actionButton.convert(leadingEdgeCenteredVertically, to: view)
+        presentPostActions(at: point)
+    }
 }

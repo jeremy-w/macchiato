@@ -23,6 +23,11 @@ func toast(title: String) {
     }
 }
 
+func toast(error: Error, prefix: String) {
+    let text = TenCenturiesError.describe(error)
+    toast(title: "\(prefix): \(text)")
+}
+
 class ToastViewController: UIViewController {
     init(title: String) {
         super.init(nibName: nil, bundle: Bundle(for: ToastViewController.self))
