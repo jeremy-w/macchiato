@@ -57,6 +57,7 @@
 		3F78B84A1E6281F800B40B55 /* PhotoUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8491E6281F800B40B55 /* PhotoUploader.swift */; };
 		3F78B84C1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B84B1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift */; };
 		3F78B84E1E62825B00B40B55 /* PhotoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B84D1E62825B00B40B55 /* PhotoProvider.swift */; };
+		3F78B8511E64783B00B40B55 /* StreamViewController+PostActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8501E64783B00B40B55 /* StreamViewController+PostActions.swift */; };
 		3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */; };
 		3F7D757F1E3D377800AB8C4A /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */; };
 		3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144EB1E31C17F001E25EC /* AccountRepository.swift */; };
@@ -139,6 +140,7 @@
 		3F78B8491E6281F800B40B55 /* PhotoUploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoUploader.swift; sourceTree = "<group>"; };
 		3F78B84B1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TenCenturiesCDNPhotoUploader.swift; sourceTree = "<group>"; };
 		3F78B84D1E62825B00B40B55 /* PhotoProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoProvider.swift; sourceTree = "<group>"; };
+		3F78B8501E64783B00B40B55 /* StreamViewController+PostActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StreamViewController+PostActions.swift"; sourceTree = "<group>"; };
 		3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
 		3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
 		3F8144EB1E31C17F001E25EC /* AccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 			children = (
 				3F2E292C1DA9DCF200519C9E /* PostCell.swift */,
 				3F2E292A1DA9DC9900519C9E /* StreamViewController.swift */,
+				3F78B8501E64783B00B40B55 /* StreamViewController+PostActions.swift */,
 				3F8144FC1E34633F001E25EC /* HTMLToAttributedString.swift */,
 				3F52CF211E46B6EF002D92BC /* PostImageViewController.swift */,
 				3F52CF221E46B6EF002D92BC /* PostImageViewController.xib */,
@@ -603,6 +606,7 @@
 				3F2E29021DA9B9F200519C9E /* AppDelegate.swift in Sources */,
 				3F2E29401DAACF2100519C9E /* TenCenturiesError.swift in Sources */,
 				3F2E29A51DAFC75C00519C9E /* UUID+StringEncoding.swift in Sources */,
+				3F78B8511E64783B00B40B55 /* StreamViewController+PostActions.swift in Sources */,
 				3F2E29421DAACF4B00519C9E /* TenCenturiesPostRepository.swift in Sources */,
 				3F8144FD1E34633F001E25EC /* HTMLToAttributedString.swift in Sources */,
 				3F2E29A91DAFE46800519C9E /* TenCenturiesSessionManager+AppClientGUID.swift in Sources */,
