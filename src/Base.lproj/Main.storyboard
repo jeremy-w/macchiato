@@ -357,6 +357,7 @@
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zh2-c5-3st">
                                             <rect key="frame" x="327" y="8" width="40" height="40"/>
+                                            <accessibility key="accessibilityConfiguration" label="Post Actions"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="40" id="7T1-pC-sd0"/>
                                                 <constraint firstAttribute="width" constant="40" id="jfL-Sw-16W"/>
