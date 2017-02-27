@@ -180,14 +180,27 @@ class StreamViewController: UITableViewController {
     }
 
 
-    // MARK: - Loads thread on swipe to left
+    // MARK: - Loads thread on swipe to left (or selection when AT enabled)
     func prepareToShowThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == "ShowThread" else { return false }
 
-        guard let swipe = sender as? UISwipeGestureRecognizer
-        , let post = post(at: swipe.location(in: view)) else {
-            print("STREAMVC/", stream?.view as Any, ": ERROR: No post at swipe location. Unable to show thread.")
-            return true
+        let selectedPost: Post
+        if let swipe = sender as? UISwipeGestureRecognizer {
+            guard let post = post(at: swipe.location(in: view)) else {
+                print("STREAMVC/", stream?.view as Any, ": ERROR: No post at swipe location. Unable to show thread.")
+                return true
+            }
+            selectedPost = post
+        } else {
+            guard let tableView = tableView, let selection = tableView.indexPathForSelectedRow else {
+                return true
+            }
+            let rect = tableView.rectForRow(at: selection)
+            guard let post = post(at: CGPoint(x: rect.midX, y: rect.midY)) else {
+                print("STREAMVC/", stream?.view as Any, ": ERROR: No post at cell location. Unable to show thread.")
+                return true
+            }
+            selectedPost = post
         }
 
         guard let streamVC = segue.destination as? StreamViewController
@@ -199,7 +212,7 @@ class StreamViewController: UITableViewController {
 
         // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
         // (match on thread.root)
-        let threadStream = post.threadStream
+        let threadStream = selectedPost.threadStream
         print("STREAMVC/", stream?.view as Any, ": INFO: Preparing to show thread stream:", threadStream)
         streamVC.configure(stream: threadStream, postRepository: postRepository, identity: identity)
         return true
@@ -209,6 +222,12 @@ class StreamViewController: UITableViewController {
         guard let index = tableView.indexPathForRow(at: point)?.row else { return nil }
         guard let posts = stream?.posts, posts.isValid(index: index) else { return nil }
         return posts[index]
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard UIAccessibilityIsVoiceOverRunning() || UIAccessibilityIsSwitchControlRunning() else { return }
+
+        performSegue(withIdentifier: "ShowThread", sender: nil)
     }
 
 
