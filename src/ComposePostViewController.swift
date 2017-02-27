@@ -46,25 +46,14 @@ class ComposePostViewController: UIViewController {
             return
         }
 
-        let nstext = text as NSString
-        var mentionsRange = NSRange(location: 0, length: 0)
-        nstext.enumerateSubstrings(
-            in: NSRange(location: 0, length: nstext.length),
-            options: [.byWords, .substringNotRequired]
-        ) { (_, wordRange, enclosingRange, done) in
-            // When I let it give me the substring, I got gibberish. Weird!
-            // Word range omits at-signs. DERP!
-            let word = nstext.substring(with: wordRange)
-            guard word.hasPrefix("@") else {
-                done.pointee = true
-                return
-            }
-
-            mentionsRange.length = NSMaxRange(wordRange)
+        guard let regex = try? NSRegularExpression(pattern: "^(?:@\\S+ )", options: []) else {
+            return
         }
 
-        let select = NSRange(location: NSMaxRange(mentionsRange), length: 0)
-        textView.selectedRange = select
+        let nstext = text as NSString
+        let firstMention = regex.rangeOfFirstMatch(in: text, options: [], range: NSRange(location: 0, length: nstext.length))
+        let afterFirstMention = (firstMention.location == NSNotFound) ? 0 : NSMaxRange(firstMention)
+        textView.selectedRange = NSRange(location: afterFirstMention, length: 0)
     }
 
 
