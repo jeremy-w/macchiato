@@ -22,6 +22,7 @@ class ComposePostViewController: UIViewController {
         registerForKeyboardNotifications()
         insertionPointSwiper = InsertionPointSwiper(editableTextView: textView!)
         loadTextFromAction()
+        positionInsertionPointInText()
     }
 
     func registerForKeyboardNotifications() {
@@ -34,6 +35,25 @@ class ComposePostViewController: UIViewController {
     func loadTextFromAction() {
         let authorsUsername = [author?.username].flatMap({ $0 })
         textView?.text = action.template(notMentioning: authorsUsername)
+    }
+
+    func positionInsertionPointInText() {
+        guard let textView = textView else { return }
+        defer { textView.becomeFirstResponder() }
+
+        guard let text = textView.text else {
+            textView.selectedRange = NSRange(location: 0, length: 0)
+            return
+        }
+
+        guard let regex = try? NSRegularExpression(pattern: "^(?:@\\S+ )", options: []) else {
+            return
+        }
+
+        let nstext = text as NSString
+        let firstMention = regex.rangeOfFirstMatch(in: text, options: [], range: NSRange(location: 0, length: nstext.length))
+        let afterFirstMention = (firstMention.location == NSNotFound) ? 0 : NSMaxRange(firstMention)
+        textView.selectedRange = NSRange(location: afterFirstMention, length: 0)
     }
 
 
@@ -49,12 +69,7 @@ class ComposePostViewController: UIViewController {
 
             case let .failure(error):
                 // (jws/2016-10-15)FIXME: Save as draft and allow to retry!
-                let details: String
-                if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
-                    details = text
-                } else {
-                    details = "😔"
-                }
+                let details = TenCenturiesError.describe(error)
                 toast(title: NSLocalizedString("Posting Failed: ", comment: "title") + details)
             }
         })
