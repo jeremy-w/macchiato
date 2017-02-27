@@ -4,6 +4,7 @@ import Kingfisher
 protocol PostCellDelegate: class {
     func tapped(link: URL, in cell: PostCell)
     func tapped(image: UIImage?, from url: URL, in cell: PostCell)
+    func tapped(actionButton: UIButton, in cell: PostCell)
 }
 
 func enableAutoContentSizeUpdates(for view: UIView?) {
@@ -86,6 +87,13 @@ class PostCell: UITableViewCell {
     func highlightIfMention() {
         let isMention = (post?.you.wereMentioned ?? false)
         backgroundColor = isMention ? #colorLiteral(red: 0.95, green: 0.9866666667, blue: 1, alpha: 1) : UIColor.white
+    }
+
+
+    // MARK: - Forwards action button tap
+    @objc(actionButtonAction:)
+    @IBAction func actionButtonAction(sender: UIButton) {
+        delegate?.tapped(actionButton: sender, in: self)
     }
 
 
