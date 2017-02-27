@@ -327,7 +327,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="751" verticalCompressionResistancePriority="752" text="@someone" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CjN-sX-xmO">
-                                            <rect key="frame" x="86" y="8" width="281" height="21"/>
+                                            <rect key="frame" x="86" y="8" width="233" height="21"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -350,11 +350,22 @@
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" text="2016-10-08 22:15" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xC9-6S-Dc5">
-                                            <rect key="frame" x="86" y="37" width="281" height="18"/>
+                                            <rect key="frame" x="86" y="37" width="233" height="18"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zh2-c5-3st">
+                                            <rect key="frame" x="327" y="8" width="40" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="7T1-pC-sd0"/>
+                                                <constraint firstAttribute="width" constant="40" id="jfL-Sw-16W"/>
+                                            </constraints>
+                                            <state key="normal" image="action-dots"/>
+                                            <connections>
+                                                <action selector="actionButtonAction:" destination="VDA-u1-3Hw" eventType="touchUpInside" id="Zdw-fS-n0W"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="7DO-y4-hqa" firstAttribute="top" secondItem="tqt-qo-Z8s" secondAttribute="bottom" constant="8" id="55Y-a8-Hd2"/>
@@ -367,13 +378,15 @@
                                         <constraint firstItem="7DO-y4-hqa" firstAttribute="bottom" secondItem="nYg-wG-Sv5" secondAttribute="bottomMargin" constant="-12" id="Tgv-L6-d7V"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="tqt-qo-Z8s" secondAttribute="trailing" id="Wq3-PA-4hY"/>
                                         <constraint firstAttribute="topMargin" secondItem="nBa-Kd-FT9" secondAttribute="top" id="Y2r-nv-APX"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="xC9-6S-Dc5" secondAttribute="trailing" id="YHE-xd-uah"/>
                                         <constraint firstItem="tqt-qo-Z8s" firstAttribute="leading" secondItem="nYg-wG-Sv5" secondAttribute="leadingMargin" id="aII-lk-VEf"/>
+                                        <constraint firstItem="zh2-c5-3st" firstAttribute="leading" secondItem="xC9-6S-Dc5" secondAttribute="trailing" constant="8" symbolic="YES" id="bsq-51-dTt"/>
                                         <constraint firstItem="xC9-6S-Dc5" firstAttribute="leading" secondItem="CjN-sX-xmO" secondAttribute="leading" id="gQI-qE-GjV"/>
+                                        <constraint firstItem="zh2-c5-3st" firstAttribute="trailing" secondItem="nYg-wG-Sv5" secondAttribute="trailingMargin" id="lBJ-BG-9QN"/>
+                                        <constraint firstItem="zh2-c5-3st" firstAttribute="leading" secondItem="CjN-sX-xmO" secondAttribute="trailing" constant="8" symbolic="YES" id="tHg-hd-bsN"/>
+                                        <constraint firstItem="zh2-c5-3st" firstAttribute="top" secondItem="nYg-wG-Sv5" secondAttribute="topMargin" id="uVt-Bv-Z2y"/>
                                         <constraint firstItem="CjN-sX-xmO" firstAttribute="top" secondItem="nBa-Kd-FT9" secondAttribute="top" id="uqh-0k-g55"/>
                                         <constraint firstItem="xC9-6S-Dc5" firstAttribute="top" secondItem="CjN-sX-xmO" secondAttribute="bottom" constant="8" symbolic="YES" id="urh-Na-xAF"/>
                                         <constraint firstItem="CjN-sX-xmO" firstAttribute="leading" secondItem="nBa-Kd-FT9" secondAttribute="trailing" constant="8" symbolic="YES" id="vJy-84-UN9"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="CjN-sX-xmO" secondAttribute="trailing" id="w2i-t4-xmZ"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
@@ -493,6 +506,9 @@
             <point key="canvasLocation" x="2637.5999999999999" y="127.28635682158921"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="action-dots" width="24" height="24"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="6S0-TO-JiA"/>
         <segue reference="Y7p-AU-gU9"/>
