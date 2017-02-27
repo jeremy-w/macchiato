@@ -139,7 +139,10 @@ extension AppDelegate: ComposePostViewControllerDelegate {
 
     func didReceivePhoto(_ photo: Photo?, from provider: PhotoProvider, continue continuation: @escaping ((title: String, href: URL)?) -> Void) {
         print("COMPOSER/IMAGE: INFO: Image provider", provider, "gave photo:", photo as Any)
-        guard let photo = photo else { return }
+        guard let photo = photo else {
+            continuation(nil)
+            return
+        }
 
         services.photoUploader.upload(photo) { [weak self] result in
             self?.didUpload(photo: photo, result: result, continue: continuation)
@@ -148,11 +151,14 @@ extension AppDelegate: ComposePostViewControllerDelegate {
 
     func didUpload(photo: Photo, result: Result<URL>, continue continuation: @escaping ((title: String, href: URL)?) -> Void) {
         print("COMPOSER/IMAGE: INFO: Uploading photo", photo, "had result:", result)
+        let info: (title: String, href: URL)?
         do {
             let location = try result.unwrap()
-            continuation((title: photo.title, href: location))
+            info = (title: photo.title, href: location)
         } catch {
             toast(error: error, prefix: NSLocalizedString("Photo Upload Failed", comment: "toast error prefix"))
+            info = nil
         }
+        continuation(info)
     }
 }
