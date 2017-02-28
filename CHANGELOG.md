@@ -19,7 +19,7 @@ Changed:
 Fixed:
 
 - Posts are now sorted by publication date, not creation date. Using the wrong date sometimes led to a time range being skipped by Load Older. [#79]
-- Logging in should be recognized without a restart. [#44]
+- Logging in should be recognized without a restart. [#57]
 - Private posts no longer stay stuck to the top of the post list; they are ignored entirely. [#80]
 
 
