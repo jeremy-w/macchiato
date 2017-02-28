@@ -3,6 +3,26 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (10) - 2017-02-27
+New:
+
+- Upload Image button: Pick an image, and it gets uploaded to the 10C CDN, and corresponding image Markdown appended to the post body. [#12]
+
+Changed:
+
+- Posts display date and username on separate lines. [#74]
+- Posts use the full width of the screen for their text block. [#75]
+- Starting a new post immediately puts the caret after the first mention. [#24]
+- A Post Actions button serves as a more discoverable version of the long-press gesture. [#44]
+- Display Markdown rather than raw HTML when post HTML rendering fails [#81]
+
+Fixed:
+
+- Posts are now sorted by publication date, not creation date. Using the wrong date sometimes led to a time range being skipped by Load Older. [#79]
+- Logging in should be recognized without a restart. [#44]
+- Private posts no longer stay stuck to the top of the post list; they are ignored entirely. [#80]
+
+
 ### 1.0 (9) - 2017-02-17
 New:
 
