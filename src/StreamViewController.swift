@@ -248,11 +248,16 @@ class StreamViewController: UITableViewController {
 
         removeKeyCommand(newPostKeyCommand)
         if canSendPost {
-            print("DEBUG: ADDING", newPostKeyCommand)
             addKeyCommand(newPostKeyCommand)
         }
     }
 
+    /// Required to vend key commands.
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    /// Called by `newPostKeyCommand`.
     @IBAction func composePostAction() {
         guard isLoggedIn else { return }
 
