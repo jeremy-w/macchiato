@@ -15,6 +15,7 @@ class StreamViewController: UITableViewController {
             })
         }
     }
+
     func configure(stream: Stream, postRepository: PostRepository, identity: Identity) {
         print("configured:", self)
         self.stream = stream
