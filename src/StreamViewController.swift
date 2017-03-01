@@ -233,12 +233,30 @@ class StreamViewController: UITableViewController {
 
 
     // MARK: - Allows to post a new post
+    var newPostKeyCommand = UIKeyCommand(
+        input: "n",
+        modifierFlags: .command,
+        action: #selector(StreamViewController.composePostAction),
+        discoverabilityTitle: NSLocalizedString("New Post", comment: "keyboard discoverability title"))
+
     func canSendPostDidChange() {
         guard isViewLoaded else { return }
 
         let canSendPost = isLoggedIn
         newPostButton?.isEnabled = canSendPost
         print("STREAMVC/", stream?.view as Any, self, ": DEBUG: Can send post did change:", canSendPost)
+
+        removeKeyCommand(newPostKeyCommand)
+        if canSendPost {
+            print("DEBUG: ADDING", newPostKeyCommand)
+            addKeyCommand(newPostKeyCommand)
+        }
+    }
+
+    @IBAction func composePostAction() {
+        guard isLoggedIn else { return }
+
+        performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: newPostButton)
     }
 
     enum Segue: String {
