@@ -340,10 +340,10 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="7DO-y4-hqa">
-                                            <rect key="frame" x="8" y="291" width="359" height="0.0"/>
+                                            <rect key="frame" x="8" y="291" width="359" height="32"/>
                                         </stackView>
                                         <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" axis="vertical" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="6P5-Dg-pZA">
-                                            <rect key="frame" x="8" y="333" width="359" height="0.0"/>
+                                            <rect key="frame" x="0.0" y="333" width="375" height="44"/>
                                         </stackView>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="nBa-Kd-FT9">
                                             <rect key="frame" x="8" y="8" width="70" height="70"/>
@@ -377,7 +377,7 @@
                                         <constraint firstItem="7DO-y4-hqa" firstAttribute="leading" secondItem="tqt-qo-Z8s" secondAttribute="leading" id="9IT-28-R8a"/>
                                         <constraint firstItem="tqt-qo-Z8s" firstAttribute="top" relation="greaterThanOrEqual" secondItem="xC9-6S-Dc5" secondAttribute="bottom" constant="8" symbolic="YES" id="CUA-OB-Kwp"/>
                                         <constraint firstItem="7DO-y4-hqa" firstAttribute="trailing" secondItem="nYg-wG-Sv5" secondAttribute="trailingMargin" id="Cdd-hl-x62"/>
-                                        <constraint firstItem="7DO-y4-hqa" firstAttribute="bottom" secondItem="6P5-Dg-pZA" secondAttribute="top" id="DgY-0Y-Ohf"/>
+                                        <constraint firstItem="7DO-y4-hqa" firstAttribute="bottom" secondItem="6P5-Dg-pZA" secondAttribute="top" constant="-8" id="DgY-0Y-Ohf"/>
                                         <constraint firstItem="nBa-Kd-FT9" firstAttribute="bottom" secondItem="xC9-6S-Dc5" secondAttribute="bottom" priority="750" id="IuJ-PH-WbE"/>
                                         <constraint firstAttribute="trailing" secondItem="6P5-Dg-pZA" secondAttribute="trailing" id="LvR-gH-B7e"/>
                                         <constraint firstItem="tqt-qo-Z8s" firstAttribute="top" secondItem="nBa-Kd-FT9" secondAttribute="bottom" constant="8" id="SX6-cg-kyR"/>
