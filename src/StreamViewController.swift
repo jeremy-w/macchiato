@@ -262,7 +262,7 @@ class StreamViewController: UITableViewController {
         // and this is one way to do that.
         //
         // Really, we should be kicking the "spawn this thing" work out to _our_ delegate!
-        guard let abomination = UIApplication.shared.delegate as? AppDelegate else { return true }
+        guard let abomination: ComposePostViewControllerDelegate = UIApplication.shared.delegate as? AppDelegate else { return true }
         composer.configure(delegate: abomination, postRepository: postRepository, action: action, author: author)
         return true
     }
