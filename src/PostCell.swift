@@ -26,6 +26,7 @@ class PostCell: UITableViewCell {
     @IBOutlet var date: UILabel?
     @IBOutlet var content: UILabel?
     @IBOutlet var infoStack: UIStackView?
+    @IBOutlet var imageStack: UIStackView?
 
     private var post: Post?
     func configure(post: Post, delegate: PostCellDelegate? = nil) {
@@ -104,6 +105,9 @@ class PostCell: UITableViewCell {
         emptyOut(stack)
         addInfoLabels()
         addLinkButtons()
+
+        guard let imageStack = imageStack else { return }
+        emptyOut(imageStack)
         addImageViews()
     }
 
@@ -216,7 +220,7 @@ class PostCell: UITableViewCell {
 
     // MARK: - Image displays
     func addImageViews() {
-        guard let text = content?.attributedText, let stack = infoStack else { return }
+        guard let text = content?.attributedText, let stack = imageStack else { return }
 
         let imageURLs = imageLinks(in: text)
         for url in imageURLs {
