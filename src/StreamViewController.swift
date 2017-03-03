@@ -15,6 +15,7 @@ class StreamViewController: UITableViewController {
             })
         }
     }
+
     func configure(stream: Stream, postRepository: PostRepository, identity: Identity) {
         print("configured:", self)
         self.stream = stream
@@ -232,12 +233,35 @@ class StreamViewController: UITableViewController {
 
 
     // MARK: - Allows to post a new post
+    var newPostKeyCommand = UIKeyCommand(
+        input: "n",
+        modifierFlags: .command,
+        action: #selector(StreamViewController.composePostAction),
+        discoverabilityTitle: NSLocalizedString("New Post", comment: "keyboard discoverability title"))
+
     func canSendPostDidChange() {
         guard isViewLoaded else { return }
 
         let canSendPost = isLoggedIn
         newPostButton?.isEnabled = canSendPost
         print("STREAMVC/", stream?.view as Any, self, ": DEBUG: Can send post did change:", canSendPost)
+
+        removeKeyCommand(newPostKeyCommand)
+        if canSendPost {
+            addKeyCommand(newPostKeyCommand)
+        }
+    }
+
+    /// Required to vend key commands.
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    /// Called by `newPostKeyCommand`.
+    @IBAction func composePostAction() {
+        guard isLoggedIn else { return }
+
+        performSegue(withIdentifier: Segue.createNewThread.rawValue, sender: newPostButton)
     }
 
     enum Segue: String {
@@ -261,7 +285,7 @@ class StreamViewController: UITableViewController {
         // and this is one way to do that.
         //
         // Really, we should be kicking the "spawn this thing" work out to _our_ delegate!
-        guard let abomination = UIApplication.shared.delegate as? AppDelegate else { return true }
+        guard let abomination: ComposePostViewControllerDelegate = UIApplication.shared.delegate as? AppDelegate else { return true }
         composer.configure(delegate: abomination, postRepository: postRepository, action: action, author: author)
         return true
     }
