@@ -73,13 +73,20 @@ class ComposePostViewController: UIViewController {
                 toast(title: NSLocalizedString("Posting Failed: ", comment: "title") + details)
             }
         })
+
+        performUnwindToParentSegue()
     }
 
 
     // MARK: - Attaches an image
-    @objc(uploadImageAction:)
-    @IBAction func uploadImageAction(sender: UIButton) {
+    @IBOutlet var uploadImageButton: UIButton?
+    @IBAction func uploadImageAction() {
         print("COMPOSER/IMAGE: INFO: Upload image action invoked")
+
+        guard let sender = uploadImageButton else {
+            print("COMPOSER/IMAGE: ERROR: |uploadImageButton| is nil! Has our view been loaded?")
+            return
+        }
 
         let previousTitle = sender.currentTitle
         sender.setTitle(NSLocalizedString("Uploading…", comment: "button title"), for: .normal)
@@ -90,6 +97,7 @@ class ComposePostViewController: UIViewController {
             DispatchQueue.main.async {
                 sender.setTitle(previousTitle, for: .normal)
                 sender.isEnabled = true
+                UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, sender)
             }
 
             guard let me = self else { return }
@@ -123,5 +131,74 @@ class ComposePostViewController: UIViewController {
         guard let value = note.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue else { return }
         let topEdgeOfKeyboard = window.convert(value.cgRectValue, from: nil).minY
         constraint.constant = window.bounds.height - topEdgeOfKeyboard
+    }
+
+
+    // MARK: - Exposes keyboard shortcuts while view is visible
+    lazy var sendPostKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(
+            input: "\r",
+            modifierFlags: .command,
+            action: #selector(ComposePostViewController.postAction),
+            discoverabilityTitle: NSLocalizedString("Send Post", comment: "keyboard discoverability title"))
+    }()
+
+    lazy var insertImageKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(
+            input: "I",
+            modifierFlags: .command,
+            action: #selector(ComposePostViewController.uploadImageAction),
+            discoverabilityTitle: NSLocalizedString("Insert Image", comment: "keyboard discoverability title"))
+    }()
+
+    lazy var cancelPostKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(
+            input: UIKeyInputEscape,
+            modifierFlags: [],
+            action: #selector(ComposePostViewController.cancelAction),
+            discoverabilityTitle: NSLocalizedString("Cancel Post", comment: "keyboard discoverability title"))
+    }()
+
+    func ourKeyCommands() -> [UIKeyCommand] {
+        return [
+            sendPostKeyCommand,
+            insertImageKeyCommand,
+            cancelPostKeyCommand,
+        ]
+    }
+
+    func installKeyCommands() {
+        for command in ourKeyCommands() {
+            addKeyCommand(command)
+        }
+    }
+
+    func uninstallKeyCommands() {
+        for command in ourKeyCommands() {
+            removeKeyCommand(command)
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        installKeyCommands()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Remove key commands, so that people don't Cancel the post
+        // when they just mean to Cancel the image picker!
+        uninstallKeyCommands()
+    }
+
+    /// Called by `cancelPostKeyCommand`.
+    @IBAction func cancelAction() {
+        performUnwindToParentSegue()
+    }
+
+    func performUnwindToParentSegue() {
+        performSegue(withIdentifier: "unwindToParentStreamViewController:", sender: nil)
     }
 }

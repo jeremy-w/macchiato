@@ -32,7 +32,7 @@
                                             <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
                                         <connections>
-                                            <segue destination="UEc-Sh-0fK" kind="unwind" unwindAction="unwindToParentStreamViewController:" id="PNh-zi-uw7"/>
+                                            <segue destination="UEc-Sh-0fK" kind="unwind" identifier="unwindToParentStreamViewController:" unwindAction="unwindToParentStreamViewController:" id="PNh-zi-uw7"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nt5-bW-f9Q">
@@ -40,7 +40,7 @@
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                         <state key="normal" title="Upload Image"/>
                                         <connections>
-                                            <action selector="uploadImageAction:" destination="Qw4-kH-RwE" eventType="touchUpInside" id="gG1-uX-8ge"/>
+                                            <action selector="uploadImageAction" destination="Qw4-kH-RwE" eventType="touchUpInside" id="UCv-GM-ZUw"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h2N-2B-bip">
@@ -49,7 +49,6 @@
                                         <state key="normal" title="Post"/>
                                         <connections>
                                             <action selector="postAction" destination="Qw4-kH-RwE" eventType="touchUpInside" id="7d3-sv-TnE"/>
-                                            <segue destination="UEc-Sh-0fK" kind="unwind" unwindAction="unwindToParentStreamViewController:" id="h13-a3-xuw"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -75,6 +74,7 @@
                     <connections>
                         <outlet property="bottomConstraint" destination="y9N-gR-LgL" id="G7W-Ux-3bH"/>
                         <outlet property="textView" destination="dYz-qF-gej" id="XK9-6i-h0O"/>
+                        <outlet property="uploadImageButton" destination="Nt5-bW-f9Q" id="qhr-Hy-aCt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FqN-SG-bdT" userLabel="First Responder" sceneMemberID="firstResponder"/>
