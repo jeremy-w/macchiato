@@ -15,8 +15,6 @@ class ComposePostViewController: UIViewController {
         self.postRepository = postRepository
         self.action = action
         self.author = author
-
-        installKeyCommands()
     }
 
     override func viewDidLoad() {
@@ -136,7 +134,7 @@ class ComposePostViewController: UIViewController {
     }
 
 
-    // MARK: - Exposes keyboard shortcuts
+    // MARK: - Exposes keyboard shortcuts while view is visible
     lazy var sendPostKeyCommand: UIKeyCommand = {
         return UIKeyCommand(
             input: "\r",
@@ -161,14 +159,38 @@ class ComposePostViewController: UIViewController {
             discoverabilityTitle: NSLocalizedString("Cancel Post", comment: "keyboard discoverability title"))
     }()
 
-    func installKeyCommands() {
-        for command in [
+    func ourKeyCommands() -> [UIKeyCommand] {
+        return [
             sendPostKeyCommand,
             insertImageKeyCommand,
             cancelPostKeyCommand,
-        ] {
+        ]
+    }
+
+    func installKeyCommands() {
+        for command in ourKeyCommands() {
             addKeyCommand(command)
         }
+    }
+
+    func uninstallKeyCommands() {
+        for command in ourKeyCommands() {
+            removeKeyCommand(command)
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        installKeyCommands()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // Remove key commands, so that people don't Cancel the post
+        // when they just mean to Cancel the image picker!
+        uninstallKeyCommands()
     }
 
     /// Called by `cancelPostKeyCommand`.
