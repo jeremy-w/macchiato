@@ -49,7 +49,6 @@
                                         <state key="normal" title="Post"/>
                                         <connections>
                                             <action selector="postAction" destination="Qw4-kH-RwE" eventType="touchUpInside" id="7d3-sv-TnE"/>
-                                            <segue destination="UEc-Sh-0fK" kind="unwind" unwindAction="unwindToParentStreamViewController:" id="h13-a3-xuw"/>
                                         </connections>
                                     </button>
                                 </subviews>

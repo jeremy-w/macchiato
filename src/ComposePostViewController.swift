@@ -75,6 +75,8 @@ class ComposePostViewController: UIViewController {
                 toast(title: NSLocalizedString("Posting Failed: ", comment: "title") + details)
             }
         })
+
+        performUnwindToParentSegue()
     }
 
 
@@ -165,6 +167,10 @@ class ComposePostViewController: UIViewController {
 
     /// Called by `cancelPostKeyCommand`.
     @IBAction func cancelAction() {
+        performUnwindToParentSegue()
+    }
+
+    func performUnwindToParentSegue() {
         performSegue(withIdentifier: "unwindToParentStreamViewController:", sender: nil)
     }
 }
