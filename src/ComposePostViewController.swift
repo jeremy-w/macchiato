@@ -15,6 +15,8 @@ class ComposePostViewController: UIViewController {
         self.postRepository = postRepository
         self.action = action
         self.author = author
+
+        installKeyCommands()
     }
 
     override func viewDidLoad() {
@@ -123,5 +125,46 @@ class ComposePostViewController: UIViewController {
         guard let value = note.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue else { return }
         let topEdgeOfKeyboard = window.convert(value.cgRectValue, from: nil).minY
         constraint.constant = window.bounds.height - topEdgeOfKeyboard
+    }
+
+
+    // MARK: - Exposes keyboard shortcuts
+    lazy var sendPostKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(
+            input: "\r",
+            modifierFlags: .command,
+            action: #selector(ComposePostViewController.postAction),
+            discoverabilityTitle: NSLocalizedString("Send Post", comment: "keyboard discoverability title"))
+    }()
+
+    lazy var insertImageKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(
+            input: "I",
+            modifierFlags: .command,
+            action: #selector(ComposePostViewController.uploadImageAction),
+            discoverabilityTitle: NSLocalizedString("Insert Image", comment: "keyboard discoverability title"))
+    }()
+
+    lazy var cancelPostKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(
+            input: UIKeyInputEscape,
+            modifierFlags: [],
+            action: #selector(ComposePostViewController.cancelAction),
+            discoverabilityTitle: NSLocalizedString("Cancel Post", comment: "keyboard discoverability title"))
+    }()
+
+    func installKeyCommands() {
+        for command in [
+            sendPostKeyCommand,
+            insertImageKeyCommand,
+            cancelPostKeyCommand,
+        ] {
+            addKeyCommand(command)
+        }
+    }
+
+    /// Called by `cancelPostKeyCommand`.
+    @IBAction func cancelAction() {
+        performSegue(withIdentifier: "unwindToParentStreamViewController:", sender: nil)
     }
 }
