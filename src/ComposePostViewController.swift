@@ -81,9 +81,14 @@ class ComposePostViewController: UIViewController {
 
 
     // MARK: - Attaches an image
-    @objc(uploadImageAction:)
-    @IBAction func uploadImageAction(sender: UIButton) {
+    @IBOutlet var uploadImageButton: UIButton?
+    @IBAction func uploadImageAction() {
         print("COMPOSER/IMAGE: INFO: Upload image action invoked")
+
+        guard let sender = uploadImageButton else {
+            print("COMPOSER/IMAGE: ERROR: |uploadImageButton| is nil! Has our view been loaded?")
+            return
+        }
 
         let previousTitle = sender.currentTitle
         sender.setTitle(NSLocalizedString("Uploading…", comment: "button title"), for: .normal)
@@ -94,6 +99,7 @@ class ComposePostViewController: UIViewController {
             DispatchQueue.main.async {
                 sender.setTitle(previousTitle, for: .normal)
                 sender.isEnabled = true
+                UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, sender)
             }
 
             guard let me = self else { return }
