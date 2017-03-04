@@ -34,7 +34,7 @@ class StreamViewController: UITableViewController {
         super.viewDidLoad()
 
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 44
+        tableView.estimatedRowHeight = 350
 
         canSendPostDidChange()
         refreshControl = makeRefreshControl()
