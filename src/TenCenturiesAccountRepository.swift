@@ -51,10 +51,21 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
             id: String(describing: try unpack(dict, "id") as Any),
             username: try unpack(dict, "username"),
             name: (first: try unpack(nameDict, "first_name"), last: try unpack(nameDict, "last_name"), display: try unpack(nameDict, "display")),
-            avatarURL: (try? unpack(dict, "avatar_url") as String).flatMap({ URL(string: "https:" + $0) }) ?? Account.defaultAvatarURL,
+            avatarURL: parseAvatarURL(dict["avatar_url"]),
             verified: verified,
             description: text,
             timezone: try unpack(dict, "timezone"),
             counts: try unpack(dict, "counts"))
+    }
+
+    static func parseAvatarURL(_ hopefullyString: Any?) -> URL {
+        guard let string = hopefullyString as? String else {
+            return Account.defaultAvatarURL
+        }
+
+        guard let url = URL(string: "https:" + string) else {
+            return Account.defaultAvatarURL
+        }
+        return url
     }
 }
