@@ -182,6 +182,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let created = Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970)
         let updated = Date(timeIntervalSince1970: (try? unpack(post, "updated_unix")) ?? defaultDate.timeIntervalSince1970)
         let published = Date(timeIntervalSince1970: (try? unpack(post, "publish_unix")) ?? defaultDate.timeIntervalSince1970)
+
+        let stars = parseStars(from: post["stars"])
         return Post(
             id: postID,
             account: account ?? (isPrivate ? Account.makePrivate() : Account.makeFake()),
@@ -196,7 +198,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             updated: updated,
             published: published,
             deleted: (try? unpack(post, "is_deleted")) ?? false,
-            you: you)
+            you: you,
+            stars: stars)
     }
 
     func parseYou(from post: JSONDictionary) throws -> Post.You {
@@ -244,6 +247,28 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             name: stripPrefixedAtSign(from: try unpack(mention, "name")),
             id: String(describing: try unpack(mention, "id") as Any),
             current: stripPrefixedAtSign(from: try unpack(mention, "current")))
+    }
+
+    func parseStars(from json: Any?) -> [Post.Star] {
+        guard let stars = json as? [JSONDictionary] else {
+            return []
+        }
+
+        var parsed: [Post.Star] = []
+        parsed.reserveCapacity(stars.count)
+        for dict in stars {
+            do {
+                let avatarURL = TenCenturiesAccountRepository.parseAvatarURL(dict["avatar_url"])
+                let id = String(describing: try unpack(dict, "id") as Any)
+                let atName = try unpack(dict, "name") as String
+                let starTimestamp = try unpack(dict, "starred_unix") as TimeInterval
+                let star = Post.Star(avatarURL: avatarURL, userID: id, userAtName: atName, starredAt: Date(timeIntervalSince1970: starTimestamp))
+                parsed.append(star)
+            } catch {
+                print("POST/STAR: ERROR: Failed to parse a star record:", error, "- record", dict)
+            }
+        }
+        return parsed
     }
 
 

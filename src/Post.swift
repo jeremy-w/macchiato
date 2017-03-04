@@ -22,15 +22,22 @@ struct Post {
     var you: You
 
     /* STATS */
-    /*
-     stars = [{
-     "avatar_url" = "//cdn.10centuries.org/Wf649r/45ab260697817fad00290ff93980ec4b.jpeg";
-     id = 27;
-     name = "@jws";
-     "starred_at" = "2017-02-18 07:05:15";
-     "starred_unix" = 1487401515;
-     }]
-     */
+    var stars: [Star]
+    struct Star {
+        let avatarURL: URL
+        let userID: String
+        let userAtName: String
+        let starredAt: Date
+        /*
+         {
+         "avatar_url" = "//cdn.10centuries.org/Wf649r/45ab260697817fad00290ff93980ec4b.jpeg";
+         id = 27;
+         name = "@jws";
+         "starred_at" = "2017-02-18 07:05:15";
+         "starred_unix" = 1487401515;
+         }
+         */
+    }
 
     static func makeFake() -> Post {
         // swiftlint:disable:previous function_body_length
@@ -50,7 +57,8 @@ struct Post {
             updated: now,
             published: now,
             deleted: false,
-            you: You())
+            you: You(),
+            stars: [])
     }
 
     static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
@@ -77,7 +85,8 @@ struct Post {
             updated: now,
             published: now,
             deleted: false,
-            you: You())
+            you: You(),
+            stars: [])
     }
 }
 
