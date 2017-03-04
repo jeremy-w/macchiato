@@ -30,7 +30,7 @@ class PostCell: UITableViewCell {
     @IBOutlet var imageStack: UIStackView?
 
     private var post: Post?
-    func configure(post: Post, delegate: PostCellDelegate? = nil) {
+    func configure(post: Post, headerView: UIView?, delegate: PostCellDelegate? = nil) {
         self.post = post
         self.delegate = delegate
 
@@ -48,6 +48,12 @@ class PostCell: UITableViewCell {
         }
 
         highlightIfMention()
+
+        if let topBin = topBin {
+            emptyOut(topBin)
+            headerView.map { topBin.addArrangedSubview($0) }
+        }
+
         stackUpAdditionalInfo()
     }
     weak var delegate: PostCellDelegate?

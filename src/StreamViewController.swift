@@ -132,7 +132,7 @@ class StreamViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.identifier, for: indexPath) as! PostCell
         // swiftlint:disable:previous force_cast
         let post = stream.posts[indexPath.row]
-        cell.configure(post: post, delegate: self)
+        cell.configure(post: post, headerView: nil, delegate: self)
         return cell
     }
 
