@@ -326,13 +326,13 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="349"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="751" verticalCompressionResistancePriority="752" text="@someone" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CjN-sX-xmO">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="751" verticalCompressionResistancePriority="1000" text="@someone" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CjN-sX-xmO">
                                             <rect key="frame" x="86" y="8" width="233" height="21"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="751" layoutMarginsFollowReadableWidth="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tqt-qo-Z8s">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="1000" layoutMarginsFollowReadableWidth="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tqt-qo-Z8s">
                                             <rect key="frame" x="8" y="86" width="359" height="196.5"/>
                                             <string key="text">Pellentesque lacinia blandit magna, at scelerisque mauris aliquet placerat. Aliquam at quam commodo, volutpat massa non, feugiat nibh. Ut lobortis luctus consequat. Donec ultricies rutrum vestibulum. Aenean eget eros semper, molestie lectus sed, convallis sem. Sed eu lectus bibendum, bibendum justo id, ornare nulla. Mauris sollicitudin mauris eu neque dignissim molestie. Ut a leo justo.</string>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
@@ -352,7 +352,7 @@
                                                 <constraint firstAttribute="width" secondItem="nBa-Kd-FT9" secondAttribute="height" multiplier="1:1" id="jmO-2Y-sux"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" text="2016-10-08 22:15" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xC9-6S-Dc5">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="1000" text="2016-10-08 22:15" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xC9-6S-Dc5">
                                             <rect key="frame" x="86" y="37" width="233" height="18"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                             <nil key="textColor"/>
