@@ -21,6 +21,7 @@ func enableAutoContentSizeUpdates(for view: UIView?) {
 
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
+    @IBOutlet var topBin: UIStackView?
     @IBOutlet var avatar: UIImageView?
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
