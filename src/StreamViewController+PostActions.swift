@@ -21,7 +21,7 @@ extension StreamViewController {
     }
 
     func makePostActionAlert(for post: Post, at point: CGPoint) -> UIAlertController {
-        let alert = UIAlertController(title: NSLocalizedString("Post Actions", comment: "alert title"), message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         func perform(_ action: PostAction) -> (UIAlertAction) -> Void {
             return { [weak self] _ in self?.take(action: action, on: post) }
         }
