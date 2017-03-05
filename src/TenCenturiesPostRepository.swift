@@ -177,6 +177,12 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
 
         let parentID = try? unpack(post, "parent_id") as String
+        let parent: Any?
+        if parentID != nil, let parentDict = post["parent"] as? JSONDictionary {
+            parent = try parsePost(from: parentDict)
+        } else {
+            parent = nil
+        }
 
         let defaultDate = Date()
         let created = Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970)
@@ -199,7 +205,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             published: published,
             deleted: (try? unpack(post, "is_deleted")) ?? false,
             you: you,
-            stars: stars)
+            stars: stars,
+            parent: parent)
     }
 
     func parseYou(from post: JSONDictionary) throws -> Post.You {

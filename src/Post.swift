@@ -38,6 +38,10 @@ struct Post {
          }
          */
     }
+    let parent: Any?  // actually a Post, if present
+    var originalPost: Post? {
+        return parent as? Post
+    }
 
     static func makeFake() -> Post {
         // swiftlint:disable:previous function_body_length
@@ -58,7 +62,8 @@ struct Post {
             published: now,
             deleted: false,
             you: You(),
-            stars: [])
+            stars: [],
+            parent: nil)
     }
 
     static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
@@ -86,7 +91,8 @@ struct Post {
             published: now,
             deleted: false,
             you: You(),
-            stars: [])
+            stars: [],
+            parent: nil)
     }
 }
 
