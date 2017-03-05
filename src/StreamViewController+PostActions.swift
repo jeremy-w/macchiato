@@ -80,7 +80,7 @@ extension StreamViewController {
     }
 
     func makeCancelAction() -> UIAlertAction {
-        return UIAlertAction(title: NSLocalizedString("Cancel", comment: "button"), style: .default, handler: nil)
+        return UIAlertAction(title: NSLocalizedString("Cancel", comment: "button"), style: .cancel, handler: nil)
     }
 
     func take(action: PostAction, on post: Post) {
