@@ -25,6 +25,15 @@ extension StreamViewController {
         func perform(_ action: PostAction) -> (UIAlertAction) -> Void {
             return { [weak self] _ in self?.take(action: action, on: post) }
         }
+
+        if post.account.id == identity.account?.id {
+            alert.addAction(
+                UIAlertAction(
+                    title: NSLocalizedString("Delete", comment: "delete post action button title"),
+                    style: .destructive,
+                    handler: perform(.delete)))
+        }
+
         for (title, action) in [
             (NSLocalizedString("Reply", comment: "button"), .reply),
             (post.you.starred
@@ -49,14 +58,6 @@ extension StreamViewController {
 
             guard !title.isEmpty else { continue }
             alert.addAction(UIAlertAction(title: title, style: .default, handler: perform(action)))
-        }
-
-        if post.account.id == identity.account?.id {
-            alert.addAction(
-                UIAlertAction(
-                    title: NSLocalizedString("Delete", comment: "delete post action button title"),
-                    style: .destructive,
-                    handler: perform(.delete)))
         }
 
         let cancel = makeCancelAction()
