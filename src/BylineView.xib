@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="BylineView" customModule="Macchiato" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="Bxb-mn-ebP">
+                    <rect key="frame" x="0.0" y="0.0" width="70" height="70"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="Bxb-mn-ebP" secondAttribute="height" multiplier="1:1" id="Apf-pJ-Vcd"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="70" id="ChN-OB-fi8"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="751" verticalCompressionResistancePriority="1000" text="@someone" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="upj-mg-Nxw">
+                    <rect key="frame" x="78" y="0.0" width="297" height="21"/>
+                    <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="1000" text="2016-10-08 22:15" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4u3-Iv-NiF">
+                    <rect key="frame" x="78" y="29" width="297" height="18"/>
+                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="Bxb-mn-ebP" firstAttribute="bottom" secondItem="4u3-Iv-NiF" secondAttribute="bottom" priority="750" id="5XU-Fp-SbH"/>
+                <constraint firstItem="Bxb-mn-ebP" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="5Ye-tB-5u7"/>
+                <constraint firstItem="4u3-Iv-NiF" firstAttribute="top" secondItem="upj-mg-Nxw" secondAttribute="bottom" constant="8" symbolic="YES" id="EOk-Nc-ZPh"/>
+                <constraint firstItem="upj-mg-Nxw" firstAttribute="top" secondItem="Bxb-mn-ebP" secondAttribute="top" id="HBL-JQ-69E"/>
+                <constraint firstItem="4u3-Iv-NiF" firstAttribute="leading" secondItem="upj-mg-Nxw" secondAttribute="leading" id="MP2-Gj-eSy"/>
+                <constraint firstAttribute="trailing" secondItem="4u3-Iv-NiF" secondAttribute="trailing" id="Zve-Hj-0xJ"/>
+                <constraint firstAttribute="bottom" secondItem="Bxb-mn-ebP" secondAttribute="bottom" id="cCT-l5-jH7"/>
+                <constraint firstItem="Bxb-mn-ebP" firstAttribute="width" secondItem="Bxb-mn-ebP" secondAttribute="height" multiplier="1:1" id="fMX-6n-Kwp"/>
+                <constraint firstAttribute="trailing" secondItem="upj-mg-Nxw" secondAttribute="trailing" id="gwy-W6-LqX"/>
+                <constraint firstItem="upj-mg-Nxw" firstAttribute="leading" secondItem="Bxb-mn-ebP" secondAttribute="trailing" constant="8" symbolic="YES" id="ly7-3F-0ao"/>
+                <constraint firstItem="Bxb-mn-ebP" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="rlr-Sl-qRE"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="author" destination="upj-mg-Nxw" id="g5h-0A-nfw"/>
+                <outlet property="avatar" destination="Bxb-mn-ebP" id="tf1-kk-LZh"/>
+                <outlet property="date" destination="4u3-Iv-NiF" id="DAE-Av-fq4"/>
+            </connections>
+            <point key="canvasLocation" x="33.5" y="-245"/>
+        </view>
+    </objects>
+</document>
