@@ -176,8 +176,9 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
                 info: post)
         }
 
-        let parentID = try? unpack(post, "parent_id") as String
-        let parent: Any?
+        // This is mostly "0" it seems, so we only show it if there's a |parent|, too.
+        let parentID = post["parent_id"].map({ String(describing: $0) })
+        let parent: Post?
         if parentID != nil, let parentDict = post["parent"] as? JSONDictionary {
             parent = try parsePost(from: parentDict)
         } else {
@@ -197,7 +198,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             html: html ?? "<p>—</p>",
             privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
-            parentID: parentID,
+            parentID: (parent != nil) ? parentID : Optional<String>.none,
             client: (try? unpack(unpack(post, "client"), "name")) ?? "—",
             mentions: (try? parseMentions(from: mentions)) ?? [],
             created: created,
