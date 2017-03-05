@@ -249,7 +249,13 @@ class StreamViewController: UITableViewController {
         let actionPost = selectedPost.originalPost ?? selectedPost
         let threadStream = actionPost.threadStream
         if let stream = stream {
-            threadStream.posts = stream.posts.filter({ $0.thread?.root == actionPost.thread?.root })
+            let postIDAtRootOfThread = actionPost.thread?.root ?? actionPost.id
+            threadStream.posts = stream.posts.filter(
+                { $0.id == postIDAtRootOfThread
+                    || $0.parentID == postIDAtRootOfThread
+                    || $0.thread?.root == postIDAtRootOfThread })
+            print("STREAMVC/", stream.view,
+                  ": DEBUG: Bootstrapping thread-view with", threadStream.posts.count, "posts matching ID", postIDAtRootOfThread)
         }
 
         print("STREAMVC/", stream?.view as Any, ": INFO: Preparing to show thread stream:", threadStream)
