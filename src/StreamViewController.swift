@@ -244,9 +244,14 @@ class StreamViewController: UITableViewController {
             return true
         }
 
-        // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
-        // (match on thread.root)
-        let threadStream = selectedPost.threadStream
+        // Bootstrap the thread stream with all the posts we already have (match on thread.root)
+        // (jeremy-w/2017-03-05)TODO: Shift this logic onto the Stream itself
+        let actionPost = selectedPost.originalPost ?? selectedPost
+        let threadStream = actionPost.threadStream
+        if let stream = stream {
+            threadStream.posts = stream.posts.filter({ $0.thread?.root == actionPost.thread?.root })
+        }
+
         print("STREAMVC/", stream?.view as Any, ": INFO: Preparing to show thread stream:", threadStream)
         streamVC.configure(stream: threadStream, postRepository: postRepository, identity: identity)
         return true
