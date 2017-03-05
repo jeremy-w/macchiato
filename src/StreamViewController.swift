@@ -34,7 +34,7 @@ class StreamViewController: UITableViewController {
         super.viewDidLoad()
 
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 44
+        tableView.estimatedRowHeight = 350
 
         canSendPostDidChange()
         refreshControl = makeRefreshControl()
@@ -132,8 +132,41 @@ class StreamViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.identifier, for: indexPath) as! PostCell
         // swiftlint:disable:previous force_cast
         let post = stream.posts[indexPath.row]
-        cell.configure(post: post, delegate: self)
+        let display = post.originalPost ?? post
+        cell.configure(post: display, headerView: header(for: post), delegate: self)
         return cell
+    }
+
+    func header(for post: Post) -> UIView? {
+        if post.originalPost != nil {
+            let repostFormat = NSLocalizedString("Reposted by: @%@", comment: "%@ is username")
+            let author = String.localizedStringWithFormat(repostFormat, post.account.username)
+
+            let banner = BylineView.makeView()
+            banner.configure(imageURL: post.account.avatarURL, author: author, date: post.published)
+            return banner
+        }
+
+        guard stream?.view == .interactions else { return nil }
+
+        let names = post.stars.map({ $0.userAtName })
+        guard !names.isEmpty else { return nil }
+
+        let format = NSLocalizedString("Starred by: %@", comment: "label: %@ is account names")
+        let series = names.joined(separator: " ")
+        let text = String.localizedStringWithFormat(format, series)
+
+        let label = UILabel()
+        label.numberOfLines = 0
+
+        enableAutoContentSizeUpdates(for: label)
+        let bodyFont = UIFont.preferredFont(forTextStyle: .body)
+        let body = bodyFont.fontDescriptor
+        let bolded = body.withSymbolicTraits(.traitBold).map({ UIFont(descriptor: $0, size: 0) })
+        label.font = bolded ?? bodyFont
+
+        label.text = text
+        return label
     }
 
 
@@ -211,9 +244,14 @@ class StreamViewController: UITableViewController {
             return true
         }
 
-        // (jws/2016-10-14)FIXME: Should bootstrap the thread stream with all the posts we already have
-        // (match on thread.root)
-        let threadStream = selectedPost.threadStream
+        // Bootstrap the thread stream with all the posts we already have (match on thread.root)
+        // (jeremy-w/2017-03-05)TODO: Shift this logic onto the Stream itself
+        let actionPost = selectedPost.originalPost ?? selectedPost
+        let threadStream = actionPost.threadStream
+        if let stream = stream {
+            threadStream.posts = stream.posts.filter({ $0.thread?.root == actionPost.thread?.root })
+        }
+
         print("STREAMVC/", stream?.view as Any, ": INFO: Preparing to show thread stream:", threadStream)
         streamVC.configure(stream: threadStream, postRepository: postRepository, identity: identity)
         return true

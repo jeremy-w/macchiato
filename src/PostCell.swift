@@ -21,6 +21,8 @@ func enableAutoContentSizeUpdates(for view: UIView?) {
 
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
+    @IBOutlet var topBin: UIStackView?
+    @IBOutlet var avatarToTopBin: NSLayoutConstraint?
     @IBOutlet var avatar: UIImageView?
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
@@ -29,7 +31,7 @@ class PostCell: UITableViewCell {
     @IBOutlet var imageStack: UIStackView?
 
     private var post: Post?
-    func configure(post: Post, delegate: PostCellDelegate? = nil) {
+    func configure(post: Post, headerView: UIView?, delegate: PostCellDelegate? = nil) {
         self.post = post
         self.delegate = delegate
 
@@ -47,6 +49,13 @@ class PostCell: UITableViewCell {
         }
 
         highlightIfMention()
+
+        if let topBin = topBin {
+            emptyOut(topBin)
+            headerView.map { topBin.addArrangedSubview($0) }
+            avatarToTopBin?.constant = (headerView != nil) ? 8 : 0
+        }
+
         stackUpAdditionalInfo()
     }
     weak var delegate: PostCellDelegate?
