@@ -22,7 +22,7 @@ extension StreamViewController {
 
     func makePostActionAlert(for post: Post, at point: CGPoint) -> UIAlertController {
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        func perform(_ action: PostAction) -> (UIAlertAction) -> Void {
+        func perform(_ action: PostAction, on: Post = post.originalPost ?? post) -> (UIAlertAction) -> Void {
             return { [weak self] _ in self?.take(action: action, on: post) }
         }
 
@@ -31,7 +31,7 @@ extension StreamViewController {
                 UIAlertAction(
                     title: NSLocalizedString("Delete", comment: "delete post action button title"),
                     style: .destructive,
-                    handler: perform(.delete)))
+                    handler: perform(.delete, on: post)))
         }
 
         for (title, action) in [
