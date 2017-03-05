@@ -3,6 +3,23 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (11) - 2017-03-05
+New:
+
+- Keyboard shortcuts for New Post, Send, Attach Image, and Cancel. Hold down Command to see what shortcuts are available at any point. [#76] [#77]
+
+Changed:
+
+- Posts display the image the full width of the screen. [#86]
+- Thread views are bootstrapped with posts already on hand. [#92]
+
+Fixed:
+
+- The Interactions stream now tells you who starred or reposted your posts. This is thus the first release where the Interactions display is actually useful. [#58]
+- Reposts now display the reposter and date alongside the original post. Post actions are directed at the original post, not the repost-post. [#85]
+- Action sheets are now more HIG-compliant. [#90] [#91]
+
+
 ### 1.0 (10) - 2017-02-27
 New:
 
