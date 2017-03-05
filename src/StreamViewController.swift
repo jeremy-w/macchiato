@@ -132,15 +132,24 @@ class StreamViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.identifier, for: indexPath) as! PostCell
         // swiftlint:disable:previous force_cast
         let post = stream.posts[indexPath.row]
-        cell.configure(post: post, headerView: header(for: post), delegate: self)
+        let display = post.originalPost ?? post
+        cell.configure(post: display, headerView: header(for: post), delegate: self)
         return cell
     }
 
     func header(for post: Post) -> UIView? {
+        if post.originalPost != nil {
+            let repostFormat = NSLocalizedString("Reposted by: @%@", comment: "%@ is username")
+            let author = String.localizedStringWithFormat(repostFormat, post.account.username)
+
+            let banner = BylineView.makeView()
+            banner.configure(imageURL: post.account.avatarURL, author: author, date: post.published)
+            return banner
+        }
+
         guard stream?.view == .interactions else { return nil }
 
         let names = post.stars.map({ $0.userAtName })
-        // We don't do reposts - yet.
         guard !names.isEmpty else { return nil }
 
         let format = NSLocalizedString("Starred by: %@", comment: "label: %@ is account names")
