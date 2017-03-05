@@ -405,6 +405,7 @@
                                 <connections>
                                     <outlet property="author" destination="CjN-sX-xmO" id="WwV-xY-XYZ"/>
                                     <outlet property="avatar" destination="nBa-Kd-FT9" id="t0V-lF-ChT"/>
+                                    <outlet property="avatarToTopBin" destination="tW6-ip-p9I" id="1Mo-7v-bsp"/>
                                     <outlet property="content" destination="tqt-qo-Z8s" id="bOg-B9-wuz"/>
                                     <outlet property="date" destination="xC9-6S-Dc5" id="OPh-sK-kz1"/>
                                     <outlet property="imageStack" destination="6P5-Dg-pZA" id="aF1-jm-clP"/>

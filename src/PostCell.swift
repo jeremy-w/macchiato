@@ -22,6 +22,7 @@ func enableAutoContentSizeUpdates(for view: UIView?) {
 class PostCell: UITableViewCell {
     @nonobjc static let identifier = "PostCell"
     @IBOutlet var topBin: UIStackView?
+    @IBOutlet var avatarToTopBin: NSLayoutConstraint?
     @IBOutlet var avatar: UIImageView?
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
@@ -52,6 +53,7 @@ class PostCell: UITableViewCell {
         if let topBin = topBin {
             emptyOut(topBin)
             headerView.map { topBin.addArrangedSubview($0) }
+            avatarToTopBin?.constant = (headerView != nil) ? 8 : 0
         }
 
         stackUpAdditionalInfo()
