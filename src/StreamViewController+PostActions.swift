@@ -149,21 +149,21 @@ extension StreamViewController {
     }
 
     func makePinAlert(for post: Post, at point: CGPoint) -> UIAlertController {
-        let alert = UIAlertController(title: NSLocalizedString("Pin With…", comment: "button"), message: nil, preferredStyle: .actionSheet)
-        for color: Post.PinColor in [.black, .blue, .green, .orange, .yellow, .red] {
-            alert.addAction(
-                UIAlertAction(
-                    title: String(describing: color).capitalized,
-                    style: .default,
-                    handler: { _ in self.pin(post: post, with: color) }))
-        }
-
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         if post.you.pinned != nil {
             alert.addAction(
                 UIAlertAction(
                     title: NSLocalizedString("Unpin", comment: "button"),
                     style: .destructive,
                     handler: { _ in self.pin(post: post, with: nil) }))
+        }
+
+        for color: Post.PinColor in [.black, .blue, .green, .orange, .yellow, .red] {
+            alert.addAction(
+                UIAlertAction(
+                    title: String(describing: color).capitalized,
+                    style: .default,
+                    handler: { _ in self.pin(post: post, with: color) }))
         }
 
         let cancel = makeCancelAction()
