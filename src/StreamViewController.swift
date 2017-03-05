@@ -132,8 +132,27 @@ class StreamViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.identifier, for: indexPath) as! PostCell
         // swiftlint:disable:previous force_cast
         let post = stream.posts[indexPath.row]
-        cell.configure(post: post, headerView: nil, delegate: self)
+        cell.configure(post: post, headerView: header(for: post), delegate: self)
         return cell
+    }
+
+    func header(for post: Post) -> UIView? {
+        guard stream?.view == .interactions else { return nil }
+
+        let names = post.stars.map({ $0.userAtName })
+        // We don't do reposts - yet.
+        guard !names.isEmpty else { return nil }
+
+        let format = NSLocalizedString("Starred by: %@", comment: "label: %@ is account names")
+        let series = names.joined(separator: " ")
+        let text = String.localizedStringWithFormat(format, series)
+
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.font = UIFont.preferredFont(forTextStyle: .body)
+        enableAutoContentSizeUpdates(for: label)
+        label.text = text
+        return label
     }
 
 
