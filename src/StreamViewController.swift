@@ -149,8 +149,13 @@ class StreamViewController: UITableViewController {
 
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = UIFont.preferredFont(forTextStyle: .body)
+
         enableAutoContentSizeUpdates(for: label)
+        let bodyFont = UIFont.preferredFont(forTextStyle: .body)
+        let body = bodyFont.fontDescriptor
+        let bolded = body.withSymbolicTraits(.traitBold).map({ UIFont(descriptor: $0, size: 0) })
+        label.font = bolded ?? bodyFont
+
         label.text = text
         return label
     }
