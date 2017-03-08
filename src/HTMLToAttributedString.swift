@@ -9,7 +9,11 @@ import Kingfisher
  */
 func makeAttributedString(fromHTML html: String) -> NSAttributedString? {
     // (jeremy-w/2017-02-16)FIXME: This should return optional, and then we can fall back to raw Markdown.
-    let withRootNode = "<body>" + html.replacingOccurrences(of: "<hr>", with: "<hr />") + "</body>"
+    let fixedUp = html
+        .replacingOccurrences(of: "<hr>", with: "<hr />")
+        .replacingOccurrences(of: "<br>", with: "<br />")
+        .replacingOccurrences(of: "\u{0010}", with: "\n")
+    let withRootNode = "<body>" + fixedUp + "</body>"
     guard let utf8 = withRootNode.data(using: .utf8) else {
         print("HTML: ERROR: Failed to convert string to UTF-8–encoded data: returning as-is")
         return NSAttributedString(string: html)
