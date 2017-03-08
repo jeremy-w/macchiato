@@ -3,6 +3,13 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (12) - 2017-03-08
+Fixed:
+
+- Rewrote some HTML to valid XML to fix post display. [#55] [#93]
+- Forced line-wrapping to avoid unwanted truncation of paragraphs alongside blockquotes. [#87]
+
+
 ### 1.0 (11) - 2017-03-05
 New:
 
