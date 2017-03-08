@@ -299,6 +299,12 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     // MARK: - Rich Text Attributes
     static func applyParagraph(to attributes: Attributes) -> Attributes {
         var paragraphy = attributes
+
+        let style = (paragraphy[NSParagraphStyleAttributeName] as? NSParagraphStyle) ?? NSParagraphStyle.default
+        let mutableStyle = style.mutableCopy() as! NSMutableParagraphStyle  // swiftlint:disable:this force_cast
+        mutableStyle.lineBreakMode = .byWordWrapping
+        paragraphy[NSParagraphStyleAttributeName] = mutableStyle
+
         guard paragraphy[NSFontAttributeName] == nil else {
             return paragraphy
         }
