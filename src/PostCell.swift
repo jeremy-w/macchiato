@@ -5,6 +5,8 @@ protocol PostCellDelegate: class {
     func tapped(link: URL, in cell: PostCell)
     func tapped(image: UIImage?, from url: URL, in cell: PostCell)
     func tapped(actionButton: UIButton, in cell: PostCell)
+    func tappedAvatar(in cell: PostCell)
+    func longPressedAvatar(in cell: PostCell)
 }
 
 func enableAutoContentSizeUpdates(for view: UIView?) {
@@ -74,6 +76,7 @@ class PostCell: UITableViewCell {
         enableAutoContentSizeUpdates(for: author)
         enableAutoContentSizeUpdates(for: date)
         enableAutoContentSizeUpdates(for: content)
+        connectAvatarActions()
     }
 
     func roundCorners(of view: UIView?) {
@@ -81,6 +84,13 @@ class PostCell: UITableViewCell {
 
         view.layer.masksToBounds = true
         view.layer.cornerRadius = 8
+    }
+
+    @IBOutlet var avatarTapRecognizer: UITapGestureRecognizer?
+    @IBOutlet var avatarLongPressRecognizer: UILongPressGestureRecognizer?
+    func connectAvatarActions() {
+        avatarTapRecognizer?.addTarget(self, action: #selector(tapAvatarAction))
+        avatarLongPressRecognizer?.addTarget(self, action: #selector(longPressAvatarAction))
     }
 
     @nonobjc static var dateFormatter: DateFormatter = {
@@ -100,10 +110,20 @@ class PostCell: UITableViewCell {
     }
 
 
-    // MARK: - Forwards action button tap
+    // MARK: - Forwards actions
     @objc(actionButtonAction:)
     @IBAction func actionButtonAction(sender: UIButton) {
         delegate?.tapped(actionButton: sender, in: self)
+    }
+
+    @objc(tapAvatarAction:)
+    @IBAction func tapAvatarAction(sender: UITapGestureRecognizer) {
+        delegate?.tappedAvatar(in: self)
+    }
+
+    @objc(longPressAvatarAction:)
+    @IBAction func longPressAvatarAction(sender: UILongPressGestureRecognizer) {
+        delegate?.longPressedAvatar(in: self)
     }
 
 

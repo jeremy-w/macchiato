@@ -363,4 +363,12 @@ extension StreamViewController: PostCellDelegate {
         let point = actionButton.convert(leadingEdgeCenteredVertically, to: view)
         presentPostActions(at: point)
     }
+
+    func tappedAvatar(in cell: PostCell) {
+        print("TODO: show account view")
+    }
+
+    func longPressedAvatar(in cell: PostCell) {
+        print("TODO: display account actions")
+    }
 }
