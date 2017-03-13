@@ -21,11 +21,11 @@ func enableAutoContentSizeUpdates(for view: UIView?) {
     }
 }
 
-class PostCell: UITableViewCell {
+class PostCell: UITableViewCell, AvatarImageViewDelegate {
     @nonobjc static let identifier = "PostCell"
     @IBOutlet var topBin: UIStackView?
     @IBOutlet var avatarToTopBin: NSLayoutConstraint?
-    @IBOutlet var avatar: UIImageView?
+    @IBOutlet var avatar: AvatarImageView?
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
     @IBOutlet var content: UILabel?
@@ -37,7 +37,7 @@ class PostCell: UITableViewCell {
         self.post = post
         self.delegate = delegate
 
-        avatar?.kf.setImage(with: post.account.avatarURL)
+        avatar?.display(account: post.account, delegate: self)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.published)
 
@@ -76,21 +76,6 @@ class PostCell: UITableViewCell {
         enableAutoContentSizeUpdates(for: author)
         enableAutoContentSizeUpdates(for: date)
         enableAutoContentSizeUpdates(for: content)
-        connectAvatarActions()
-    }
-
-    func roundCorners(of view: UIView?) {
-        guard let view = view else { return }
-
-        view.layer.masksToBounds = true
-        view.layer.cornerRadius = 8
-    }
-
-    @IBOutlet var avatarTapRecognizer: UITapGestureRecognizer?
-    @IBOutlet var avatarLongPressRecognizer: UILongPressGestureRecognizer?
-    func connectAvatarActions() {
-        avatarTapRecognizer?.addTarget(self, action: #selector(tapAvatarAction))
-        avatarLongPressRecognizer?.addTarget(self, action: #selector(longPressAvatarAction))
     }
 
     @nonobjc static var dateFormatter: DateFormatter = {
@@ -116,13 +101,11 @@ class PostCell: UITableViewCell {
         delegate?.tapped(actionButton: sender, in: self)
     }
 
-    @objc(tapAvatarAction:)
-    @IBAction func tapAvatarAction(sender: UITapGestureRecognizer) {
+    func tapped(avatarImageView: AvatarImageView) {
         delegate?.tappedAvatar(in: self)
     }
 
-    @objc(longPressAvatarAction:)
-    @IBAction func longPressAvatarAction(sender: UILongPressGestureRecognizer) {
+    func longPressed(avatarImageView: AvatarImageView) {
         delegate?.longPressedAvatar(in: self)
     }
 
@@ -310,4 +293,12 @@ class PostCell: UITableViewCell {
         imageView.accessibilityTraits |= UIAccessibilityTraitLink
         return imageView
     }
+}
+
+
+func roundCorners(of view: UIView?, radius: CGFloat = 8.0) {
+    guard let view = view else { return }
+
+    view.layer.masksToBounds = true
+    view.layer.cornerRadius = radius
 }
