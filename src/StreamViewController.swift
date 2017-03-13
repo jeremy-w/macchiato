@@ -366,6 +366,12 @@ extension StreamViewController: PostCellDelegate {
 
     func tappedAvatar(in cell: PostCell) {
         print("TODO: show account view")
+        showAccountView()
+    }
+
+    func showAccountView() {
+        let accountVC = AccountViewController()
+        show(accountVC, sender: self)
     }
 
     func longPressedAvatar(in cell: PostCell) {
