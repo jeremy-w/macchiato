@@ -14,18 +14,37 @@ struct Account {
     static let defaultAvatarURL = URL(string: "https://cdn.10centuries.org/avatars/default.png")!
 
     let verified: URL?
-    let description: String
+    let descriptionMarkdown: String
+    let descriptionHTML: String
     let timezone: String
 
+    enum CountKey {
+        static let blogposts = "blogposts"
+        static let followers = "followers"
+        static let following = "following"
+        static let podcasts = "podcasts"
+        static let socialposts = "socialposts"
+        static let stars = "stars"
+    }
     let counts: [String: Int]  // following, followers, stars, posts of various sizes
-//    let createdAt: Date  // ISO8601, Zulu
+    let createdAt: Date  // ISO8601, Zulu
 //    let annotations: Bool
 //    let coverImage: URL  // or false
-//    let evangelist: Bool
-//    let followsYou: Bool
-//    let youFollow: Bool
-//    let isMuted: Bool
-//    let isSilenced: Bool
+    let isEvangelist: Bool
+    let followsYou: Bool
+    let youFollow: Bool
+    let isMuted: Bool
+    let isSilenced: Bool
+
+    var fullName: String {
+        // (jeremy-w/2017-03-20)TODO: Respect user's preferences for name ordering
+        var fullName = name.first
+        if !fullName.isEmpty && !name.last.isEmpty {
+            fullName += " "
+        }
+        fullName += name.last
+        return fullName
+    }
 }
 
 
@@ -40,9 +59,16 @@ extension Account {
                 display: "someone"),
             avatarURL: Account.defaultAvatarURL,
             verified: nil,
-            description: "just somebody",
+            descriptionMarkdown: "just somebody",
+            descriptionHTML: "<p>just somebody</p>",
             timezone: "US/Eastern",
-            counts: [:])
+            counts: [:],
+            createdAt: Date(),
+            isEvangelist: false,
+            followsYou: false,
+            youFollow: false,
+            isMuted: false,
+            isSilenced: false)
     }
 
     static func makePrivate() -> Account {
@@ -53,8 +79,15 @@ extension Account {
             name: (first: privateThing, last: privateThing, display: privateThing),
             avatarURL: Account.defaultAvatarURL,
             verified: nil,
-            description: "",
+            descriptionMarkdown: "",
+            descriptionHTML: "",
             timezone: "",
-            counts: [:])
+            counts: [:],
+            createdAt: Date(),
+            isEvangelist: false,
+            followsYou: false,
+            youFollow: false,
+            isMuted: false,
+            isSilenced: false)
     }
 }

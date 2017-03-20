@@ -5,6 +5,8 @@ protocol PostCellDelegate: class {
     func tapped(link: URL, in cell: PostCell)
     func tapped(image: UIImage?, from url: URL, in cell: PostCell)
     func tapped(actionButton: UIButton, in cell: PostCell)
+    func tappedAvatar(in cell: PostCell)
+    func longPressedAvatar(in cell: PostCell)
 }
 
 func enableAutoContentSizeUpdates(for view: UIView?) {
@@ -19,23 +21,23 @@ func enableAutoContentSizeUpdates(for view: UIView?) {
     }
 }
 
-class PostCell: UITableViewCell {
+class PostCell: UITableViewCell, AvatarImageViewDelegate {
     @nonobjc static let identifier = "PostCell"
     @IBOutlet var topBin: UIStackView?
     @IBOutlet var avatarToTopBin: NSLayoutConstraint?
-    @IBOutlet var avatar: UIImageView?
+    @IBOutlet var avatar: AvatarImageView?
     @IBOutlet var author: UILabel?
     @IBOutlet var date: UILabel?
     @IBOutlet var content: UILabel?
     @IBOutlet var infoStack: UIStackView?
     @IBOutlet var imageStack: UIStackView?
 
-    private var post: Post?
+    private(set) var post: Post?
     func configure(post: Post, headerView: UIView?, delegate: PostCellDelegate? = nil) {
         self.post = post
         self.delegate = delegate
 
-        avatar?.kf.setImage(with: post.account.avatarURL)
+        avatar?.display(account: post.account, delegate: self)
         author?.text = post.author
         date?.text = PostCell.dateFormatter.string(from: post.published)
 
@@ -76,13 +78,6 @@ class PostCell: UITableViewCell {
         enableAutoContentSizeUpdates(for: content)
     }
 
-    func roundCorners(of view: UIView?) {
-        guard let view = view else { return }
-
-        view.layer.masksToBounds = true
-        view.layer.cornerRadius = 8
-    }
-
     @nonobjc static var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -100,10 +95,18 @@ class PostCell: UITableViewCell {
     }
 
 
-    // MARK: - Forwards action button tap
+    // MARK: - Forwards actions
     @objc(actionButtonAction:)
     @IBAction func actionButtonAction(sender: UIButton) {
         delegate?.tapped(actionButton: sender, in: self)
+    }
+
+    func tapped(avatarImageView: AvatarImageView) {
+        delegate?.tappedAvatar(in: self)
+    }
+
+    func longPressed(avatarImageView: AvatarImageView) {
+        delegate?.longPressedAvatar(in: self)
     }
 
 
@@ -290,4 +293,12 @@ class PostCell: UITableViewCell {
         imageView.accessibilityTraits |= UIAccessibilityTraitLink
         return imageView
     }
+}
+
+
+func roundCorners(of view: UIView?, radius: CGFloat = 8.0) {
+    guard let view = view else { return }
+
+    view.layer.masksToBounds = true
+    view.layer.cornerRadius = radius
 }

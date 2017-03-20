@@ -363,4 +363,23 @@ extension StreamViewController: PostCellDelegate {
         let point = actionButton.convert(leadingEdgeCenteredVertically, to: view)
         presentPostActions(at: point)
     }
+
+    func tappedAvatar(in cell: PostCell) {
+        guard let account = cell.post?.account else {
+            print("STREAM: WARNING: Tapped cell without a post account; cannot show avatar")
+            return
+        }
+
+        showAccountView(displaying: account)
+    }
+
+    func showAccountView(displaying account: Account) {
+        let accountVC = AccountViewController()
+        accountVC.configure(account: account)
+        show(accountVC, sender: self)
+    }
+
+    func longPressedAvatar(in cell: PostCell) {
+        print("TODO: display account actions")
+    }
 }

@@ -40,12 +40,24 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
             verified = nil
         }
 
-        let text: String
+        let descriptionMarkdown: String
+        let descriptionHTML: String
         if let descDict = try? unpack(dict, "description") as JSONDictionary {
-            text = (try? unpack(descDict, "text")) ?? ""
+            descriptionMarkdown = (try? unpack(descDict, "text")) ?? ""
+            descriptionHTML = (try? unpack(descDict, "html")) ?? ""
         } else {
-            text = ""
+            descriptionMarkdown = ""
+            descriptionHTML = ""
         }
+
+        let defaultDate = Date.distantPast
+        let created = (try? unpack(dict, "created_at")).flatMap({ parseISODate(from: $0) }) ?? defaultDate
+
+        let isEvangelist = (try? unpack(dict, "evangelist")) ?? false
+        let followsYou = (try? unpack(dict, "follows_you")) ?? false
+        let youFollow = (try? unpack(dict, "you_follow")) ?? false
+        let isMuted = (try? unpack(dict, "is_muted")) ?? false
+        let isSilenced = (try? unpack(dict, "is_silenced")) ?? false
 
         return Account(
             id: String(describing: try unpack(dict, "id") as Any),
@@ -53,9 +65,17 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
             name: (first: try unpack(nameDict, "first_name"), last: try unpack(nameDict, "last_name"), display: try unpack(nameDict, "display")),
             avatarURL: parseAvatarURL(dict["avatar_url"]),
             verified: verified,
-            description: text,
+            descriptionMarkdown: descriptionMarkdown,
+            descriptionHTML: descriptionHTML,
             timezone: try unpack(dict, "timezone"),
-            counts: try unpack(dict, "counts"))
+            counts: try unpack(dict, "counts"),
+            createdAt: created,
+            isEvangelist: isEvangelist,
+            followsYou: followsYou,
+            youFollow: youFollow,
+            isMuted: isMuted,
+            isSilenced: isSilenced
+        )
     }
 
     static func parseAvatarURL(_ hopefullyString: Any?) -> URL {
@@ -68,4 +88,15 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
         }
         return url
     }
+}
+
+private let isoDateFormatter: DateFormatter = {
+    let dateFormatter = DateFormatter()
+    dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+    dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+    dateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
+    return dateFormatter
+}()
+func parseISODate(from string: String) -> Date? {
+    return isoDateFormatter.date(from: string)
 }

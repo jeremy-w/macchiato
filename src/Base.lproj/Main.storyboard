@@ -329,8 +329,9 @@
                                         <stackView opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="infinite" placeholderIntrinsicHeight="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="Sj8-DO-SKd">
                                             <rect key="frame" x="8" y="8" width="359" height="0.0"/>
                                         </stackView>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="nBa-Kd-FT9">
+                                        <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="nBa-Kd-FT9" customClass="AvatarImageView" customModule="Macchiato" customModuleProvider="target">
                                             <rect key="frame" x="8" y="8" width="70" height="70"/>
+                                            <gestureRecognizers/>
                                             <constraints>
                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="70" id="8Po-RU-fu9"/>
                                                 <constraint firstAttribute="width" secondItem="nBa-Kd-FT9" secondAttribute="height" multiplier="1:1" id="jmO-2Y-sux"/>
@@ -361,17 +362,17 @@
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="1000" layoutMarginsFollowReadableWidth="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tqt-qo-Z8s">
-                                            <rect key="frame" x="8" y="86" width="359" height="196.5"/>
+                                            <rect key="frame" x="8" y="86" width="359" height="197"/>
                                             <string key="text">Pellentesque lacinia blandit magna, at scelerisque mauris aliquet placerat. Aliquam at quam commodo, volutpat massa non, feugiat nibh. Ut lobortis luctus consequat. Donec ultricies rutrum vestibulum. Aenean eget eros semper, molestie lectus sed, convallis sem. Sed eu lectus bibendum, bibendum justo id, ornare nulla. Mauris sollicitudin mauris eu neque dignissim molestie. Ut a leo justo.</string>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <stackView opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="infinite" placeholderIntrinsicHeight="32" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="7DO-y4-hqa">
-                                            <rect key="frame" x="8" y="291" width="359" height="0.0"/>
+                                            <rect key="frame" x="8" y="292" width="359" height="0.0"/>
                                         </stackView>
                                         <stackView opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="751" placeholderIntrinsicWidth="infinite" placeholderIntrinsicHeight="44" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" axis="vertical" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="6P5-Dg-pZA">
-                                            <rect key="frame" x="0.0" y="299" width="375" height="30.5"/>
+                                            <rect key="frame" x="0.0" y="300" width="375" height="30"/>
                                         </stackView>
                                     </subviews>
                                     <constraints>
@@ -472,7 +473,7 @@
                         <segue destination="okv-1E-ESU" kind="show" identifier="ShowThread" id="es5-Sc-Pfh"/>
                     </connections>
                 </swipeGestureRecognizer>
-                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="Stn-t1-Ks6">
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="Stn-t1-Ks6" userLabel="&quot;Show Post Actions&quot; Long Press Gesture Recognizer">
                     <connections>
                         <action selector="longPressActionWithSender:" destination="okv-1E-ESU" id="6VK-4w-RAM"/>
                     </connections>
