@@ -67,7 +67,7 @@ extension AccountViewController {
         avatar?.display(account: account, delegate: nil)
         handle?.text = account?.username
         name?.text = account?.fullName
-        about?.text = account?.description
+        about?.text = account?.descriptionMarkdown
         // FIXME: Parse createdAt!
         created?.text = String.localizedStringWithFormat("Joined: %@", "")
     }
