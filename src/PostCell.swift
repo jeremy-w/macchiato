@@ -32,7 +32,7 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
     @IBOutlet var infoStack: UIStackView?
     @IBOutlet var imageStack: UIStackView?
 
-    private var post: Post?
+    private(set) var post: Post?
     func configure(post: Post, headerView: UIView?, delegate: PostCellDelegate? = nil) {
         self.post = post
         self.delegate = delegate

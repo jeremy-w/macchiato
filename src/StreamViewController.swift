@@ -365,12 +365,17 @@ extension StreamViewController: PostCellDelegate {
     }
 
     func tappedAvatar(in cell: PostCell) {
-        print("TODO: show account view")
-        showAccountView()
+        guard let account = cell.post?.account else {
+            print("STREAM: WARNING: Tapped cell without a post account; cannot show avatar")
+            return
+        }
+
+        showAccountView(displaying: account)
     }
 
-    func showAccountView() {
+    func showAccountView(displaying account: Account) {
         let accountVC = AccountViewController()
+        accountVC.configure(account: account)
         show(accountVC, sender: self)
     }
 
