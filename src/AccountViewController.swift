@@ -65,7 +65,8 @@ extension AccountViewController {
 
     func displayBasicAccountInfo() {
         avatar?.display(account: account, delegate: nil)
-        handle?.text = account?.username
+        title = (account?.username).map({ "@" + $0 })
+        handle?.text = title
         name?.text = account?.fullName
         about?.text = account?.descriptionMarkdown
         // FIXME: Parse createdAt!
