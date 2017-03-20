@@ -17,6 +17,14 @@ struct Account {
     let description: String
     let timezone: String
 
+    enum CountKey {
+        static let blogposts = "blogposts"
+        static let followers = "followers"
+        static let following = "following"
+        static let podcasts = "podcasts"
+        static let socialposts = "socialposts"
+        static let stars = "stars"
+    }
     let counts: [String: Int]  // following, followers, stars, posts of various sizes
 //    let createdAt: Date  // ISO8601, Zulu
 //    let annotations: Bool

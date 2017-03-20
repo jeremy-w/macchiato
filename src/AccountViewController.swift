@@ -88,6 +88,9 @@ extension AccountViewController {
     }
 
     func updateStatisticsLinks() {
-        // FIXME: Not really parsing this, either.
+        posts?.setTitle(String.localizedStringWithFormat("%d Posts", account?.counts[Account.CountKey.socialposts] ?? -1), for: .normal)
+        stars?.setTitle(String.localizedStringWithFormat("%d Stars", account?.counts[Account.CountKey.stars] ?? -1), for: .normal)
+        following?.setTitle(String.localizedStringWithFormat("Following %d", account?.counts[Account.CountKey.following] ?? -1), for: .normal)
+        followers?.setTitle(String.localizedStringWithFormat("Followed by %d", account?.counts[Account.CountKey.followers] ?? -1), for: .normal)
     }
 }
