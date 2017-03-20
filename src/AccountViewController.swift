@@ -69,8 +69,11 @@ extension AccountViewController {
         handle?.text = title
         name?.text = account?.fullName
         about?.text = account?.descriptionMarkdown
-        // FIXME: Parse createdAt!
-        created?.text = String.localizedStringWithFormat("Joined: %@", "")
+
+        let format = NSLocalizedString("Joined: %@", comment: "%@ is date")
+        // Full+Long is like: Wednesday, February 22 2017 at 12:00:50 PM EST
+        let dateString = (account?.createdAt).map({DateFormatter.localizedString(from: $0, dateStyle: .full, timeStyle: .long)}) ?? ""
+        created?.text = String.localizedStringWithFormat(format, dateString)
     }
 
     func updateRelationshipButtons() {
