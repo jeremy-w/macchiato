@@ -77,7 +77,7 @@ extension AccountViewController {
     }
 
     func updateRelationshipButtons() {
-        guard let _ = account else {
+        guard let account = account else {
             follow?.isHidden = true
             mute?.isHidden = true
             silence?.isHidden = true
@@ -88,7 +88,21 @@ extension AccountViewController {
         mute?.isHidden = false
         silence?.isHidden = false
 
-        // FIXME: Need to parse youFollow etc!
+        follow?.setTitle(
+            account.youFollow
+                ? NSLocalizedString("Unfollow", comment: "button label")
+                : NSLocalizedString("Follow", comment: "button label"),
+            for: .normal)
+        mute?.setTitle(
+            account.isMuted
+                ? NSLocalizedString("Unmute", comment: "button label")
+                : NSLocalizedString("Mute", comment: "button label"),
+            for: .normal)
+        silence?.setTitle(
+            account.isSilenced
+                ? NSLocalizedString("Unsilence", comment: "button label")
+                : NSLocalizedString("Silence", comment: "button label"),
+            for: .normal)
     }
 
     func updateStatisticsLinks() {
