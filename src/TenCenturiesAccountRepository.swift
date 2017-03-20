@@ -53,7 +53,11 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
         let defaultDate = Date.distantPast
         let created = (try? unpack(dict, "created_at")).flatMap({ parseISODate(from: $0) }) ?? defaultDate
 
-        // TODO: evangelist and other bools
+        let isEvangelist = (try? unpack(dict, "evangelist")) ?? false
+        let followsYou = (try? unpack(dict, "follows_you")) ?? false
+        let youFollow = (try? unpack(dict, "you_follow")) ?? false
+        let isMuted = (try? unpack(dict, "is_muted")) ?? false
+        let isSilenced = (try? unpack(dict, "is_silenced")) ?? false
 
         return Account(
             id: String(describing: try unpack(dict, "id") as Any),
@@ -66,11 +70,11 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
             timezone: try unpack(dict, "timezone"),
             counts: try unpack(dict, "counts"),
             createdAt: created,
-            isEvangelist: false,
-            followsYou: false,
-            youFollow: false,
-            isMuted: false,
-            isSilenced: false
+            isEvangelist: isEvangelist,
+            followsYou: followsYou,
+            youFollow: youFollow,
+            isMuted: isMuted,
+            isSilenced: isSilenced
         )
     }
 
