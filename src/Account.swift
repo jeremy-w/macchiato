@@ -26,6 +26,16 @@ struct Account {
 //    let youFollow: Bool
 //    let isMuted: Bool
 //    let isSilenced: Bool
+
+    var fullName: String {
+        // (jeremy-w/2017-03-20)TODO: Respect user's preferences for name ordering
+        var fullName = name.first
+        if !fullName.isEmpty && !name.last.isEmpty {
+            fullName += " "
+        }
+        fullName += name.last
+        return fullName
+    }
 }
 
 

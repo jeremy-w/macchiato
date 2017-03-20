@@ -11,6 +11,18 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AccountViewController" customModule="Macchiato" customModuleProvider="target">
             <connections>
+                <outlet property="about" destination="VP1-RC-zbe" id="HxS-TY-k8f"/>
+                <outlet property="avatar" destination="xhu-4G-26i" id="bMx-Te-5vo"/>
+                <outlet property="created" destination="5F0-m1-aOF" id="pmj-FX-EnP"/>
+                <outlet property="follow" destination="MaS-C5-ecT" id="hov-PK-Jh8"/>
+                <outlet property="followers" destination="Q0I-Z2-wY0" id="H9i-AV-ltS"/>
+                <outlet property="following" destination="Erh-cL-cfl" id="HI6-nF-K6A"/>
+                <outlet property="handle" destination="ReT-N9-XFG" id="qgC-5z-afb"/>
+                <outlet property="mute" destination="TpF-nT-lPt" id="8Dr-wj-OoK"/>
+                <outlet property="name" destination="FZq-zc-pN2" id="HeE-Fd-gjH"/>
+                <outlet property="posts" destination="Qxb-BU-PUp" id="aDB-57-IGp"/>
+                <outlet property="silence" destination="po2-yD-DWm" id="gTj-3T-plD"/>
+                <outlet property="stars" destination="r2N-My-fV2" id="cyU-zp-PKa"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -23,7 +35,7 @@
                     <rect key="frame" x="-20" y="-20" width="415" height="687"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="eVr-Rc-DhO">
-                            <rect key="frame" x="20" y="20" width="375" height="233"/>
+                            <rect key="frame" x="20" y="20" width="375" height="449"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xhu-4G-26i" customClass="AvatarImageView" customModule="Macchiato" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="128"/>
@@ -46,7 +58,73 @@
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Created: $DATE" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5F0-m1-aOF">
+                                    <rect key="frame" x="139.5" y="240.5" width="96.5" height="16"/>
+                                    <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" distribution="equalSpacing" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Mpa-Zg-CFn">
+                                    <rect key="frame" x="107" y="264.5" width="161" height="32"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MaS-C5-ecT">
+                                            <rect key="frame" x="0.0" y="0.0" width="47" height="32"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                            <state key="normal" title="Follow"/>
+                                            <connections>
+                                                <action selector="toggleFollowAction" destination="-1" eventType="touchUpInside" id="z7g-Wm-sKE"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TpF-nT-lPt">
+                                            <rect key="frame" x="59" y="0.0" width="37" height="32"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                            <state key="normal" title="Mute"/>
+                                            <connections>
+                                                <action selector="toggleMuteAction" destination="-1" eventType="touchUpInside" id="a1y-XF-G1p"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="po2-yD-DWm">
+                                            <rect key="frame" x="108" y="0.0" width="53" height="32"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                            <state key="normal" title="Silence"/>
+                                            <connections>
+                                                <action selector="toggleSilenceAction" destination="-1" eventType="touchUpInside" id="NeE-Bh-Eqd"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </stackView>
+                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qxb-BU-PUp">
+                                    <rect key="frame" x="146.5" y="304.5" width="82" height="30"/>
+                                    <state key="normal" title="Some Posts"/>
+                                    <connections>
+                                        <action selector="viewPostsAction" destination="-1" eventType="touchUpInside" id="bST-Rf-OsY"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r2N-My-fV2">
+                                    <rect key="frame" x="148" y="342.5" width="79" height="30"/>
+                                    <state key="normal" title="Some Stars"/>
+                                    <connections>
+                                        <action selector="viewStarsAction" destination="-1" eventType="touchUpInside" id="HdY-eG-Fa7"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q0I-Z2-wY0">
+                                    <rect key="frame" x="125" y="380.5" width="125" height="30"/>
+                                    <state key="normal" title="Followed by Some"/>
+                                    <connections>
+                                        <action selector="viewFollowersAction" destination="-1" eventType="touchUpInside" id="8Uj-bu-JJY"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Erh-cL-cfl">
+                                    <rect key="frame" x="129.5" y="418.5" width="116" height="30"/>
+                                    <state key="normal" title="Following Others"/>
+                                    <connections>
+                                        <action selector="viewFollowingAction" destination="-1" eventType="touchUpInside" id="vjd-1u-BzH"/>
+                                    </connections>
+                                </button>
                             </subviews>
+                            <constraints>
+                                <constraint firstItem="Mpa-Zg-CFn" firstAttribute="width" relation="lessThanOrEqual" secondItem="eVr-Rc-DhO" secondAttribute="width" id="NXn-KA-MfW"/>
+                            </constraints>
                         </stackView>
                     </subviews>
                     <constraints>
