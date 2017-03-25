@@ -7,6 +7,7 @@ class FakeAccountRepository: AccountRepository {
         }
     }
 
+
     func follow(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
         DispatchQueue.main.async {
             completion(.success(Account.makeFake()))
@@ -19,6 +20,7 @@ class FakeAccountRepository: AccountRepository {
         }
     }
 
+
     func mute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
         DispatchQueue.main.async {
             completion(.success(Account.makeFake()))
@@ -26,6 +28,19 @@ class FakeAccountRepository: AccountRepository {
     }
 
     func unmute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        DispatchQueue.main.async {
+            completion(.success(Account.makeFake()))
+        }
+    }
+
+
+    func silence(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        DispatchQueue.main.async {
+            completion(.success(Account.makeFake()))
+        }
+    }
+
+    func unsilence(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
         DispatchQueue.main.async {
             completion(.success(Account.makeFake()))
         }

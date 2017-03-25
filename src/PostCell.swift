@@ -222,6 +222,9 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
                 urls.append(url)
                 return
             } else {
+                // (jeremy-w/2017-03-25)FIXME: URL does not support international domain names.
+                // Pull in a PunyCode library to handle them. :\
+                // Example: POSTCELL: WARNING: Failed to create URL from HREF: http://jason•matigo.ca - in post with ID Optional("129389")
                 print("POSTCELL: WARNING: Failed to create URL from HREF:", value as Any, "- in post with ID", post?.id as Any)
                 return
             }

@@ -33,7 +33,19 @@ struct Account {
     let isEvangelist: Bool
     let followsYou: Bool
     let youFollow: Bool
+
+    /**
+     If an Account is muted, the intended effect is that you will no longer see their posts
+     unless they they mention you.
+     */
     let isMuted: Bool
+
+    /**
+     If an Account is silenced, they are dead to you:
+     
+     - You won't see any of their posts, ever.
+     - You won't even see any posts that _mention_ them!
+     */
     let isSilenced: Bool
 
     var fullName: String {
