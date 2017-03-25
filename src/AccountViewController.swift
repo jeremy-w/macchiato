@@ -16,6 +16,8 @@ class AccountViewController: UIViewController {
     private(set) var actor: (AccountAction) -> Void = { _ in }
     func configure(account: Account, actor: @escaping (AccountAction) -> Void) {
         self.account = account
+        loadInitialRelationshipState(from: account)
+
         self.actor = actor
         updateView()
     }
@@ -28,6 +30,17 @@ class AccountViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+
+    func loadInitialRelationshipState(from account: Account) {
+        showFollowing = account.youFollow
+        showMuting = account.isMuted
+        showSilencing = account.isSilenced
+    }
+
+    /// Initially set by `configure`, updated optimistically on UI actions.
+    var showFollowing: Bool = false
+    var showMuting: Bool = false
+    var showSilencing: Bool = false
 
     @IBOutlet var avatar: AvatarImageView?
     @IBOutlet var handle: UILabel?
@@ -50,19 +63,28 @@ class AccountViewController: UIViewController {
     @IBAction func toggleFollowAction() {
         guard let account = account else { return }
 
-        actor(.toggleFollowing(account: account, currently: account.youFollow))
+        actor(.toggleFollowing(account: account, currently: showFollowing))
+
+        showFollowing = !showFollowing
+        updateRelationshipButtons()
     }
 
     @IBAction func toggleMuteAction() {
         guard let account = account else { return }
 
-        actor(.toggleMuting(account: account, currently: account.isMuted))
+        actor(.toggleMuting(account: account, currently: showMuting))
+
+        showMuting = !showMuting
+        updateRelationshipButtons()
     }
 
     @IBAction func toggleSilenceAction() {
         guard let account = account else { return }
 
-        actor(.toggleSilencing(account: account, currently: account.isSilenced))
+        actor(.toggleSilencing(account: account, currently: showSilencing))
+
+        showSilencing = !showSilencing
+        updateRelationshipButtons()
     }
 
 
@@ -116,7 +138,7 @@ extension AccountViewController {
     }
 
     func updateRelationshipButtons() {
-        guard let account = account else {
+        guard account != nil else {
             follow?.isHidden = true
             mute?.isHidden = true
             silence?.isHidden = true
@@ -128,17 +150,17 @@ extension AccountViewController {
         silence?.isHidden = false
 
         follow?.setTitle(
-            account.youFollow
+            showFollowing
                 ? NSLocalizedString("Unfollow", comment: "button label")
                 : NSLocalizedString("Follow", comment: "button label"),
             for: .normal)
         mute?.setTitle(
-            account.isMuted
+            showMuting
                 ? NSLocalizedString("Unmute", comment: "button label")
                 : NSLocalizedString("Mute", comment: "button label"),
             for: .normal)
         silence?.setTitle(
-            account.isSilenced
+            showSilencing
                 ? NSLocalizedString("Unsilence", comment: "button label")
                 : NSLocalizedString("Silence", comment: "button label"),
             for: .normal)
