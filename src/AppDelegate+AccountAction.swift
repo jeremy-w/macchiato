@@ -11,10 +11,28 @@ extension AppDelegate {
             if currently {
                 accounts.unfollow(accountWithID: account.id, completion: { (result) in
                     print(channel, "INFO: Result:", result)
+                    do {
+                        let _ = try result.unwrap()
+                        let template = NSLocalizedString("Unfollowed @%@", comment: "toast")
+                        let title = String.localizedStringWithFormat(template, account.username)
+                        toast(title: title)
+                    } catch {
+                        let prefix = String.localizedStringWithFormat(NSLocalizedString("Failed to unfollow @%@", comment: "toast"), account.username)
+                        toast(error: error, prefix: prefix)
+                    }
                 })
             } else {
                 accounts.follow(accountWithID: account.id, completion: { (result) in
                     print(channel, "INFO: Result:", result)
+                    do {
+                        let _ = try result.unwrap()
+                        let template = NSLocalizedString("Followed @%@", comment: "toast")
+                        let title = String.localizedStringWithFormat(template, account.username)
+                        toast(title: title)
+                    } catch {
+                        let prefix = String.localizedStringWithFormat(NSLocalizedString("Failed to follow @%@", comment: "toast"), account.username)
+                        toast(error: error, prefix: prefix)
+                    }
                 })
             }
             break
