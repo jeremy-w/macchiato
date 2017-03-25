@@ -375,7 +375,13 @@ extension StreamViewController: PostCellDelegate {
 
     func showAccountView(displaying account: Account) {
         let accountVC = AccountViewController()
-        accountVC.configure(account: account)
+        guard let actor = UIApplication.shared.delegate as? AppDelegate else { return }
+
+        accountVC.configure(account: account, actor: {
+            [weak accountVC] action in
+            guard let accountVC = accountVC else { return }
+            actor.run(action, for: accountVC)
+        })
         show(accountVC, sender: self)
     }
 

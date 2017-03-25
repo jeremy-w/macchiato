@@ -1,9 +1,22 @@
 import UIKit
 
+enum AccountAction {
+    case toggleFollowing(account: Account, currently: Bool)
+    case toggleMuting(account: Account, currently: Bool)
+    case toggleSilencing(account: Account, currently: Bool)
+
+    case viewPosts(from: Account)
+    case viewStars(by: Account)
+    case viewAccountsFollowing(account: Account)
+    case viewAccountsFollowed(by: Account)
+}
+
 class AccountViewController: UIViewController {
     private(set) var account: Account?
-    func configure(account: Account) {
+    private(set) var actor: (AccountAction) -> Void = { _ in }
+    func configure(account: Account, actor: @escaping (AccountAction) -> Void) {
         self.account = account
+        self.actor = actor
         updateView()
     }
 
@@ -35,26 +48,47 @@ class AccountViewController: UIViewController {
     // MARK: - Edit your relationship with the account
     // (jeremy-w/2017-03-25)FIXME: Follow and such make no sense if you're not logged in. :\
     @IBAction func toggleFollowAction() {
+        guard let account = account else { return }
+
+        actor(.toggleFollowing(account: account, currently: account.youFollow))
     }
 
     @IBAction func toggleMuteAction() {
+        guard let account = account else { return }
+
+        actor(.toggleMuting(account: account, currently: account.isMuted))
     }
 
     @IBAction func toggleSilenceAction() {
+        guard let account = account else { return }
+
+        actor(.toggleSilencing(account: account, currently: account.isSilenced))
     }
 
 
     // MARK: - Display posts and accounts related to this account
     @IBAction func viewPostsAction() {
+        guard let account = account else { return }
+
+        actor(.viewPosts(from: account))
     }
 
     @IBAction func viewStarsAction() {
+        guard let account = account else { return }
+
+        actor(.viewStars(by: account))
     }
 
     @IBAction func viewFollowingAction() {
+        guard let account = account else { return }
+
+        actor(.viewAccountsFollowed(by: account))
     }
 
     @IBAction func viewFollowersAction() {
+        guard let account = account else { return }
+
+        actor(.viewAccountsFollowing(account: account))
     }
 }
 

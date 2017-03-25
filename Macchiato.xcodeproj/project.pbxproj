@@ -65,6 +65,7 @@
 		3F78B85C1E77222600B40B55 /* AccountViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F78B85A1E77222600B40B55 /* AccountViewController.xib */; };
 		3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */; };
 		3F7D757F1E3D377800AB8C4A /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */; };
+		3F7FAF4D1E871958006D1FDB /* AppDelegate+AccountAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7FAF4C1E871958006D1FDB /* AppDelegate+AccountAction.swift */; };
 		3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144EB1E31C17F001E25EC /* AccountRepository.swift */; };
 		3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */; };
 		3F8144F31E31C9B9001E25EC /* FakeAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */; };
@@ -153,6 +154,7 @@
 		3F78B85A1E77222600B40B55 /* AccountViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccountViewController.xib; sourceTree = "<group>"; };
 		3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
 		3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
+		3F7FAF4C1E871958006D1FDB /* AppDelegate+AccountAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppDelegate+AccountAction.swift"; sourceTree = "<group>"; };
 		3F8144EB1E31C17F001E25EC /* AccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
 		3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TenCenturiesAccountRepository.swift; sourceTree = "<group>"; };
 		3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountRepository.swift; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 			isa = PBXGroup;
 			children = (
 				3F2E29011DA9B9F200519C9E /* AppDelegate.swift */,
+				3F7FAF4C1E871958006D1FDB /* AppDelegate+AccountAction.swift */,
 				3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */,
 				3F2E290C1DA9B9F200519C9E /* LaunchScreen.storyboard */,
 				3F2E290A1DA9B9F200519C9E /* Assets.xcassets */,
@@ -617,6 +620,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F7FAF4D1E871958006D1FDB /* AppDelegate+AccountAction.swift in Sources */,
 				3F8144F91E31CD2D001E25EC /* FakeSessionManager.swift in Sources */,
 				3F2E293E1DAACF0400519C9E /* FakePostRepository.swift in Sources */,
 				3F2E29371DA9EB6E00519C9E /* Result.swift in Sources */,
