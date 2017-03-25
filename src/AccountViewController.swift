@@ -1,9 +1,24 @@
 import UIKit
 
+enum AccountAction {
+    case toggleFollowing(account: Account, currently: Bool)
+    case toggleMuting(account: Account, currently: Bool)
+    case toggleSilencing(account: Account, currently: Bool)
+
+    case viewPosts(from: Account)
+    case viewStars(by: Account)
+    case viewAccountsFollowing(account: Account)
+    case viewAccountsFollowed(by: Account)
+}
+
 class AccountViewController: UIViewController {
-    var account: Account?
-    func configure(account: Account) {
+    private(set) var account: Account?
+    private(set) var actor: (AccountAction) -> Void = { _ in }
+    func configure(account: Account, actor: @escaping (AccountAction) -> Void) {
         self.account = account
+        loadInitialRelationshipState(from: account)
+
+        self.actor = actor
         updateView()
     }
 
@@ -15,6 +30,17 @@ class AccountViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+
+    func loadInitialRelationshipState(from account: Account) {
+        showFollowing = account.youFollow
+        showMuting = account.isMuted
+        showSilencing = account.isSilenced
+    }
+
+    /// Initially set by `configure`, updated optimistically on UI actions.
+    var showFollowing: Bool = false
+    var showMuting: Bool = false
+    var showSilencing: Bool = false
 
     @IBOutlet var avatar: AvatarImageView?
     @IBOutlet var handle: UILabel?
@@ -31,25 +57,60 @@ class AccountViewController: UIViewController {
     @IBOutlet var following: UIButton?
     @IBOutlet var followers: UIButton?
 
+
+    // MARK: - Edit your relationship with the account
+    // (jeremy-w/2017-03-25)FIXME: Follow and such make no sense if you're not logged in. :\
     @IBAction func toggleFollowAction() {
+        guard let account = account else { return }
+
+        actor(.toggleFollowing(account: account, currently: showFollowing))
+
+        showFollowing = !showFollowing
+        updateRelationshipButtons()
     }
 
     @IBAction func toggleMuteAction() {
+        guard let account = account else { return }
+
+        actor(.toggleMuting(account: account, currently: showMuting))
+
+        showMuting = !showMuting
+        updateRelationshipButtons()
     }
 
     @IBAction func toggleSilenceAction() {
+        guard let account = account else { return }
+
+        actor(.toggleSilencing(account: account, currently: showSilencing))
+
+        showSilencing = !showSilencing
+        updateRelationshipButtons()
     }
 
+
+    // MARK: - Display posts and accounts related to this account
     @IBAction func viewPostsAction() {
+        guard let account = account else { return }
+
+        actor(.viewPosts(from: account))
     }
 
     @IBAction func viewStarsAction() {
+        guard let account = account else { return }
+
+        actor(.viewStars(by: account))
     }
 
     @IBAction func viewFollowingAction() {
+        guard let account = account else { return }
+
+        actor(.viewAccountsFollowed(by: account))
     }
 
     @IBAction func viewFollowersAction() {
+        guard let account = account else { return }
+
+        actor(.viewAccountsFollowing(account: account))
     }
 }
 
@@ -77,7 +138,7 @@ extension AccountViewController {
     }
 
     func updateRelationshipButtons() {
-        guard let account = account else {
+        guard account != nil else {
             follow?.isHidden = true
             mute?.isHidden = true
             silence?.isHidden = true
@@ -89,17 +150,17 @@ extension AccountViewController {
         silence?.isHidden = false
 
         follow?.setTitle(
-            account.youFollow
+            showFollowing
                 ? NSLocalizedString("Unfollow", comment: "button label")
                 : NSLocalizedString("Follow", comment: "button label"),
             for: .normal)
         mute?.setTitle(
-            account.isMuted
+            showMuting
                 ? NSLocalizedString("Unmute", comment: "button label")
                 : NSLocalizedString("Mute", comment: "button label"),
             for: .normal)
         silence?.setTitle(
-            account.isSilenced
+            showSilencing
                 ? NSLocalizedString("Unsilence", comment: "button label")
                 : NSLocalizedString("Silence", comment: "button label"),
             for: .normal)

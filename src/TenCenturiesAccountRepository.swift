@@ -8,6 +8,8 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
         self.authenticator = authenticator
     }
 
+
+    // MARK: - Retrieves accounts
     func account(id: String, completion: @escaping (Result<Account>) -> Void) {
         let path = "/users/" + id
         guard let url = URL(string: path, relativeTo: TenCenturies.baseURL) else {
@@ -87,6 +89,42 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
             return Account.defaultAvatarURL
         }
         return url
+    }
+
+
+    // MARK: - Un/Follows accounts
+    func follow(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        update(toBeFollowing: true, accountWithID: accountWithID, completion: completion)
+    }
+
+    func unfollow(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        update(toBeFollowing: false, accountWithID: accountWithID, completion: completion)
+    }
+
+    /** Calls the 10C API to edit following.
+
+     To follow: POST /users/follow { "follow_id": 53 }; returns updated account for ID (with you_follow updated)
+     To unfollow: DELETE /users/follow { "follow_id": 53 }; returns update account for ID (with you_follow updated)
+     */
+    private func update(toBeFollowing: Bool, accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        let url = URL(string: "/users/follow", relativeTo: TenCenturies.baseURL)!
+        var request = URLRequest(url: url)
+        request.httpMethod = toBeFollowing ? "POST" : "DELETE"
+        request.httpBody = try! JSONSerialization.data(withJSONObject: ["follow_id": accountWithID], options: [])
+
+        let _ = send(request: request) { (result) in
+            do {
+                let root = try result.unwrap()
+                let data: [JSONDictionary] = try unpack(root, "data")
+                guard let accountDict = data.first else {
+                    throw TenCenturiesError.missingField(field: "data[0]", object: root)
+                }
+                let account = try TenCenturiesAccountRepository.parseAccount(from: accountDict)
+                completion(.success(account))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 }
 

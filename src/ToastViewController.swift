@@ -23,6 +23,7 @@ func toast(title: String) {
     }
 }
 
+/// Presents as "prefix: error" - the colon gets added for you.
 func toast(error: Error, prefix: String) {
     let text = TenCenturiesError.describe(error)
     toast(title: "\(prefix): \(text)")
