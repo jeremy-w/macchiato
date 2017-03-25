@@ -1,7 +1,7 @@
 import UIKit
 
 class AccountViewController: UIViewController {
-    var account: Account?
+    private(set) var account: Account?
     func configure(account: Account) {
         self.account = account
         updateView()
@@ -31,6 +31,9 @@ class AccountViewController: UIViewController {
     @IBOutlet var following: UIButton?
     @IBOutlet var followers: UIButton?
 
+
+    // MARK: - Edit your relationship with the account
+    // (jeremy-w/2017-03-25)FIXME: Follow and such make no sense if you're not logged in. :\
     @IBAction func toggleFollowAction() {
     }
 
@@ -40,6 +43,8 @@ class AccountViewController: UIViewController {
     @IBAction func toggleSilenceAction() {
     }
 
+
+    // MARK: - Display posts and accounts related to this account
     @IBAction func viewPostsAction() {
     }
 
