@@ -114,8 +114,12 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
 
         let _ = send(request: request) { (result) in
             do {
-                let dict = try result.unwrap()
-                let account = try TenCenturiesAccountRepository.parseAccount(from: dict)
+                let root = try result.unwrap()
+                let data: [JSONDictionary] = try unpack(root, "data")
+                guard let accountDict = data.first else {
+                    throw TenCenturiesError.missingField(field: "data[0]", object: root)
+                }
+                let account = try TenCenturiesAccountRepository.parseAccount(from: accountDict)
                 completion(.success(account))
             } catch {
                 completion(.failure(error))
