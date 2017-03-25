@@ -94,23 +94,33 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
 
     // MARK: - Un/Follows accounts
     func follow(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
-        update(toBeFollowing: true, accountWithID: accountWithID, completion: completion)
+        update(relationship: .follow, establish: true, accountWithID: accountWithID, completion: completion)
     }
 
     func unfollow(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
-        update(toBeFollowing: false, accountWithID: accountWithID, completion: completion)
+        update(relationship: .follow, establish: false, accountWithID: accountWithID, completion: completion)
     }
 
-    /** Calls the 10C API to edit following.
+    // MARK: - Un/Mutes accounts
+    func mute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        update(relationship: .mute, establish: true, accountWithID: accountWithID, completion: completion)
+    }
 
-     To follow: POST /users/follow { "follow_id": 53 }; returns updated account for ID (with you_follow updated)
-     To unfollow: DELETE /users/follow { "follow_id": 53 }; returns update account for ID (with you_follow updated)
+    func unmute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        update(relationship: .mute, establish: false, accountWithID: accountWithID, completion: completion)
+    }
+
+    /** Calls the 10C API to edit the relationship.
      */
-    private func update(toBeFollowing: Bool, accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
-        let url = URL(string: "/users/follow", relativeTo: TenCenturies.baseURL)!
-        var request = URLRequest(url: url)
-        request.httpMethod = toBeFollowing ? "POST" : "DELETE"
-        request.httpBody = try! JSONSerialization.data(withJSONObject: ["follow_id": accountWithID], options: [])
+    private func update(
+        relationship: EditableAccountRelationship,
+        establish: Bool,
+        accountWithID: String,
+        completion: @escaping (Result<Account>) -> Void
+    ) {
+        var request = URLRequest(url: relationship.url)
+        request.httpMethod = establish ? "POST" : "DELETE"
+        request.httpBody = try! JSONSerialization.data(withJSONObject: [relationship.bodyIDKey: accountWithID], options: [])
 
         let _ = send(request: request) { (result) in
             do {
@@ -125,6 +135,44 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
                 completion(.failure(error))
             }
         }
+    }
+}
+
+fileprivate enum EditableAccountRelationship {
+    case follow
+    case mute
+    case silence
+
+    var url: URL {
+        let chunk: String
+        switch self {
+        case .follow:
+            chunk = "follow"
+
+        case .mute:
+            chunk = "mute"
+
+        case .silence:
+            chunk = "silence"
+        }
+
+        let url = URL(string: "/users/\(chunk)", relativeTo: TenCenturies.baseURL)!
+        return url
+    }
+
+    var bodyIDKey: String {
+        let key: String
+        switch self {
+        case .follow:
+            key = "follow_id"
+
+        case .mute:
+            key = "mute_id"
+
+        case .silence:
+            key = "silence_id"
+        }
+        return key
     }
 }
 
