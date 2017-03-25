@@ -35,10 +35,35 @@ extension AppDelegate {
                     }
                 })
             }
-            break
 
         case let .toggleMuting(account: account, currently: currently):
-            break
+            if currently {
+                accounts.unmute(accountWithID: account.id, completion: { (result) in
+                    print(channel, "INFO: Result:", result)
+                    do {
+                        let _ = try result.unwrap()
+                        let template = NSLocalizedString("Unmuted @%@", comment: "toast")
+                        let title = String.localizedStringWithFormat(template, account.username)
+                        toast(title: title)
+                    } catch {
+                        let prefix = String.localizedStringWithFormat(NSLocalizedString("Failed to unmute @%@", comment: "toast"), account.username)
+                        toast(error: error, prefix: prefix)
+                    }
+                })
+            } else {
+                accounts.mute(accountWithID: account.id, completion: { (result) in
+                    print(channel, "INFO: Result:", result)
+                    do {
+                        let _ = try result.unwrap()
+                        let template = NSLocalizedString("Muted @%@", comment: "toast")
+                        let title = String.localizedStringWithFormat(template, account.username)
+                        toast(title: title)
+                    } catch {
+                        let prefix = String.localizedStringWithFormat(NSLocalizedString("Failed to mute @%@", comment: "toast"), account.username)
+                        toast(error: error, prefix: prefix)
+                    }
+                })
+            }
 
         case let .toggleSilencing(account: account, currently: currently):
             break
