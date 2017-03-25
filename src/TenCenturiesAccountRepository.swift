@@ -101,6 +101,7 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
         update(relationship: .follow, establish: false, accountWithID: accountWithID, completion: completion)
     }
 
+
     // MARK: - Un/Mutes accounts
     func mute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
         update(relationship: .mute, establish: true, accountWithID: accountWithID, completion: completion)
@@ -108,6 +109,16 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
 
     func unmute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
         update(relationship: .mute, establish: false, accountWithID: accountWithID, completion: completion)
+    }
+
+
+    // MARK: - Un/Silences accounts
+    func silence(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        update(relationship: .silence, establish: true, accountWithID: accountWithID, completion: completion)
+    }
+
+    func unsilence(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+        update(relationship: .silence, establish: false, accountWithID: accountWithID, completion: completion)
     }
 
     /** Calls the 10C API to edit the relationship.
