@@ -177,10 +177,9 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             listStack.append(webList)
 
             let separator = TenCenturiesHTMLParser.paragraphSeparator
-            let indent = Array(repeating: "\t", count: webList.indentLevel).joined()
 
             let attributesForIndentation = styled.list(atIndentLevel: webList.indentLevel)
-            let listItem = NSMutableAttributedString(string: separator + indent, attributes: attributesForIndentation)
+            let listItem = NSMutableAttributedString(string: separator, attributes: attributesForIndentation)
 
             let itemLabel: NSAttributedString
             if webList.isOrdered {
@@ -462,8 +461,19 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     }
 
     static func list(atIndentLevel indentLevel: Int) -> Attributes {
-        // Could muck with indents…
-        return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
+        var attributes = applyParagraph(to: [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)])
+
+        let style = (attributes[NSParagraphStyleAttributeName] as? NSParagraphStyle) ?? NSParagraphStyle.default
+        let mutableStyle = style.mutableCopy() as! NSMutableParagraphStyle  // swiftlint:disable:this force_cast
+
+        // 28 is the default tab stop, which mirrors our old "stick some tabs on" approach, which looked OK.
+        let indentation = CGFloat(indentLevel) * 28.0
+        mutableStyle.firstLineHeadIndent = indentation
+        // (jeremy-w/2017-03-25)TODO: Would be nice to do a proper hanging-indent, but then need to measure the item label.
+        mutableStyle.headIndent = indentation + 8.0
+
+        attributes[NSParagraphStyleAttributeName] = mutableStyle
+        return attributes
     }
 
     static func applyBlockquote(to attributes: Attributes) -> Attributes {
