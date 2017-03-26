@@ -91,6 +91,7 @@ extension StreamViewController {
             composePost(as: .newReply(to: post))
 
         case .star:
+            let isStarring = !post.you.starred
             postRepository?.star(post: post) { result in
                 do {
                     let starredPost = try result.unwrap()[0]
@@ -104,7 +105,7 @@ extension StreamViewController {
                             return (at: offset, value: updated)
                         })
                         .flatMap({ $0 })
-                    print("STREAMVC/", stream.view as Any, "DEBUG: Starring of post \(starredPost.id) affected posts: \(updated.map{ $0.value.id })")
+                    print("STREAMVC/", stream.view as Any, "DEBUG: Toggling starred of post \(starredPost.id) affected posts: \(updated.map{ $0.value.id })")
 
                     DispatchQueue.main.async {
                         for (i, value) in updated {
@@ -112,10 +113,12 @@ extension StreamViewController {
                         }
 
                         self.tableView?.reloadRows(at: updated.map({ IndexPath(row: $0.at, section: 0) }), with: .none)
-                        toast(title: NSLocalizedString("Starred!", comment: "title"))
+                        let success = isStarring ? NSLocalizedString("Starred!", comment: "title") : NSLocalizedString("Unstarred", comment: "title")
+                        toast(title: success)
                     }
                 } catch {
-                    toast(error: error, prefix: NSLocalizedString("Starring Failed", comment: "title"))
+                    let prefix = isStarring ? NSLocalizedString("Starring Failed", comment: "title") : NSLocalizedString("Unstarring Failed", comment: "title")
+                    toast(error: error, prefix: prefix)
                 }
             }
 
