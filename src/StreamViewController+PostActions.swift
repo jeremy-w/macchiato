@@ -93,12 +93,48 @@ extension StreamViewController {
         case .star:
             postRepository?.star(post: post) { result in
                 do {
-                    let _ = try result.unwrap()
-                    guard let stream = self.stream
-                    , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
+                    let starredPost = try result.unwrap()[0]
+
+                    guard let stream = self.stream else { return }
+                    let updated = stream.posts
+                        .enumerated()
+                        .filter({ (offset, element) in
+                            let isPostItself = element.id == starredPost.id
+                            let isRepost = element.originalPost.map({ $0.id == starredPost.id }) ?? false
+                            let needsUpdate = isPostItself || isRepost
+                            return needsUpdate
+                        })
+                        .map({ (offset, element) -> (at: Int, store: Post) in
+                            if element.id == starredPost.id {
+                                return (at: offset, store: element)
+                            }
+
+                            let withUpdatedOriginalPost = Post(
+                                id: element.id,
+                                account: element.account,
+                                content: element.content,
+                                html: element.html,
+                                privacy: element.privacy,
+                                thread: element.thread,
+                                parentID: element.parentID,
+                                client: element.client,
+                                mentions: element.mentions,
+                                created: element.created,
+                                updated: element.updated,
+                                published: element.published,
+                                deleted: element.deleted,
+                                you: element.you,
+                                stars: element.stars,
+                                parent: starredPost)
+                            return (at: offset, store: withUpdatedOriginalPost)
+                        })
+
                     DispatchQueue.main.async {
-                        stream.posts[index].you.starred = !stream.posts[index].you.starred
-                        self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                        for (i, value) in updated {
+                            stream.posts[i] = value
+                        }
+
+                        self.tableView?.reloadRows(at: updated.map({ IndexPath(row: $0.at, section: 0) }), with: .none)
                         toast(title: NSLocalizedString("Starred!", comment: "title"))
                     }
                 } catch {
@@ -132,6 +168,7 @@ extension StreamViewController {
             composePost(as: .update(post))
 
         case .delete:
+            // (jeremy-w/2017-03-26)FIXME: If you delete a Repost, then we need to edit the You.Reposted on the parent post.
             confirmBeforeDeleting(post)
 
         case .webView:
