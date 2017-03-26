@@ -150,13 +150,13 @@ class HTMLToAttributedStringTests: XCTestCase {
     // MARK: - Renders block content
     func testOrderedList() {
         let html = "<ol><li>1</li><li>2</li></ol>"
-        let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t1. 1" + TenCenturiesHTMLParser.paragraphSeparator + "\t2. 2"
+        let expected = TenCenturiesHTMLParser.paragraphSeparator + "1. 1" + TenCenturiesHTMLParser.paragraphSeparator + "2. 2"
         XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
     func testUnorderedList() {
         let html = "<ul><li>A</li><li>B</li></ul>"
-        let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• A" + TenCenturiesHTMLParser.paragraphSeparator + "\t• B"
+        let expected = TenCenturiesHTMLParser.paragraphSeparator + "• A" + TenCenturiesHTMLParser.paragraphSeparator + "• B"
         XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
@@ -188,7 +188,7 @@ class HTMLToAttributedStringTests: XCTestCase {
 
     func testAvoidsDoubleLinebreakDueToParagraphWithinListItem() {
         let html = "<ul><li><p>Single indent.</p></li></ul>"
-        let expected = TenCenturiesHTMLParser.paragraphSeparator + "\t• Single indent."
+        let expected = TenCenturiesHTMLParser.paragraphSeparator + "• Single indent."
         XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), NSAttributedString(string: expected, attributes: TenCenturiesHTMLParser.list(atIndentLevel: 1)))
     }
 
