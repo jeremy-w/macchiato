@@ -84,6 +84,10 @@ extension StreamViewController {
         return UIAlertAction(title: NSLocalizedString("Cancel", comment: "button"), style: .cancel, handler: nil)
     }
 
+    fileprivate func syncUpdatesToTableView(_ updates: [(at: Int, now: Post)]) {
+        tableView?.reloadRows(at: updates.map({ IndexPath(row: $0.at, section: 0) }), with: .none)
+    }
+
     func take(action: PostAction, on post: Post) {
         print("STREAMVC/", stream?.view as Any, ": INFO: Taking post action", action, "on post:", post.id)
         switch action {
@@ -97,22 +101,13 @@ extension StreamViewController {
                     let starredPost = try result.unwrap()[0]
 
                     guard let stream = self.stream else { return }
-                    let updated: [(at: Int, value: Post)] = stream.posts
-                        .enumerated()
-                        .map({ (offset, post) -> (at: Int, value: Post)? in
-                            guard let updated = post.updated(forChangedPost: starredPost) else { return nil }
-
-                            return (at: offset, value: updated)
-                        })
-                        .flatMap({ $0 })
-                    print("STREAMVC/", stream.view as Any, "DEBUG: Toggling starred of post \(starredPost.id) affected posts: \(updated.map{ $0.value.id })")
+                    let updates = stream.postsAffected(byChangedPost: starredPost)
+                    print("STREAMVC/", stream.view as Any, "DEBUG: Toggling starred of post \(starredPost.id) affected posts: \(updates.map{ $0.now.id })")
 
                     DispatchQueue.main.async {
-                        for (i, value) in updated {
-                            stream.posts[i] = value
-                        }
+                        stream.updateAffectedPosts(with: updates)
+                        self.syncUpdatesToTableView(updates)
 
-                        self.tableView?.reloadRows(at: updated.map({ IndexPath(row: $0.at, section: 0) }), with: .none)
                         let success = isStarring ? NSLocalizedString("Starred!", comment: "title") : NSLocalizedString("Unstarred", comment: "title")
                         toast(title: success)
                     }
