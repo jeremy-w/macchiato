@@ -463,7 +463,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
     static func list(atIndentLevel indentLevel: Int) -> Attributes {
         // Could muck with indents…
-        return [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)]
+        return applyParagraph(to: [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)])
     }
 
     static func applyBlockquote(to attributes: Attributes) -> Attributes {
