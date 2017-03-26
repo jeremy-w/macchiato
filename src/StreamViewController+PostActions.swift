@@ -96,15 +96,15 @@ extension StreamViewController {
                     let starredPost = try result.unwrap()[0]
 
                     guard let stream = self.stream else { return }
-                    let updated = stream.posts
+                    let updated: [(at: Int, value: Post)] = stream.posts
                         .enumerated()
-                        .filter({ $0.element.needsUpdate(forChangedPostID: starredPost.id) })
-                        .map({ (offset, element) -> (at: Int, store: Post) in
-                            if element.id == starredPost.id {
-                                return (at: offset, store: element)
-                            }
-                            return (at: offset, store: element.withUpdatedOriginalPost(starredPost))
+                        .map({ (offset, post) -> (at: Int, value: Post)? in
+                            guard let updated = post.updated(forChangedPost: starredPost) else { return nil }
+
+                            return (at: offset, value: updated)
                         })
+                        .flatMap({ $0 })
+                    print("STREAMVC/", stream.view as Any, "DEBUG: Starring of post \(starredPost.id) affected posts: \(updated.map{ $0.value.id })")
 
                     DispatchQueue.main.async {
                         for (i, value) in updated {

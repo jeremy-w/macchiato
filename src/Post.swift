@@ -106,13 +106,6 @@ extension Post {
 
 // MARK: - Assists in updates
 extension Post {
-    func needsUpdate(forChangedPostID changedPostID: PostID) -> Bool {
-        let isPostItself = id == changedPostID
-        let isRepost = originalPost.map({ $0.id == changedPostID }) ?? false
-        let needsUpdate = isPostItself || isRepost
-        return needsUpdate
-    }
-
     /// Returns `self` with `originalPost` AKA `parent` set to the new value.
     ///
     /// Used when applying star actions to reposts.
@@ -135,6 +128,19 @@ extension Post {
             stars: stars,
             parent: originalPost)
         return withUpdatedOriginalPost
+    }
+
+    /// Returns `nil` if no update needed, otherwise `self` updated to reflect the new `Post`.
+    func updated(forChangedPost changedPost: Post) -> Post? {
+        if id == changedPost.id {
+            return changedPost
+        }
+
+        if let original = originalPost, original.id == changedPost.id {
+            return self.withUpdatedOriginalPost(changedPost)
+        }
+
+        return nil
     }
 }
 
