@@ -98,12 +98,7 @@ extension StreamViewController {
                     guard let stream = self.stream else { return }
                     let updated = stream.posts
                         .enumerated()
-                        .filter({ (offset, element) in
-                            let isPostItself = element.id == starredPost.id
-                            let isRepost = element.originalPost.map({ $0.id == starredPost.id }) ?? false
-                            let needsUpdate = isPostItself || isRepost
-                            return needsUpdate
-                        })
+                        .filter({ $0.element.needsUpdate(forChangedPostID: starredPost.id) })
                         .map({ (offset, element) -> (at: Int, store: Post) in
                             if element.id == starredPost.id {
                                 return (at: offset, store: element)

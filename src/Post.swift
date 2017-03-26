@@ -104,6 +104,17 @@ extension Post {
 }
 
 
+// MARK: - Assists in updates
+extension Post {
+    func needsUpdate(forChangedPostID changedPostID: PostID) -> Bool {
+        let isPostItself = id == changedPostID
+        let isRepost = originalPost.map({ $0.id == changedPostID }) ?? false
+        let needsUpdate = isPostItself || isRepost
+        return needsUpdate
+    }
+}
+
+
 extension Post {
     func replyTemplate(notMentioning handles: [String]) -> String {
         let target = account.id
