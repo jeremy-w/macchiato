@@ -190,11 +190,14 @@ extension StreamViewController {
         repo.pin(post: post, color: color) { (result) in
             do {
                 let posts = try result.unwrap()
-                guard let post = posts.first, let stream = self.stream else { return }
-                guard let index = stream.posts.index(where: { $0.id == post.id }) else { return }
+                guard let pinnedPost = posts.first, let stream = self.stream else { return }
+
+                let updates = stream.postsAffected(byChangedPost: pinnedPost)
+
                 DispatchQueue.main.async {
-                    stream.posts[index] = post
-                    self.tableView?.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    stream.updateAffectedPosts(with: updates)
+                    self.syncUpdatesToTableView(updates)
+
                     toast(title: NSLocalizedString("Pinned!", comment: "title"))
                 }
             } catch {
