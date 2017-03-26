@@ -18,6 +18,27 @@ class Stream {
         self.init(name: view.localizedName, view: view, posts: posts)
     }
 
+
+    // MARK: - Helps with incremental updates
+    func postsAffected(byChangedPost changedPost: Post) -> [(at: Int, now: Post)] {
+        let updated: [(at: Int, now: Post)] = posts
+            .enumerated()
+            .map({ (offset, post) -> (at: Int, now: Post)? in
+                guard let updated = post.updated(forChangedPost: changedPost) else { return nil }
+
+                return (at: offset, now: updated)
+            })
+            .flatMap({ $0 })
+        return updated
+    }
+
+    func updateAffectedPosts(with updates: [(at: Int, now: Post)]) {
+        for (i, value) in updates {
+            posts[i] = value
+        }
+    }
+
+
     // MARK: - Handles merging in new posts
     func replacePosts(with posts: [Post], fetchedAt date: Date) {
         self.posts = posts

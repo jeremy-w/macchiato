@@ -42,9 +42,9 @@ struct Account {
 
     /**
      If an Account is silenced, they are dead to you:
-     
+
      - You won't see any of their posts, ever.
-     - You won't even see any posts that _mention_ them!
+     - You won't even see any posts that _mention_ them! (Unless those posts mention you, maybe?)
      */
     let isSilenced: Bool
 

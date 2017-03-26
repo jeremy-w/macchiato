@@ -37,28 +37,19 @@ class PostParsing: XCTestCase {
     func testParsingAccount() {
         do {
             let post = try subject.parsePost(from: capturedPostWithThreadInfo)
-            let expected = Account(
-                id: "91",
-                username: "gtwilson",
-                name: (first: "Tom", last: "Wilson", display: "Tom Wilson"),
-                avatarURL: URL(string: "https://cdn.10centuries.org/p7E6pB/6bce7312df48d9061391d17301b04192.jpg")!,
-                verified: nil,
-                description: "Software developer. Husband. Wage slave.\nhttp://eee-eye-eee.io",
-                timezone: "US/Eastern",
-                counts: [
-                    "following": 38,
-                    "followers": 22,
-                    "stars": 77,
-                    "tinyposts": 494,
-                    "microposts": 1065,
-                    "shortposts": 261,
-                    "longposts": 4,
-                    "blogposts": 4,
-                    "podcasts": 0])
-            XCTAssertEqual(post.author, expected.username, "author")
-            XCTAssertEqual(post.account.id, expected.id, "id")
-            XCTAssertEqual(post.account.avatarURL, expected.avatarURL, "avatar URL")
-            XCTAssertEqual(post.account.counts, expected.counts, "counts")
+            XCTAssertEqual(post.author, "gtwilson", "author")
+            XCTAssertEqual(post.account.id, "91", "id")
+            XCTAssertEqual(post.account.avatarURL, URL(string: "https://cdn.10centuries.org/p7E6pB/6bce7312df48d9061391d17301b04192.jpg")!, "avatar URL")
+            XCTAssertEqual(post.account.counts, [
+                "following": 38,
+                "followers": 22,
+                "stars": 77,
+                "tinyposts": 494,
+                "microposts": 1065,
+                "shortposts": 261,
+                "longposts": 4,
+                "blogposts": 4,
+                "podcasts": 0], "counts")
         } catch {
             return XCTFail("parsing failed completely: \(error)")
         }

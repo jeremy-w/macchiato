@@ -104,6 +104,47 @@ extension Post {
 }
 
 
+// MARK: - Assists in updates
+extension Post {
+    /// Returns `self` with `originalPost` AKA `parent` set to the new value.
+    ///
+    /// Used when applying star actions to reposts.
+    func withUpdatedOriginalPost(_ originalPost: Post?) -> Post {
+        let withUpdatedOriginalPost = Post(
+            id: id,
+            account: account,
+            content: content,
+            html: html,
+            privacy: privacy,
+            thread: thread,
+            parentID: parentID,
+            client: client,
+            mentions: mentions,
+            created: created,
+            updated: updated,
+            published: published,
+            deleted: deleted,
+            you: you,
+            stars: stars,
+            parent: originalPost)
+        return withUpdatedOriginalPost
+    }
+
+    /// Returns `nil` if no update needed, otherwise `self` updated to reflect the new `Post`.
+    func updated(forChangedPost changedPost: Post) -> Post? {
+        if id == changedPost.id {
+            return changedPost
+        }
+
+        if let original = originalPost, original.id == changedPost.id {
+            return self.withUpdatedOriginalPost(changedPost)
+        }
+
+        return nil
+    }
+}
+
+
 extension Post {
     func replyTemplate(notMentioning handles: [String]) -> String {
         let target = account.id

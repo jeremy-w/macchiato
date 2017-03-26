@@ -328,7 +328,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
 
     // MARK: - Takes sundry other actions
-    func star(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
+    func toggleStarred(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
         let url = URL(string: "/content/star/\(post.id)", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

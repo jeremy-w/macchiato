@@ -26,4 +26,24 @@ class SpyingAccountRepository: AccountRepository {
     func account(id: String, completion: @escaping (Result<Account>) -> Void) {
         accountWasCalled = (id, completion)
     }
+
+    func follow(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+    }
+
+    func unfollow(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+    }
+
+
+    func mute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+    }
+
+    func unmute(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+    }
+
+
+    func silence(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+    }
+
+    func unsilence(accountWithID: String, completion: @escaping (Result<Account>) -> Void) {
+    }
 }
