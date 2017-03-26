@@ -15,7 +15,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var session: URLSession
 
     override init() {
-        session = URLSession(configuration: URLSessionConfiguration.default)
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders = ["Accept": "application/json"]
+        session = URLSession(configuration: configuration)
+
         services = ServicePack.connectingTenCenturies(session: session)
         super.init()
         beginFetchingCurrentUserAccount()
