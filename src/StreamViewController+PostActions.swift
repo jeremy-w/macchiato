@@ -103,25 +103,7 @@ extension StreamViewController {
                             if element.id == starredPost.id {
                                 return (at: offset, store: element)
                             }
-
-                            let withUpdatedOriginalPost = Post(
-                                id: element.id,
-                                account: element.account,
-                                content: element.content,
-                                html: element.html,
-                                privacy: element.privacy,
-                                thread: element.thread,
-                                parentID: element.parentID,
-                                client: element.client,
-                                mentions: element.mentions,
-                                created: element.created,
-                                updated: element.updated,
-                                published: element.published,
-                                deleted: element.deleted,
-                                you: element.you,
-                                stars: element.stars,
-                                parent: starredPost)
-                            return (at: offset, store: withUpdatedOriginalPost)
+                            return (at: offset, store: element.withUpdatedOriginalPost(starredPost))
                         })
 
                     DispatchQueue.main.async {

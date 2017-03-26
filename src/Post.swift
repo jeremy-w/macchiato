@@ -112,6 +112,30 @@ extension Post {
         let needsUpdate = isPostItself || isRepost
         return needsUpdate
     }
+
+    /// Returns `self` with `originalPost` AKA `parent` set to the new value.
+    ///
+    /// Used when applying star actions to reposts.
+    func withUpdatedOriginalPost(_ originalPost: Post?) -> Post {
+        let withUpdatedOriginalPost = Post(
+            id: id,
+            account: account,
+            content: content,
+            html: html,
+            privacy: privacy,
+            thread: thread,
+            parentID: parentID,
+            client: client,
+            mentions: mentions,
+            created: created,
+            updated: updated,
+            published: published,
+            deleted: deleted,
+            you: you,
+            stars: stars,
+            parent: originalPost)
+        return withUpdatedOriginalPost
+    }
 }
 
 
