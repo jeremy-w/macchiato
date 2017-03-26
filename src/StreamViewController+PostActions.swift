@@ -187,21 +187,26 @@ extension StreamViewController {
 
     func pin(post: Post, with color: Post.PinColor?) {
         guard let repo = self.postRepository else { return }
+
+        let isPinning = color != nil
         repo.pin(post: post, color: color) { (result) in
             do {
                 let posts = try result.unwrap()
                 guard let pinnedPost = posts.first, let stream = self.stream else { return }
 
                 let updates = stream.postsAffected(byChangedPost: pinnedPost)
+                print("STREAMVC/", stream.view as Any, "DEBUG: Editing pin of post \(pinnedPost.id) affected posts: \(updates.map{ $0.now.id })")
 
                 DispatchQueue.main.async {
                     stream.updateAffectedPosts(with: updates)
                     self.syncUpdatesToTableView(updates)
 
-                    toast(title: NSLocalizedString("Pinned!", comment: "title"))
+                    let title = isPinning ? NSLocalizedString("Pinned!", comment: "title") : NSLocalizedString("Unpinned!", comment: "title")
+                    toast(title: title)
                 }
             } catch {
-                toast(error: error, prefix: NSLocalizedString("Pin Failed", comment: "title"))
+                let prefix = isPinning ? NSLocalizedString("Pin Failed", comment: "title") : NSLocalizedString("Unpin Failed", comment: "title")
+                toast(error: error, prefix: prefix)
             }
         }
     }
