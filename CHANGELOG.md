@@ -3,6 +3,31 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (13) - 2017-03-26
+New:
+
+- Tap the avatar on a post to view the user's profile [#25]
+- Un/follow an account using a button on its profile page [#26]
+- Un/mute an account using a button on its profile page [#101]
+
+   Mutes take effect the next time you reload a stream. The API mostly won't send muted posts, but when it does, they are displayed with a "☠️ (you muted this)" line in the post metadata area below the post content.
+- Un/silence an account using a button on its profile page [#64]
+
+   WARNING: Careful with this; you can currently only get to an account via a post avatar, and you won't see any posts from users you've silenced, so you won't be able to unsilence them once you leave this page!
+
+Changed:
+
+- Lists (including footnotes) now indent all their lines, not just the first [#97]
+- API requests now specify they want only JSON in response, which might improve error display in some weird cases you'll probably never encounter. [#96]
+
+Fixed:
+
+- Footnotes should no longer truncate, but instead word-wrap [#97]
+- Starring and pinning a repost will update the repost to show the result [#99]
+- Unstar result is now toasted as such, not as starring [#99]
+- Unpin result is now toasted as such, not as pinning [#99]
+
+
 ### 1.0 (12) - 2017-03-08
 Fixed:
 
