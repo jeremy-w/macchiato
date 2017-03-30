@@ -150,32 +150,12 @@ extension Post {
         let omit = Set(handles)
         guard !omit.contains(account.username) else {
             // Carry over current mentions, or supply an empty body.
-            // Unfortunately, |mentions| is not sorted to match order in post body!
-            let decorated = mentions.map({ (mention: Mention) -> (String.Index?, Mention) in
-                let name = "@" + mention.current
-                let range = content.range(of: name)
-                return (range?.lowerBound, mention)
-            })
-            let sorted = decorated.sorted(by: { (left, right) -> Bool in
-                switch (left.0, right.0) {
-                case let (posleft?, posright?):
-                    return posleft < posright
-
-                case (_?, nil):
-                    return true
-
-                case (nil, _?):
-                    return false
-
-                case (nil, nil):
-                    return false
-                }
-            })
-            guard let main = sorted.first?.1.current else {
+            let sorted = orderedMentions
+            guard let main = sorted.first?.current else {
                 return ""
             }
 
-            let bystanders = sorted.dropFirst().map({ $0.1.current })
+            let bystanders = sorted.dropFirst().map({ $0.current })
             return Post.replyTemplate(main: main, bystanders: bystanders)
         }
 
@@ -195,6 +175,34 @@ extension Post {
         }
 
         return "@\(main) \n\n/@" + bystanders.joined(separator: " @")
+    }
+
+    /// Returns `mentions` sorted in the order they are mentioned in `content`.
+    var orderedMentions: [Mention] {
+        let decorated = mentions.map({ (mention: Mention) -> (String.Index?, Mention) in
+            let name = "@" + mention.current
+            let range = content.range(of: name)
+            return (range?.lowerBound, mention)
+        })
+
+        let sorted = decorated.sorted(by: { (left, right) -> Bool in
+            switch (left.0, right.0) {
+            case let (posleft?, posright?):
+                return posleft < posright
+
+            case (_?, nil):
+                return true
+
+            case (nil, _?):
+                return false
+
+            case (nil, nil):
+                return false
+            }
+        })
+
+        let orderedMentions = sorted.map({ $0.1 })
+        return orderedMentions
     }
 }
 
