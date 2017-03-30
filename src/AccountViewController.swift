@@ -67,6 +67,7 @@ class AccountViewController: UIViewController {
 
         showFollowing = !showFollowing
         updateRelationshipButtons()
+        updateStatisticsLinks()
     }
 
     @IBAction func toggleMuteAction() {
@@ -169,7 +170,29 @@ extension AccountViewController {
     func updateStatisticsLinks() {
         posts?.setTitle(String.localizedStringWithFormat("%d Posts", account?.counts[Account.CountKey.socialposts] ?? -1), for: .normal)
         stars?.setTitle(String.localizedStringWithFormat("%d Stars", account?.counts[Account.CountKey.stars] ?? -1), for: .normal)
-        following?.setTitle(String.localizedStringWithFormat("Following %d", account?.counts[Account.CountKey.following] ?? -1), for: .normal)
-        followers?.setTitle(String.localizedStringWithFormat("Followed by %d", account?.counts[Account.CountKey.followers] ?? -1), for: .normal)
+        following?.setTitle(followingButtonText, for: .normal)
+        followers?.setTitle(followersButtonText, for: .normal)
+    }
+
+    var followingButtonText: String {
+        let followsYou = account?.followsYou ?? false
+        let followingCount = account?.counts[Account.CountKey.following] ?? -1
+
+        let template =
+            followsYou
+                ? NSLocalizedString("Following %d (Including You!)", comment: "button text")
+                : NSLocalizedString("Following %d (But Not You)", comment: "button text")
+        return String.localizedStringWithFormat(template, followingCount)
+    }
+
+    var followersButtonText: String {
+        let youFollow = showFollowing
+        let followedByCount = account?.counts[Account.CountKey.followers] ?? -1
+
+        let template =
+            youFollow
+                ? NSLocalizedString("Followed by %d (Including You!)", comment: "button text")
+                : NSLocalizedString("Followed by %d (But Not You)", comment: "button text")
+        return String.localizedStringWithFormat(template, followedByCount)
     }
 }
