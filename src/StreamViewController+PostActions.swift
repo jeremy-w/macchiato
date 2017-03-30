@@ -102,17 +102,26 @@ extension StreamViewController {
 
                     guard let stream = self.stream else { return }
                     let updates = stream.postsAffected(byChangedPost: starredPost)
-                    print("STREAMVC/", stream.view as Any, "DEBUG: Toggling starred of post \(starredPost.id) affected posts: \(updates.map{ $0.now.id })")
+                    print(
+                        "STREAMVC/", stream.view as Any,
+                        "DEBUG: Toggling starred of post", starredPost.id, "affected posts:",
+                        updates.map{ $0.now.id })
 
                     DispatchQueue.main.async {
                         stream.updateAffectedPosts(with: updates)
                         self.syncUpdatesToTableView(updates)
 
-                        let success = isStarring ? NSLocalizedString("Starred!", comment: "title") : NSLocalizedString("Unstarred", comment: "title")
+                        let success =
+                            isStarring
+                                ? NSLocalizedString("Starred!", comment: "title")
+                                : NSLocalizedString("Unstarred", comment: "title")
                         toast(title: success)
                     }
                 } catch {
-                    let prefix = isStarring ? NSLocalizedString("Starring Failed", comment: "title") : NSLocalizedString("Unstarring Failed", comment: "title")
+                    let prefix =
+                        isStarring
+                            ? NSLocalizedString("Starring Failed", comment: "title")
+                            : NSLocalizedString("Unstarring Failed", comment: "title")
                     toast(error: error, prefix: prefix)
                 }
             }
