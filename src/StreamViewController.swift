@@ -216,7 +216,7 @@ class StreamViewController: UITableViewController {
 
     // MARK: - Loads thread on swipe to left (or selection when AT enabled)
     func prepareToShowThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
-        guard segue.identifier == "ShowThread" else { return false }
+        guard segue.identifier == Segue.showThread.rawValue else { return false }
 
         let selectedPost: Post
         if let swipe = sender as? UISwipeGestureRecognizer {
@@ -272,7 +272,7 @@ class StreamViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard UIAccessibilityIsVoiceOverRunning() || UIAccessibilityIsSwitchControlRunning() else { return }
 
-        performSegue(withIdentifier: "ShowThread", sender: nil)
+        performSegue(withIdentifier: Segue.showThread.rawValue, sender: nil)
     }
 
 
@@ -309,6 +309,7 @@ class StreamViewController: UITableViewController {
     }
 
     enum Segue: String {
+        case showThread = "ShowThread"
         case createNewThread = "CreateNewThread"
     }
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
