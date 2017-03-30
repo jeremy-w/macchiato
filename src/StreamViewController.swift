@@ -225,6 +225,8 @@ class StreamViewController: UITableViewController {
                 return true
             }
             selectedPost = post
+        } else if let post = sender as? Post {
+            selectedPost = post
         } else {
             guard let tableView = tableView, let selection = tableView.indexPathForSelectedRow else {
                 return true
