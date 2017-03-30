@@ -185,6 +185,13 @@ extension AccountViewController {
     }
 
     var followersButtonText: String {
-        return String.localizedStringWithFormat("Followed by %d", account?.counts[Account.CountKey.followers] ?? -1)
+        let youFollow = showFollowing
+        let followedByCount = account?.counts[Account.CountKey.followers] ?? -1
+
+        let template =
+            youFollow
+                ? NSLocalizedString("Followed by %d (Including You!)", comment: "button text")
+                : NSLocalizedString("Followed by %d (But Not You)", comment: "button text")
+        return String.localizedStringWithFormat(template, followedByCount)
     }
 }
