@@ -180,7 +180,7 @@ extension Post {
     /// Returns `mentions` sorted in the order they are mentioned in `content`.
     var orderedMentions: [Mention] {
         let decorated = mentions.map({ (mention: Mention) -> (String.Index?, Mention) in
-            let name = "@" + mention.current
+            let name = "@" + mention.name
             let range = content.range(of: name)
             return (range?.lowerBound, mention)
         })
