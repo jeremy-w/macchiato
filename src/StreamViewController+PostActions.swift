@@ -47,6 +47,7 @@ extension StreamViewController {
             (((post.account.id == identity.account?.id)
                 ? NSLocalizedString("Edit", comment: "button")
                 : ""), .edit),
+            (NSLocalizedString("View Thread", comment: "button"), .viewThread),
             (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
             switch action {
@@ -155,6 +156,9 @@ extension StreamViewController {
             // (jeremy-w/2017-03-26)FIXME: If you delete a Repost, then we need to edit the You.Reposted on the parent post.
             confirmBeforeDeleting(post)
 
+        case .viewThread:
+            performSegue(withIdentifier: Segue.showThread.rawValue, sender: post)
+
         case .webView:
             displayInWebView(URL(string: "https://10centuries.org/post/\(post.id)")!)
         }
@@ -257,6 +261,7 @@ extension StreamViewController {
         case repost
         case edit
         case delete
+        case viewThread
         case webView
     }
 }
