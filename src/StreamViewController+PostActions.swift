@@ -47,6 +47,7 @@ extension StreamViewController {
             (((post.account.id == identity.account?.id)
                 ? NSLocalizedString("Edit", comment: "button")
                 : ""), .edit),
+            (NSLocalizedString("View Thread", comment: "button"), .viewThread),
             (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
             switch action {
@@ -102,17 +103,26 @@ extension StreamViewController {
 
                     guard let stream = self.stream else { return }
                     let updates = stream.postsAffected(byChangedPost: starredPost)
-                    print("STREAMVC/", stream.view as Any, "DEBUG: Toggling starred of post \(starredPost.id) affected posts: \(updates.map{ $0.now.id })")
+                    print(
+                        "STREAMVC/", stream.view as Any,
+                        "DEBUG: Toggling starred of post", starredPost.id, "affected posts:",
+                        updates.map{ $0.now.id })
 
                     DispatchQueue.main.async {
                         stream.updateAffectedPosts(with: updates)
                         self.syncUpdatesToTableView(updates)
 
-                        let success = isStarring ? NSLocalizedString("Starred!", comment: "title") : NSLocalizedString("Unstarred", comment: "title")
+                        let success =
+                            isStarring
+                                ? NSLocalizedString("Starred!", comment: "title")
+                                : NSLocalizedString("Unstarred", comment: "title")
                         toast(title: success)
                     }
                 } catch {
-                    let prefix = isStarring ? NSLocalizedString("Starring Failed", comment: "title") : NSLocalizedString("Unstarring Failed", comment: "title")
+                    let prefix =
+                        isStarring
+                            ? NSLocalizedString("Starring Failed", comment: "title")
+                            : NSLocalizedString("Unstarring Failed", comment: "title")
                     toast(error: error, prefix: prefix)
                 }
             }
@@ -145,6 +155,9 @@ extension StreamViewController {
         case .delete:
             // (jeremy-w/2017-03-26)FIXME: If you delete a Repost, then we need to edit the You.Reposted on the parent post.
             confirmBeforeDeleting(post)
+
+        case .viewThread:
+            performSegue(withIdentifier: Segue.showThread.rawValue, sender: post)
 
         case .webView:
             displayInWebView(URL(string: "https://10centuries.org/post/\(post.id)")!)
@@ -248,6 +261,7 @@ extension StreamViewController {
         case repost
         case edit
         case delete
+        case viewThread
         case webView
     }
 }
