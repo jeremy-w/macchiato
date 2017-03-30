@@ -67,6 +67,7 @@ class AccountViewController: UIViewController {
 
         showFollowing = !showFollowing
         updateRelationshipButtons()
+        updateStatisticsLinks()
     }
 
     @IBAction func toggleMuteAction() {
