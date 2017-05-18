@@ -20,7 +20,9 @@ enum ComposePostAction {
             return original.content
 
         case let .editDraftReply(original, to: parent):
-            assert(original.replyTo == parent.id, "editDraftReply but original.replyTo does not match parent.id: \(original.replyTo) != \(parent.id)")
+            assert(original.replyTo == parent.id,
+                   "editDraftReply but original.replyTo does not match parent.id: "
+                    + "\(String(describing: original.replyTo)) != \(parent.id)")
             return original.content
 
         case let .update(current):
@@ -28,7 +30,8 @@ enum ComposePostAction {
 
         case let .updateReply(current, to: parent):
             assert(current.thread?.replyTo == parent.id,
-                   "updateReply but current.thread.replyTo does not match parent.id: \(current.thread?.replyTo) != \(parent.id)")
+                   "updateReply but current.thread.replyTo does not match parent.id: "
+                    + "\(String(describing: current.thread?.replyTo)) != \(parent.id)")
             return current.content
         }
     }

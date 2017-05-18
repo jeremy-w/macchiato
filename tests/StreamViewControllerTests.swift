@@ -30,7 +30,7 @@ class StreamViewControllerTests: XCTestCase {
 
 
 func assertAlertIsActionSheetWithValidPopoverLocation(_ alert: UIAlertController, file: StaticString = #file, line: UInt = #line) {
-    XCTAssertEqual(alert.preferredStyle, .actionSheet, "should present alert \(alert.title) as action sheet", file: file, line: line)
+    XCTAssertEqual(alert.preferredStyle, .actionSheet, "should present alert \(String(describing: alert.title)) as action sheet", file: file, line: line)
     guard UIDevice.current.userInterfaceIdiom == .pad else {
         print(#function, ": Not able to check this on iPhone. Run tests under iPad.")
         return
@@ -47,5 +47,5 @@ func assertAlertIsActionSheetWithValidPopoverLocation(_ alert: UIAlertController
     let item = presenter.barButtonItem
     let sourceView = presenter.sourceView
     XCTAssert(item != nil || sourceView != nil,
-              "action sheet \(alert.title) lacks position information of bar-button item or sourceView and sourceRect; this will trigger a crash on iPad", file: file, line: line)
+              "action sheet \(String(describing: alert.title)) lacks position information of bar-button item or sourceView and sourceRect; this will trigger a crash on iPad", file: file, line: line)
 }

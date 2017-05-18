@@ -56,7 +56,7 @@ class ToastViewController: UIViewController {
         guard !dismissing else { return }
         dismissing = true
 
-        print("DEBUG: TOAST: Dismissing: \(title) from \(viewIfLoaded?.window)")
+        print("DEBUG: TOAST: Dismissing:", title as Any, "from", viewIfLoaded?.window as Any)
         guard let window = viewIfLoaded?.window else { return }
 
         window.isHidden = true

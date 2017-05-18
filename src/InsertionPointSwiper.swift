@@ -16,7 +16,8 @@ final class InsertionPointSwiper {
         installGestures(in: editableTextView)
 
         assert(!(editableTextView.gestureRecognizers?.isEmpty ?? false),
-               "\(editableTextView) should definitely have a gesture recognizer by now, but its array is: \(editableTextView.gestureRecognizers)")
+               "\(editableTextView) should definitely have a gesture recognizer by now, "
+            + "but its array is: \(String(describing: editableTextView.gestureRecognizers))")
     }
 }
 

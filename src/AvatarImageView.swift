@@ -1,14 +1,14 @@
 import UIKit
 import Kingfisher
 
-protocol AvatarImageViewDelegate {
+protocol AvatarImageViewDelegate: class {
     func tapped(avatarImageView: AvatarImageView)
     func longPressed(avatarImageView: AvatarImageView)
 }
 
 class AvatarImageView: UIImageView {
     private(set) var account: Account?
-    private(set) var delegate: AvatarImageViewDelegate?
+    private(set) weak var delegate: AvatarImageViewDelegate?
     func display(account: Account?, delegate: AvatarImageViewDelegate?) {
         self.account = account
         self.delegate = delegate

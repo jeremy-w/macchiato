@@ -97,7 +97,7 @@ class Stream {
 
         case mentions
         case interactions
-        case private_
+        case private_  // swiftlint:disable:this identifier_name
 
         case pinned
         case starred

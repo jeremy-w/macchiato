@@ -1,6 +1,6 @@
 import UIKit
 
-protocol ComposePostViewControllerDelegate {
+protocol ComposePostViewControllerDelegate: class {
     func uploadImage(for controller: ComposePostViewController, sender: UIButton, then continuation: @escaping ((title: String, href: URL)?) -> Void)
 }
 
@@ -8,7 +8,7 @@ class ComposePostViewController: UIViewController {
     var postRepository: PostRepository?
     var action: ComposePostAction = .newThread
     var author: Account?
-    var delegate: ComposePostViewControllerDelegate?
+    weak var delegate: ComposePostViewControllerDelegate?
 
     func configure(delegate: ComposePostViewControllerDelegate, postRepository: PostRepository, action: ComposePostAction, author: Account) {
         self.delegate = delegate

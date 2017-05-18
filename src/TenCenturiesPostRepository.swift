@@ -198,7 +198,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             html: html ?? "<p>—</p>",
             privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
-            parentID: (parent != nil) ? parentID : Optional<String>.none,
+            parentID: (parent != nil) ? parentID : String?.none,
             client: (try? unpack(unpack(post, "client"), "name")) ?? "—",
             mentions: (try? parseMentions(from: mentions)) ?? [],
             created: created,

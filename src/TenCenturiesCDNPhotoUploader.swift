@@ -46,7 +46,7 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
     func send(request unauthenticated: URLRequest, completion: @escaping (Result<JSONDictionary>) -> Void) -> URLSessionTask {
         let request = authenticator.authenticate(request: unauthenticated)
         let url = request.url!  // swiftlint:disable:this
-        print("API: INFO: BEGIN \(request.url) \(request)")
+        print("API: INFO: BEGIN \(String(describing: request.url)) \(request)")
         print("API: DEBUG: BEGIN:\n\(debugInfo(for: request))")
         let task = session.dataTask(with: request) { (data, response, error) in
             let result = Result.of { () throws -> JSONDictionary in
@@ -62,7 +62,8 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
                      X-RateLimit-Reset: 2866
                      */
                     let limits = RateLimit(headers: response.allHeaderFields)
-                    print("API: INFO: END \(url): \(response.statusCode): \(data) \(error) "
+                    print("API: INFO: END \(url): "
+                        + "\(response.statusCode): \(String(describing: data)) \(String(describing: error)) "
                         + "- RATELIMIT: \(limits.map { String(reflecting: $0) } ?? "(headers not found)")")
                     print("API: DEBUG: END: \(response)\n\(debugInfo(for: response))")
 
@@ -81,7 +82,7 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
                     return dict
                 }
             }
-            print("API: DEBUG: \(request.url): Extracted response body: \(result)")
+            print("API: DEBUG: \(String(describing: request.url)): Extracted response body: \(result)")
             completion(result)
         }
         task.resume()

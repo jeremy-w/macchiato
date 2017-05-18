@@ -27,7 +27,8 @@ extension EditingPost {
             replyTo = original.replyTo
 
         case let .editDraftReply(original, to: parent):
-            assert(original.replyTo == parent.id, "editDraftReply but original.replyTo does not match parent.id: \(original.replyTo) != \(parent.id)")
+            assert(original.replyTo == parent.id,
+                   "editDraftReply but original.replyTo does not match parent.id: \(String(describing: original.replyTo)) != \(parent.id)")
             updating = original.updating
             replyTo = original.replyTo
 
@@ -37,7 +38,7 @@ extension EditingPost {
 
         case let .updateReply(current, to: parent):
             assert(current.thread?.replyTo == parent.id,
-                   "updateReply but current.thread.replyTo does not match parent.id: \(current.thread?.replyTo) != \(parent.id)")
+                   "updateReply but current.thread.replyTo does not match parent.id: \(String(describing: current.thread?.replyTo)) != \(parent.id)")
             updating = current.id
             replyTo = current.thread?.replyTo
         }
