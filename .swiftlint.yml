@@ -6,6 +6,10 @@ disabled_rules:
     # We have a custom rule to force them to fit a specific format.
     - todo
 
+    # With a capture list and args, it's sometimes useful to spill
+    # over to the next line.
+    - closure_parameter_position
+
     # This gripes about needlessly repeating `let` in if/guard, but that
     # is actually a requirement of Future Swift, so we *want* to do that.
     - conditional_binding_cascade
@@ -17,6 +21,23 @@ disabled_rules:
     # We do this right anyway, except when we're fighting Xcode on wrapping
     # tons o' arguments (thanks, UIKit!).
     - opening_brace
+
+    # Sticking with |let| makes it easy to name this later.
+    # |let| is also required to type-annotate the LHS.
+    - redundant_discardable_let
+
+    # Trailing commas reduce errors when appending to a collection,
+    # as well as line-diffs if you push the closing bracket to next line.
+    - trailing_comma
+
+    # It's better to have the names there for documentation and future editing
+    # than not. The closure body ought to be small enough to not matter that
+    # a few extra names are around!
+    - unused_closure_parameter
+
+    # Prefer `if let _ = whatever` as a positive phrasing over the negative
+    # `!= nil` variant.
+    - unused_optional_binding
 
     # This obnoxiously expects you to write a doc comment for every blessed
     # parameter. This is a recipe for useless docs that just say the variable
@@ -41,8 +62,12 @@ file_length:
     error: 512
 
 function_body_length:
-    warning: 24
+    warning: 50
     error: 100
+
+large_tuple:
+    warning: 4
+    error: 7
 
 line_length:
     # This is to accommodate the UITableViewDataSource et al.'s long method names
@@ -54,6 +79,9 @@ variable_name:
         - id
         - my
         - me
+
+vertical_whitespace:
+    max_empty_lines: 3
 
 custom_rules:
     todo_format:
