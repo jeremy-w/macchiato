@@ -3,6 +3,14 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (14) - 2017-05-18
+Changed:
+
+- Profile page now indicates if you're in the follower/following list. [#111]
+- ComposePost uses shorter "copy-mention" style `/@abc` rather than `// @abc` for mentions other than the primary one. [#113]
+- Post actions now include "View Thread" as an alternative to the "swipe-in" gesture. [#98]
+
+
 ### 1.0 (13) - 2017-03-26
 New:
 
