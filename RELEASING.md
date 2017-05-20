@@ -28,4 +28,5 @@
 
 - Visit iTunes Connect once the build goes through, drop in the changelog entry
   in the "what to test" bit, add it for testing, and push it out to testers.
+
 - Announce the release by posting to 10C.
