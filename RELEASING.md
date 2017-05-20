@@ -20,8 +20,11 @@
 
   ```
   git tag -a 'v1.0_(NUM)' -m 'TF-NUM'
-  git push --all
+  git push --all; and git push --tags
   ```
+
+  NOTE: You can't combine `--all` and `--tags`,
+  and `--all` doesn't include tags. Fun, that.
 
 - Visit iTunes Connect once the build goes through, drop in the changelog entry
   in the "what to test" bit, add it for testing, and push it out to testers.
