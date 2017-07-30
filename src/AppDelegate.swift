@@ -80,7 +80,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             Stream.View.starters,
             Stream.View.mentions,
             Stream.View.interactions,
-            Stream.View.private_,
+
+            /*
+             Omit "Private" stream until DMs are supported.
+
+             See:
+
+             - [Streams: Remove useless "Private" stream #122](https://gitlab.com/jeremy-w/macchiato/issues/122)
+             - [Direct Messages: View & Post To #47](https://gitlab.com/jeremy-w/macchiato/issues/47)
+             */
+            // Stream.View.private_,
+
             Stream.View.pinned,
             Stream.View.starred,
             ].map { Stream(view: $0) }
