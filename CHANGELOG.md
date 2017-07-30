@@ -3,6 +3,12 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (15) - 2017-07-30
+Removed:
+
+- "Private" stream is no longer listed. DM support remains unimplemented. [#122]
+
+
 ### 1.0 (14) - 2017-05-18
 Changed:
 
