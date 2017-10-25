@@ -236,7 +236,7 @@ extension StreamViewController {
             comment: "alert message - %@ is snippet from post")
 
         let end = post.content.index(post.content.startIndex, offsetBy: 24, limitedBy: post.content.endIndex) ?? post.content.endIndex
-        let snippet = post.content.substring(to: end)
+        let snippet = String(post.content[..<end])
         let message = String.localizedStringWithFormat(messageFormat, snippet)
 
         let alert = UIAlertController(title: NSLocalizedString("Delete Post?", comment: "alert title"), message: message, preferredStyle: .alert)

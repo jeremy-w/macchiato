@@ -57,7 +57,7 @@ class HTMLToAttributedStringTests: XCTestCase {
 
         // Workaround for not having the superscript attribute: Raise the text a bit.
         // See: https://stackoverflow.com/questions/21415963/nsattributedstring-superscript-styling
-        guard let baselineOffset = result.attribute(NSBaselineOffsetAttributeName, at: 0, effectiveRange: nil) as? CGFloat else {
+        guard let baselineOffset = result.attribute(NSAttributedStringKey.baselineOffset, at: 0, effectiveRange: nil) as? CGFloat else {
             return XCTFail("failed to set baseline attribute at index 0 in attributed string: \(result)")
         }
         XCTAssertTrue(baselineOffset > 0, "expected baseline offset greater than zero, but found: \(baselineOffset)")
@@ -67,14 +67,14 @@ class HTMLToAttributedStringTests: XCTestCase {
         let html = "<strike>strike</strike>"
         let result = shouldMakeAttributedString(fromHTML: html)
         XCTAssertNotNil(
-            result.attribute(NSStrikethroughStyleAttributeName, at: 0, effectiveRange: nil),
+            result.attribute(NSAttributedStringKey.strikethroughStyle, at: 0, effectiveRange: nil),
             "expected to find strikethrough attribute at index 0 of attributed string: \(result)")
     }
 
     func testAnchorWord() {
         let html = "<a target=\"_blank\" href=\"http://example.com\" title=\"ignored\">anchored</a>"
         let result = shouldMakeAttributedString(fromHTML: html)
-        guard let link = result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil) else {
+        guard let link = result.attribute(NSAttributedStringKey.link, at: 0, effectiveRange: nil) else {
             return XCTFail("expected to find link attribute at index 0 of attributed string: \(result)")
         }
 
@@ -138,7 +138,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testHyperlinkedImage() {
         let html = "<a href=\"https://example.com/\"><img src=\"https://example.com/favicon.ico\" alt=\"alt text\" /></a>"
         let result = shouldMakeAttributedString(fromHTML: html)
-        XCTAssertNotNil(result.attribute(NSLinkAttributeName, at: 0, effectiveRange: nil), "should have link attribute in: \(result)")
+        XCTAssertNotNil(result.attribute(NSAttributedStringKey.link, at: 0, effectiveRange: nil), "should have link attribute in: \(result)")
 
         let string = result.string
         XCTAssertTrue(string.hasPrefix("["), "should start with [: \(string)")
@@ -172,7 +172,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         XCTAssertNil(result.string.range(of: "."), "should not insert dot after footnote number, but got: \(result)")
 
         var encounteredSuperscript = false
-        result.enumerateAttribute(superscriptAttributeName, in: NSRange(location: 0, length: result.length), options: []) { (value, range, done) in
+        result.enumerateAttribute(NSAttributedStringKey(rawValue: superscriptAttributeName), in: NSRange(location: 0, length: result.length), options: []) { (value, range, done) in
             encounteredSuperscript = true
         }
         XCTAssertTrue(encounteredSuperscript, "should apply the attribute “\(superscriptAttributeName)” to the footnote number, but got: \(result)")
@@ -182,7 +182,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         #if os(macOS)
             return NSSuperscriptAttributeName
         #else
-            return NSBaselineOffsetAttributeName
+            return NSAttributedStringKey.baselineOffset.rawValue
         #endif
     }
 
@@ -203,7 +203,7 @@ class HTMLToAttributedStringTests: XCTestCase {
         let rendered = shouldMakeAttributedString(fromHTML: html)
         XCTAssertEqual(rendered.string, "quoted")
 
-        guard let style = rendered.attribute(NSParagraphStyleAttributeName, at: 0, effectiveRange: nil) as? NSParagraphStyle else {
+        guard let style = rendered.attribute(NSAttributedStringKey.paragraphStyle, at: 0, effectiveRange: nil) as? NSParagraphStyle else {
             return XCTFail("expected to find paragraph style at index 0 in: \(rendered)")
         }
 
@@ -221,7 +221,7 @@ class HTMLToAttributedStringTests: XCTestCase {
             return XCTFail("failed to quoted string “\(quoted)” in: \(rendered)")
         }
 
-        guard let style = rendered.attribute(NSParagraphStyleAttributeName, at: range.location, effectiveRange: nil) as? NSParagraphStyle else {
+        guard let style = rendered.attribute(NSAttributedStringKey.paragraphStyle, at: range.location, effectiveRange: nil) as? NSParagraphStyle else {
             return XCTFail("expected to find paragraph style in range \(range) of: \(rendered)")
         }
 
@@ -246,13 +246,13 @@ class HTMLToAttributedStringTests: XCTestCase {
         let expectedHTML = "<em>[Image: an image]</em>"
         let renderedString = shouldMakeAttributedString(fromHTML: expectedHTML).mutableCopy() as! NSMutableAttributedString
         renderedString.addAttributes(
-            [TenCenturiesHTMLParser.imageSourceURLAttributeName: URL(string: "https://example.com")!],
+            [.macchiatoImageSourceURL: URL(string: "https://example.com")!],
             range: NSRange(location: 0, length: renderedString.length))
         XCTAssertEqual(shouldMakeAttributedString(fromHTML: html), renderedString)
     }
 
     func assertSymbolicTraits(_ trait: UIFontDescriptorSymbolicTraits, foundInFontDescriptorAtIndex index: Int, of string: NSAttributedString, file: StaticString = #file, line: UInt = #line) {
-        guard let font = string.attribute(NSFontAttributeName, at: index, effectiveRange: nil) as? UIFont else {
+        guard let font = string.attribute(NSAttributedStringKey.font, at: index, effectiveRange: nil) as? UIFont else {
             return XCTFail("failed to set font attribute at index \(index) in attributed string: \(string)", file: file, line: line)
         }
 

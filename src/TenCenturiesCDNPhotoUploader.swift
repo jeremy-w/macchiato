@@ -104,7 +104,7 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
     func multipartBoundary(for date: Date) -> String {
         let maybeTooLong = "com.jeremywsherman.Macchiato-" + String(describing: date.timeIntervalSince1970)
         let limit = maybeTooLong.index(maybeTooLong.startIndex, offsetBy: 70, limitedBy: maybeTooLong.endIndex)
-        let boundary = limit.map({ maybeTooLong[maybeTooLong.startIndex ..< $0] }) ?? maybeTooLong
+        let boundary = limit.map({ String(maybeTooLong[maybeTooLong.startIndex ..< $0]) }) ?? maybeTooLong
         return boundary
     }
 }

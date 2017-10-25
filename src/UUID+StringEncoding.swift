@@ -6,6 +6,12 @@ extension StringEncoding {
         return uuidString.lowercased().components(separatedBy: "-").joined()
     }
 
+    /**
+     Given a UUID string of lowercase hexdigits without any separator,
+     builds a UUID.
+
+     Fails if the string has invalid characters, too few, or too many.
+     */
     init?(lowercaseHexString: String) {
         // E621E1F8-C36C-495A-93FC-0C247A3E6E5F
         // 4 - 2 - 2 - 2 - 6
@@ -20,15 +26,13 @@ extension StringEncoding {
                 + "found \(utf8.count) instead in: \(lowercaseHexString)")
         }
 
-        var rest = utf8
-        let chunks: [String] = [4, 2, 2, 2, 6].map { (byteCount: Int) -> String in
-            let characterCount = byteCount * 2
-            let chunk: String.UTF8View = utf8.prefix(characterCount)
-            rest = rest.dropFirst(characterCount)
-            guard let string = String(chunk) else {
-                preconditionFailure("\(#function): ERROR: failed to stringify chunk: \(chunk)")
-            }
-            return string
+        let chunkLengths = [4, 2, 2, 2, 6]
+        var chunks = [String]()
+        var rest = utf8.dropFirst(0)
+        for length in chunkLengths {
+            let chunk = String(rest.prefix(length))!
+            chunks.append(chunk)
+            rest = rest.dropFirst(length)
         }
         self.init(uuidString: chunks.joined(separator: "-"))
     }

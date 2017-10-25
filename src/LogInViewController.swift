@@ -27,13 +27,21 @@ class LogInViewController: UIViewController {
     }
 
     func logInDidEnd() {
+        // SwiftLint: False positive for some reason. Go figure.
+        //swiftlint:disable:next control_statement
+        if (!Thread.isMainThread) {
+            return OperationQueue.main.addOperation { [weak self] in
+                self?.logInDidEnd()
+            }
+        }
+
         isLoggingIn = false
         updateButtonDisabled()
     }
 
 
     // MARK: - Updates "Log In" enabled when text changes
-    func updateButtonDisabled() {
+    @objc func updateButtonDisabled() {
         guard let button = logIn else { return }
 
         button.isEnabled = !isLoggingIn && hasUsername && hasPassword

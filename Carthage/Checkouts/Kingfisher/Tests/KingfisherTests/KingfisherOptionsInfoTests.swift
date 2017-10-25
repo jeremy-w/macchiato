@@ -59,6 +59,8 @@ class KingfisherOptionsInfoTests: XCTestCase {
         XCTAssertEqual(options.callbackDispatchQueue.label, DispatchQueue.main.label)
         XCTAssertEqual(options.scaleFactor, 1.0)
         XCTAssertFalse(options.keepCurrentImageWhileLoading)
+        XCTAssertFalse(options.onlyLoadFirstFrame)
+        XCTAssertFalse(options.cacheOriginalImage)
     }
     
 
@@ -89,7 +91,9 @@ class KingfisherOptionsInfoTests: XCTestCase {
             KingfisherOptionsInfoItem.scaleFactor(2.0),
             .requestModifier(testModifier),
             .processor(processor),
-            .keepCurrentImageWhileLoading
+            .keepCurrentImageWhileLoading,
+            .onlyLoadFirstFrame,
+            .cacheOriginalImage
         ]
         
         XCTAssertTrue(options.targetCache === cache)
@@ -113,6 +117,19 @@ class KingfisherOptionsInfoTests: XCTestCase {
         XCTAssertTrue(options.modifier is TestModifier)
         XCTAssertEqual(options.processor.identifier, processor.identifier)
         XCTAssertTrue(options.keepCurrentImageWhileLoading)
+        XCTAssertTrue(options.onlyLoadFirstFrame)
+        XCTAssertTrue(options.cacheOriginalImage)
+    }
+    
+    func testOptionCouldBeOverwritten() {
+        var options: KingfisherOptionsInfo = [.downloadPriority(0.5), .onlyFromCache]
+        XCTAssertEqual(options.downloadPriority, 0.5)
+        
+        options.append(.downloadPriority(0.8))
+        XCTAssertEqual(options.downloadPriority, 0.8)
+        
+        options.append(.downloadPriority(1.0))
+        XCTAssertEqual(options.downloadPriority, 1.0)
     }
 }
 

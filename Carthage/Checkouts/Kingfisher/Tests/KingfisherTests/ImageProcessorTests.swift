@@ -66,11 +66,35 @@ class ImageProcessorTests: XCTestCase {
         XCTAssertEqual(p.identifier, "com.onevcat.Kingfisher.RoundCornerImageProcessor(60.0_(100.0, 100.0))")
         checkProcessor(p, with: "round-corner-60-resize-100")
     }
+    
+    func testRoundCornerWithRectCornerProcessor() {
+        let p1 = RoundCornerImageProcessor(cornerRadius: 40, roundingCorners: [.topLeft, .topRight])
+        XCTAssertEqual(p1.identifier, "com.onevcat.Kingfisher.RoundCornerImageProcessor(40.0_corner(3))")
+        checkProcessor(p1, with: "round-corner-40-corner-3")
+        
+        let p2 = RoundCornerImageProcessor(cornerRadius: 40, roundingCorners: [.bottomLeft, .bottomRight])
+        XCTAssertEqual(p2.identifier, "com.onevcat.Kingfisher.RoundCornerImageProcessor(40.0_corner(12))")
+        checkProcessor(p2, with: "round-corner-40-corner-12")
+        
+        let p3 = RoundCornerImageProcessor(cornerRadius: 40, roundingCorners: .all)
+        XCTAssertEqual(p3.identifier, "com.onevcat.Kingfisher.RoundCornerImageProcessor(40.0)")
+        checkProcessor(p3, with: "round-corner-40")
+    }
 
     func testResizingProcessor() {
-        let p = ResizingImageProcessor(targetSize: CGSize(width: 120, height: 120))
+        let p = ResizingImageProcessor(referenceSize: CGSize(width: 120, height: 120))
         XCTAssertEqual(p.identifier, "com.onevcat.Kingfisher.ResizingImageProcessor((120.0, 120.0))")
         checkProcessor(p, with: "resize-120")
+    }
+    
+    func testResizingProcessorWithContentMode() {
+        let p1 = ResizingImageProcessor(referenceSize: CGSize(width: 240, height: 60), mode: .aspectFill)
+        XCTAssertEqual(p1.identifier, "com.onevcat.Kingfisher.ResizingImageProcessor((240.0, 60.0), aspectFill)")
+        checkProcessor(p1, with: "resize-240-60-aspectFill")
+        
+        let p2 = ResizingImageProcessor(referenceSize: CGSize(width: 240, height: 60), mode: .aspectFit)
+        XCTAssertEqual(p2.identifier, "com.onevcat.Kingfisher.ResizingImageProcessor((240.0, 60.0), aspectFit)")
+        checkProcessor(p2, with: "resize-240-60-aspectFit")
     }
     
     func testBlurProcessor() {
@@ -122,6 +146,12 @@ class ImageProcessorTests: XCTestCase {
         let p = TestCIImageProcessor(filter: .tint(Color.yellow.withAlphaComponent(0.2)))
         checkProcessor(p, with: "tint-yellow-02")
     }
+    
+    func testCroppingImageProcessor() {
+        let p = CroppingImageProcessor(size: CGSize(width: 50, height: 50), anchor: CGPoint(x: 0.5, y: 0.5))
+        XCTAssertEqual(p.identifier, "com.onevcat.Kingfisher.CroppingImageProcessor((50.0, 50.0)_(0.5, 0.5))")
+        checkProcessor(p, with: "cropping-50-50-anchor-center")
+    }
 }
 
 struct TestCIImageProcessor: CIImageProcessor {
@@ -139,7 +169,16 @@ extension ImageProcessorTests {
         
         let targetImages = filteredImageNames
             .map { $0.replacingOccurrences(of: ".", with: "-\(specifiedSuffix).") }
-            .map { Image(fileName: $0) }
+            .flatMap { name -> Image? in
+                if #available(iOS 11, tvOS 11.0, macOS 10.13, *) {
+                    // Look for the version specified target first. Then roll back to base.
+                    return Image(fileName: name.replacingOccurrences(of: ".", with: "-iOS11.")) ??
+                        Image(fileName: name.replacingOccurrences(of: ".", with: "-macOS1013.")) ??
+                        Image(fileName: name)
+                }
+
+                return Image(fileName: name)
+            }
         
         let resultImages = imageData(noAlpha: noAlpha).flatMap { p.process(item: .data($0), options: []) }
         
@@ -148,7 +187,7 @@ extension ImageProcessorTests {
     
     func checkImagesEqual(targetImages: [Image], resultImages: [Image], for suffix: String) {
         XCTAssertEqual(targetImages.count, resultImages.count)
-        
+
         for (i, (resultImage, targetImage)) in zip(resultImages, targetImages).enumerated() {
             guard resultImage.renderEqual(to: targetImage) else {
                 let originalName = imageNames[i]
