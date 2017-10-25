@@ -248,7 +248,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     func parse(mention: JSONDictionary) throws -> Post.Mention {
         func stripPrefixedAtSign(from string: String) -> String {
             guard string.hasPrefix("@") else { return string }
-            return string.substring(from: string.index(after: string.startIndex))
+            return String(string[string.index(after: string.startIndex)...])
         }
 
         return Post.Mention(

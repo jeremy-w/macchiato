@@ -28,6 +28,21 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString? {
     }
 }
 
+public extension NSAttributedStringKey {
+    /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`.
+    /// Its value is a `URL`.
+    public static let macchiatoImageSourceURL = NSAttributedStringKey("com.jeremywsherman.Macchiato.ImageSourceURL")
+
+    /// Mentions like `@name` have this applied. The value is a numeric `String`.
+    public static let macchiatoAccountID = NSAttributedStringKey("com.jeremywsherman.Macchiato.mention.AccountID")
+
+    /// Text like `#tag` has this applied. The value is a `String` like `"tag"` (i.e., omitting the hashmark).
+    public static let macchiatoHashtag = NSAttributedStringKey("com.jeremywsherman.Macchiato.Hashtag")
+
+    /// Text like `> quote` has this applied. The value is a strictly positive `Int`.
+    /// In future, we might have a custom renderer stick a vertical bar to its left.
+    public static let macchiatoBlockquoteLevel = NSAttributedStringKey("com.jeremywsherman.Macchiato.blockquoteLevel")
+}
 
 final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     public init(data: Data, from source: String) {
@@ -37,20 +52,6 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
     private let data: Data
     private let source: String
-
-    /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`.
-    /// Its value is a `URL`.
-    public static let imageSourceURLAttributeName = "com.jeremywsherman.Macchiato.ImageSourceURL"
-
-    /// Mentions like `@name` have this applied. The value is a numeric `String`.
-    public static let accountIDAttributeName = "com.jeremywsherman.Macchiato.mention.AccountID"
-
-    /// Text like `#tag` has this applied. The value is a `String` like `"tag"` (i.e., omitting the hashmark).
-    public static let hashtagAttributeName = "com.jeremywsherman.Macchiato.Hashtag"
-
-    /// Text like `> quote` has this applied. The value is a strictly positive `Int`.
-    /// In future, we might have a custom renderer stick a vertical bar to its left.
-    public static let blockquoteLevelAttributeName = "com.jeremywsherman.Macchiato.blockquoteLevel"
 
     public func parse() -> Result<NSAttributedString> {
         let parser = XMLParser(data: data)
@@ -66,7 +67,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
     private var result = NSMutableAttributedString()
 
-    typealias Attributes = [String: Any]
+    typealias Attributes = [NSAttributedStringKey: Any]
     private var attributesStack = [Attributes]()
 
     /// The attributes stack is not popped at the end of one of these elements.
@@ -201,7 +202,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
             let format = NSLocalizedString("[Image: %@]", comment: "%@ is the alt attribute text from the img tag")
             var stringAttributes = TenCenturiesHTMLParser.applyItalicAttributes(to: currentAttributes)
             if let url = imageURL(from: attributes) {
-                stringAttributes[TenCenturiesHTMLParser.imageSourceURLAttributeName] = url
+                stringAttributes[.macchiatoImageSourceURL] = url
             } else {
                 print("HTML: ERROR: Failed to build URL for image with attributes:", attributes)
             }
@@ -299,16 +300,16 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyParagraph(to attributes: Attributes) -> Attributes {
         var paragraphy = attributes
 
-        let style = (paragraphy[NSParagraphStyleAttributeName] as? NSParagraphStyle) ?? NSParagraphStyle.default
+        let style = (paragraphy[.paragraphStyle] as? NSParagraphStyle) ?? NSParagraphStyle.default
         let mutableStyle = style.mutableCopy() as! NSMutableParagraphStyle  // swiftlint:disable:this force_cast
         mutableStyle.lineBreakMode = .byWordWrapping
-        paragraphy[NSParagraphStyleAttributeName] = mutableStyle
+        paragraphy[.paragraphStyle] = mutableStyle
 
-        guard paragraphy[NSFontAttributeName] == nil else {
+        guard paragraphy[.font] == nil else {
             return paragraphy
         }
 
-        paragraphy[NSFontAttributeName] = UIFont.preferredFont(forTextStyle: .body)
+        paragraphy[.font] = UIFont.preferredFont(forTextStyle: .body)
         return paragraphy
     }
     static var paragraph: Attributes {
@@ -329,11 +330,11 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyItalicAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let current = attributes[NSFontAttributeName] as? UIFont
+        let current = attributes[NSAttributedStringKey.font] as? UIFont
         let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
         let font = toggle(.traitItalic, of: current) ?? UIFont.italicSystemFont(ofSize: pointSize)
         var italicized = attributes
-        italicized[NSFontAttributeName] = font
+        italicized[.font] = font
         return italicized
     }
 
@@ -354,23 +355,23 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyBoldAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let current = attributes[NSFontAttributeName] as? UIFont
+        let current = attributes[NSAttributedStringKey.font] as? UIFont
         let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
         let font = toggle(.traitBold, of: current) ?? UIFont.boldSystemFont(ofSize: pointSize)
         var bolded = attributes
-        bolded[NSFontAttributeName] = font
+        bolded[.font] = font
         return bolded
     }
 
     static func applyCodeAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let current = (attributes[NSFontAttributeName] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+        let current = (attributes[NSAttributedStringKey.font] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
         let font = makeMonospaceByHookOrByCrook(current)
         var codified = attributes
-        codified[NSFontAttributeName] = font
-        codified[NSBackgroundColorAttributeName] = #colorLiteral(red: 0.9764705882, green: 0.9490196078, blue: 0.9568627451, alpha: 1)
-        codified[NSForegroundColorAttributeName] = #colorLiteral(red: 0.7803921569, green: 0.1450980392, blue: 0.1490196078, alpha: 1)
+        codified[.font] = font
+        codified[.backgroundColor] = #colorLiteral(red: 0.9764705882, green: 0.9490196078, blue: 0.9568627451, alpha: 1)
+        codified[.foregroundColor] = #colorLiteral(red: 0.7803921569, green: 0.1450980392, blue: 0.1490196078, alpha: 1)
         return codified
     }
 
@@ -425,18 +426,18 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
                 superscripted[NSSuperscriptAttributeName] = 1.0
             }
         #else
-            let current = (attributes[NSFontAttributeName] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+            let current = (attributes[NSAttributedStringKey.font] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
             let descriptor = current.fontDescriptor
             let font = UIFont(descriptor: descriptor, size: descriptor.pointSize / 2)
-            superscripted[NSFontAttributeName] = font
-            superscripted[NSBaselineOffsetAttributeName] = descriptor.pointSize / 3
+            superscripted[.font] = font
+            superscripted[.baselineOffset] = descriptor.pointSize / 3
         #endif
         return superscripted
     }
 
     static func applyStrikethroughAttributes(to attributes: Attributes) -> Attributes {
         var strikethroughAttributes = attributes
-        strikethroughAttributes[NSStrikethroughStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+        strikethroughAttributes[.strikethroughStyle] = NSUnderlineStyle.styleSingle.rawValue
         return strikethroughAttributes
     }
 
@@ -444,26 +445,26 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
         var anchorAttributes = attributes
-        anchorAttributes[NSLinkAttributeName] = href ?? "about:blank"
+        anchorAttributes[.link] = href ?? "about:blank"
         return anchorAttributes
     }
 
     static func applyMentionAttributes(forAccountID accountID: String, to attributes: Attributes) -> Attributes {
         var mentionAttributes = applyBoldAttributes(to: attributes)
-        mentionAttributes[accountIDAttributeName] = accountID
+        mentionAttributes[.macchiatoAccountID] = accountID
         return mentionAttributes
     }
 
     static func applyAttributes(forHashtag hashtag: String, to attributes: Attributes) -> Attributes {
         var hashtagAttributes = applyItalicAttributes(to: attributes)
-        hashtagAttributes[hashtagAttributeName] = hashtag
+        hashtagAttributes[.macchiatoHashtag] = hashtag
         return hashtagAttributes
     }
 
     static func list(atIndentLevel indentLevel: Int) -> Attributes {
-        var attributes = applyParagraph(to: [NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body)])
+        var attributes = applyParagraph(to: [.font: UIFont.preferredFont(forTextStyle: .body)])
 
-        let style = (attributes[NSParagraphStyleAttributeName] as? NSParagraphStyle) ?? NSParagraphStyle.default
+        let style = (attributes[.paragraphStyle] as? NSParagraphStyle) ?? NSParagraphStyle.default
         let mutableStyle = style.mutableCopy() as! NSMutableParagraphStyle  // swiftlint:disable:this force_cast
 
         // 28 is the default tab stop, which mirrors our old "stick some tabs on" approach, which looked OK.
@@ -472,20 +473,20 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         // (jeremy-w/2017-03-25)TODO: Would be nice to do a proper hanging-indent, but then need to measure the item label.
         mutableStyle.headIndent = indentation + 8.0
 
-        attributes[NSParagraphStyleAttributeName] = mutableStyle
+        attributes[.paragraphStyle] = mutableStyle
         return attributes
     }
 
     static func applyBlockquote(to attributes: Attributes) -> Attributes {
         var quoted = attributes
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.setParagraphStyle(quoted[NSParagraphStyleAttributeName] as? NSParagraphStyle ?? NSParagraphStyle.default)
+        paragraphStyle.setParagraphStyle(quoted[.paragraphStyle] as? NSParagraphStyle ?? NSParagraphStyle.default)
         paragraphStyle.firstLineHeadIndent += 12
         paragraphStyle.headIndent += 12
-        quoted[NSParagraphStyleAttributeName] = paragraphStyle
-        quoted[NSFontAttributeName] = UIFont.preferredFont(forTextStyle: .callout)
-        quoted[NSForegroundColorAttributeName] = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-        quoted[blockquoteLevelAttributeName] = (quoted[blockquoteLevelAttributeName] as? Int ?? 0) + 1
+        quoted[.paragraphStyle] = paragraphStyle
+        quoted[.font] = UIFont.preferredFont(forTextStyle: .callout)
+        quoted[.foregroundColor] = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        quoted[.macchiatoBlockquoteLevel] = (quoted[.macchiatoBlockquoteLevel] as? Int ?? 0) + 1
         return quoted
     }
 }

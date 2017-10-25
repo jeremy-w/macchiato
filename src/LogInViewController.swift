@@ -33,7 +33,7 @@ class LogInViewController: UIViewController {
 
 
     // MARK: - Updates "Log In" enabled when text changes
-    func updateButtonDisabled() {
+    @objc func updateButtonDisabled() {
         guard let button = logIn else { return }
 
         button.isEnabled = !isLoggingIn && hasUsername && hasPassword
