@@ -27,6 +27,14 @@ class LogInViewController: UIViewController {
     }
 
     func logInDidEnd() {
+        // SwiftLint: False positive for some reason. Go figure.
+        //swiftlint:disable:next control_statement
+        if (!Thread.isMainThread) {
+            return OperationQueue.main.addOperation { [weak self] in
+                self?.logInDidEnd()
+            }
+        }
+
         isLoggingIn = false
         updateButtonDisabled()
     }
