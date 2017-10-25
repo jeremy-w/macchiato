@@ -60,6 +60,10 @@ func stubRequest(_ method: String, _ url: String) -> LSStubRequestDSL {
     return stubRequest(method, url as NSString)
 }
 
+func delay(_ time: Double, block: @escaping ()->()) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + time) { block() }
+}
+
 extension Image {
     func renderEqual(to image: Image, withinTolerance tolerance: UInt8 = 3) -> Bool {
         
@@ -136,9 +140,9 @@ extension Image {
 }
 
 extension Image {
-    convenience init(fileName: String) {
+    convenience init?(fileName: String) {
         let data = Data(fileName: fileName)
-        self.init(data: data)!
+        self.init(data: data)
     }
     
     @discardableResult
@@ -160,6 +164,10 @@ extension Data {
     }
     
     init(named name: String, type: String) {
-        try! self.init(contentsOf: URL(fileURLWithPath: Bundle(for: ImageExtensionTests.self).path(forResource: name, ofType: type)!))
+        guard let path = Bundle(for: ImageExtensionTests.self).path(forResource: name, ofType: type) else {
+            self.init()
+            return
+        }
+        try! self.init(contentsOf: URL(fileURLWithPath: path))
     }
 }

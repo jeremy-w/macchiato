@@ -78,7 +78,7 @@ class ImagePrefetcherTests: XCTestCase {
                                 XCTAssertEqual(completedResources.count, urls.count, "All resources prefetching should be completed.")
                                 XCTAssertEqual(progressCalledCount, urls.count, "Progress should be called the same time of download count.")
                                 for url in urls {
-                                    XCTAssertTrue(KingfisherManager.shared.cache.isImageCached(forKey: url.absoluteString).cached)
+                                    XCTAssertTrue(KingfisherManager.shared.cache.imageCachedType(forKey: url.absoluteString).cached)
                                 }
                             })
         prefetcher.start()
@@ -102,10 +102,10 @@ class ImagePrefetcherTests: XCTestCase {
                             progressBlock: { (skippedResources, failedResources, completedResources) -> () in
                             },
                             completionHandler: {(skippedResources, failedResources, completedResources) -> () in
-                                expectation.fulfill()
                                 XCTAssertEqual(skippedResources.count, 0, "There should be no items skipped.")
                                 XCTAssertEqual(failedResources.count, urls.count, "The failed count should be the same with started downloads due to cancellation.")
                                 XCTAssertEqual(completedResources.count, 0, "None resources prefetching should complete.")
+                                expectation.fulfill()
                             })
         
         prefetcher.maxConcurrentDownloads = maxConcurrentCount
@@ -113,12 +113,7 @@ class ImagePrefetcherTests: XCTestCase {
         prefetcher.start()
         prefetcher.stop()
         
-        let delayTime = DispatchTime.now() + Double(Int64(0.1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-        
-        DispatchQueue.main.asyncAfter(deadline: delayTime) {
-            responses.forEach { _ = $0!.go() }
-        }
-
+        delay(0.1) { responses.forEach { _ = $0!.go() } }
         waitForExpectations(timeout: 5, handler: nil)
     }
     
@@ -188,6 +183,61 @@ class ImagePrefetcherTests: XCTestCase {
         }
         
         prefetcher.start()
+        waitForExpectations(timeout: 5, handler: nil)
+    }
+    
+    func testFetchWithProcessor() {
+        let expectation = self.expectation(description: "wait for prefetching images")
+        
+        var urls = [URL]()
+        for URLString in testKeys {
+            _ = stubRequest("GET", URLString).andReturn(200)?.withBody(testImageData)
+            urls.append(URL(string: URLString)!)
+        }
+        
+        let p = RoundCornerImageProcessor(cornerRadius: 20)
+        
+        func prefetchAgain() {
+            var progressCalledCount = 0
+            let prefetcher = ImagePrefetcher(urls: urls, options: [.processor(p)],
+                                             progressBlock: { (skippedResources, failedResources, completedResources) -> () in
+                                                progressCalledCount += 1
+            },
+                                             completionHandler: {(skippedResources, failedResources, completedResources) -> () in
+                                                
+                                                XCTAssertEqual(skippedResources.count, urls.count, "There should be one item skipped since it is just prefetched.")
+                                                XCTAssertEqual(failedResources.count, 0, "There should be no failed downloading.")
+                                                XCTAssertEqual(completedResources.count, 0, "No need to prefetch anymore")
+                                                XCTAssertEqual(progressCalledCount, urls.count, "Progress should be called the same time of download count.")
+                                                for url in urls {
+                                                    XCTAssertTrue(KingfisherManager.shared.cache.imageCachedType(forKey: url.absoluteString, processorIdentifier: p.identifier).cached)
+                                                }
+                                                expectation.fulfill()
+
+            })
+            prefetcher.start()
+        }
+        
+        
+        var progressCalledCount = 0
+        let prefetcher = ImagePrefetcher(urls: urls, options: [.processor(p)],
+                                         progressBlock: { (skippedResources, failedResources, completedResources) -> () in
+                                            progressCalledCount += 1
+        },
+                                         completionHandler: {(skippedResources, failedResources, completedResources) -> () in
+                                            
+                                            XCTAssertEqual(skippedResources.count, 0, "There should be no items skipped.")
+                                            XCTAssertEqual(failedResources.count, 0, "There should be no failed downloading.")
+                                            XCTAssertEqual(completedResources.count, urls.count, "All resources prefetching should be completed.")
+                                            XCTAssertEqual(progressCalledCount, urls.count, "Progress should be called the same time of download count.")
+                                            for url in urls {
+                                                XCTAssertTrue(KingfisherManager.shared.cache.imageCachedType(forKey: url.absoluteString, processorIdentifier: p.identifier).cached)
+                                            }
+                                            
+                                            prefetchAgain()
+        })
+        prefetcher.start()
+        
         waitForExpectations(timeout: 5, handler: nil)
     }
 }
