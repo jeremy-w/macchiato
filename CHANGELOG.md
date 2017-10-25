@@ -3,6 +3,14 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (16) - 2017-10-25
+This is a maintenance release. The app is now using latest Apple toolchain.
+
+Fixed:
+
+- Stream contents are no longer partly hidden under the navigation bar.
+
+
 ### 1.0 (15) - 2017-07-30
 Removed:
 
