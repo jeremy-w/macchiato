@@ -2,7 +2,6 @@ import Foundation
 
 enum Keychain {
     static func add(account: String, service: String, data: Data) -> Bool {
-    // swiftlint:disable:previous function_body_length
         let query = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,
@@ -33,7 +32,6 @@ enum Keychain {
     }
 
     static func find(account: String, service: String) -> Data? {
-        // swiftlint:disable:previous function_body_length
         let query: NSDictionary = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,

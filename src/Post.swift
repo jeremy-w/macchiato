@@ -44,7 +44,6 @@ struct Post {
     }
 
     static func makeFake() -> Post {
-        // swiftlint:disable:previous function_body_length
         let now = Date()
         let text = Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " ")
         return Post(
