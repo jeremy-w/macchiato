@@ -160,7 +160,7 @@ extension StreamViewController {
             performSegue(withIdentifier: Segue.showThread.rawValue, sender: post)
 
         case .webView:
-            displayInWebView(URL(string: "https://10centuries.org/post/\(post.id)")!)
+            displayInWebView(URL(string: "https://social.10centuries.org/#\(post.id)")!)
         }
     }
 
