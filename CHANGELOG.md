@@ -3,6 +3,14 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (17) - 2018-01-20
+This is a maintenance release.
+
+Fixed:
+
+- "View in WebView" now uses the latest URL template. [#124]
+
+
 ### 1.0 (16) - 2017-10-25
 This is a maintenance release. The app is now using latest Apple toolchain.
 
