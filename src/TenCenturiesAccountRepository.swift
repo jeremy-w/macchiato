@@ -149,7 +149,7 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
     }
 }
 
-fileprivate enum EditableAccountRelationship {
+private enum EditableAccountRelationship {
     case follow
     case mute
     case silence

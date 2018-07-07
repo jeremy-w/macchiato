@@ -33,7 +33,13 @@ class ComposePostViewController: UIViewController {
     }
 
     func loadTextFromAction() {
-        let authorsUsername = [author?.username].flatMap({ $0 })
+        let authorsUsername: [String]
+        if let name = author?.username {
+            authorsUsername = [name]
+        } else {
+            authorsUsername = []
+        }
+
         textView?.text = action.template(notMentioning: authorsUsername)
     }
 

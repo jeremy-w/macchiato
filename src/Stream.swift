@@ -23,12 +23,11 @@ class Stream {
     func postsAffected(byChangedPost changedPost: Post) -> [(at: Int, now: Post)] {
         let updated: [(at: Int, now: Post)] = posts
             .enumerated()
-            .map({ (offset, post) -> (at: Int, now: Post)? in
+            .compactMap({ (offset, post) -> (at: Int, now: Post)? in
                 guard let updated = post.updated(forChangedPost: changedPost) else { return nil }
 
                 return (at: offset, now: updated)
             })
-            .flatMap({ $0 })
         return updated
     }
 

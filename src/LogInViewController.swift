@@ -66,7 +66,9 @@ class LogInViewController: UIViewController {
     }
 
     func updateButtonDisabledWhenTextChanges() {
-        for textField in [account, password].flatMap({ $0 }) {
+        for textField in [account, password] {
+            guard let textField = textField else { continue }
+
             NotificationCenter.default.addObserver(
                 self, selector: #selector(updateButtonDisabled),
                 name: .UITextFieldTextDidChange, object: textField)
