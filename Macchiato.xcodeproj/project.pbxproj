@@ -76,7 +76,6 @@
 		3F8145001E346357001E25EC /* HTMLToAttributedStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144FE1E346354001E25EC /* HTMLToAttributedStringTests.swift */; };
 		3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */; };
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
-		3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */; };
 		3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E61DBD7C5200E176F4 /* Account.swift */; };
 		3FB501B41E3F972600DC0642 /* ThirdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */; };
 /* End PBXBuildFile section */
@@ -166,7 +165,6 @@
 		3F8144FE1E346354001E25EC /* HTMLToAttributedStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLToAttributedStringTests.swift; sourceTree = "<group>"; };
 		3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+Indexing.swift"; sourceTree = "<group>"; };
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
-		3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRange+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		3F9CE5E61DBD7C5200E176F4 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ThirdPartyLicenses.txt; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -281,7 +279,6 @@
 				3F2E29361DA9EB6E00519C9E /* Result.swift */,
 				3F2E29301DA9E9D700519C9E /* Random.swift */,
 				3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */,
-				3F9CE5E41DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift */,
 			);
 			name = Plumbing;
 			sourceTree = "<group>";
@@ -629,7 +626,6 @@
 				3F2E29571DAB385E00519C9E /* TenCenturiesService.swift in Sources */,
 				3F2E29041DA9B9F200519C9E /* MasterViewController.swift in Sources */,
 				3F78B8551E6BCDA300B40B55 /* BylineView.swift in Sources */,
-				3F9CE5E51DBC5D9900E176F4 /* NSRange+CustomStringConvertible.swift in Sources */,
 				3F2E295C1DAD351C00519C9E /* RequestAuthenticator.swift in Sources */,
 				3F78B85B1E77222600B40B55 /* AccountViewController.swift in Sources */,
 				3F78B84C1E62822B00B40B55 /* TenCenturiesCDNPhotoUploader.swift in Sources */,
