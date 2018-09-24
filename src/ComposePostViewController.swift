@@ -29,7 +29,7 @@ class ComposePostViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillChangeFrame(notification:)),
-            name: .UIKeyboardWillChangeFrame, object: nil)
+            name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
 
     func loadTextFromAction() {
@@ -97,13 +97,13 @@ class ComposePostViewController: UIViewController {
         let previousTitle = sender.currentTitle
         sender.setTitle(NSLocalizedString("Uploading…", comment: "button title"), for: .normal)
         sender.isEnabled = false
-        UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, sender)
+        UIAccessibility.post(notification: .layoutChanged, argument: sender)
 
         delegate?.uploadImage(for: self, sender: sender, then: { [weak self] (result) in
             DispatchQueue.main.async {
                 sender.setTitle(previousTitle, for: .normal)
                 sender.isEnabled = true
-                UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, sender)
+                UIAccessibility.post(notification: .layoutChanged, argument: sender)
             }
 
             guard let me = self else { return }
@@ -134,7 +134,7 @@ class ComposePostViewController: UIViewController {
     @IBOutlet var bottomConstraint: NSLayoutConstraint?
     @objc func keyboardWillChangeFrame(notification note: NSNotification) {
         guard let window = view.window, let constraint = bottomConstraint else { return }
-        guard let value = note.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue else { return }
+        guard let value = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let topEdgeOfKeyboard = window.convert(value.cgRectValue, from: nil).minY
         constraint.constant = window.bounds.height - topEdgeOfKeyboard
     }
@@ -159,7 +159,7 @@ class ComposePostViewController: UIViewController {
 
     lazy var cancelPostKeyCommand: UIKeyCommand = {
         return UIKeyCommand(
-            input: UIKeyInputEscape,
+            input: UIKeyCommand.inputEscape,
             modifierFlags: [],
             action: #selector(ComposePostViewController.cancelAction),
             discoverabilityTitle: NSLocalizedString("Cancel Post", comment: "keyboard discoverability title"))

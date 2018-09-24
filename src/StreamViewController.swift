@@ -33,7 +33,7 @@ class StreamViewController: UITableViewController {
         print("view loaded:", self)
         super.viewDidLoad()
 
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 350
 
         canSendPostDidChange()
@@ -74,9 +74,9 @@ class StreamViewController: UITableViewController {
         refreshControl?.beginRefreshing()
 
         if isViewLoaded, !view.isHidden, view.window != nil {
-            UIAccessibilityPostNotification(
-                UIAccessibilityLayoutChangedNotification,
-                NSLocalizedString("Loading posts", comment: "accessibility announcement"))
+            UIAccessibility.post(
+                notification: .layoutChanged,
+                argument: NSLocalizedString("Loading posts", comment: "accessibility announcement"))
         }
 
         postRepository.find(stream: stream, options: []) {
@@ -96,9 +96,9 @@ class StreamViewController: UITableViewController {
             guard isViewLoaded, let tableView = tableView else { return }
             if !view.isHidden, view.window != nil {
                 let format = NSLocalizedString("Loaded %ld posts", comment: "accessibility announcement")
-                UIAccessibilityPostNotification(
-                    UIAccessibilityLayoutChangedNotification,
-                    String.localizedStringWithFormat(format, posts.count))
+                UIAccessibility.post(
+                    notification: .layoutChanged,
+                    argument: String.localizedStringWithFormat(format, posts.count))
             }
             tableView.reloadData()
         } catch {
@@ -125,7 +125,7 @@ class StreamViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let stream = stream, stream.posts.isValid(index: indexPath.row) else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "LoadOlderButton", for: indexPath)
-            cell.accessibilityTraits |= UIAccessibilityTraitButton
+            cell.accessibilityTraits.insert(.button)
             return cell
         }
 
@@ -177,9 +177,9 @@ class StreamViewController: UITableViewController {
             return refreshAction()
         }
 
-        UIAccessibilityPostNotification(
-            UIAccessibilityLayoutChangedNotification,
-            NSLocalizedString("Loading older posts", comment: "accessibility announcement"))
+        UIAccessibility.post(
+            notification: .layoutChanged,
+            argument: NSLocalizedString("Loading older posts", comment: "accessibility announcement"))
         repo.find(stream: stream, options: [.before(earliest)]) { [weak self] in self?.didReceivePosts(result: $0, olderThan: earliest)
         }
     }
@@ -192,9 +192,9 @@ class StreamViewController: UITableViewController {
                 guard self.isViewLoaded, let tableView = self.tableView else { return }
 
                 let format = NSLocalizedString("Loaded %ld older posts", comment: "accessibility announcement")
-                UIAccessibilityPostNotification(
-                    UIAccessibilityLayoutChangedNotification,
-                    String.localizedStringWithFormat(format, posts.count))
+                UIAccessibility.post(
+                    notification: .layoutChanged,
+                    argument: String.localizedStringWithFormat(format, posts.count))
                 tableView.reloadData()
             }
         } catch {
@@ -272,7 +272,7 @@ class StreamViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard UIAccessibilityIsVoiceOverRunning() || UIAccessibilityIsSwitchControlRunning() else { return }
+        guard UIAccessibility.isVoiceOverRunning || UIAccessibility.isSwitchControlRunning else { return }
 
         performSegue(withIdentifier: Segue.showThread.rawValue, sender: nil)
     }

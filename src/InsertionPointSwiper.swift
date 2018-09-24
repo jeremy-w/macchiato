@@ -23,7 +23,7 @@ final class InsertionPointSwiper {
 
 fileprivate extension InsertionPointSwiper {
     func installGestures(in textView: UITextView) {
-        for direction: UISwipeGestureRecognizerDirection in [.left, .right] {
+        for direction: UISwipeGestureRecognizer.Direction in [.left, .right] {
             for touches in 1 ... 4 {
                 let recognizer = UISwipeGestureRecognizer(target: self, action: #selector(didRecognizeSwipe))
                 recognizer.direction = direction
@@ -67,7 +67,7 @@ fileprivate extension InsertionPointSwiper {
      because that's what UITextView vends its selected range relative to.
      NSString and String count indexes rather differently!
      */
-    func pointByMoving(by unit: Motion, to direction: UISwipeGestureRecognizerDirection, in text: NSString, at point: Int) -> Int {
+    func pointByMoving(by unit: Motion, to direction: UISwipeGestureRecognizer.Direction, in text: NSString, at point: Int) -> Int {
         var updatedPoint = point
 
         // (@jeremy-w/2016-10-22)FIXME: Need to read out current text direction to properly determine enumeration direction relative to swipe

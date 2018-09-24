@@ -190,8 +190,8 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
             button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
             objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 
-            button.accessibilityTraits &= ~UIAccessibilityTraitButton
-            button.accessibilityTraits |= UIAccessibilityTraitLink
+            button.accessibilityTraits.remove(.button)
+            button.accessibilityTraits.insert(.link)
 
             enableAutoContentSizeUpdates(for: button)
 
@@ -211,7 +211,7 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
 
     func links(in text: NSAttributedString) -> [URL] {
         var urls = [URL]()
-        text.enumerateAttribute(NSAttributedStringKey.link, in: NSRange(location: 0, length: text.length), options: []) { (value, range, shouldStop) in
+        text.enumerateAttribute(NSAttributedString.Key.link, in: NSRange(location: 0, length: text.length), options: []) { (value, range, shouldStop) in
             // Gets called also for ranges where the attribute is nil.
             guard let value = value else { return }
 
@@ -247,7 +247,7 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
     func imageLinks(in text: NSAttributedString) -> [URL] {
         var urls = [URL]()
         text.enumerateAttribute(
-            NSAttributedStringKey.macchiatoImageSourceURL,
+            NSAttributedString.Key.macchiatoImageSourceURL,
             in: NSRange(location: 0, length: text.length),
             options: []) {
                 (value, range, shouldStop) in
@@ -293,7 +293,7 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
         imageView.isAccessibilityElement = true
         imageView.accessibilityLabel = NSLocalizedString("Image", comment: "accessibility label")
         imageView.accessibilityHint = NSLocalizedString("Tap to view full image", comment: "accessibility hint")
-        imageView.accessibilityTraits |= UIAccessibilityTraitLink
+        imageView.accessibilityTraits.insert(.link)
         return imageView
     }
 }

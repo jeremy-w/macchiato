@@ -28,20 +28,20 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString? {
     }
 }
 
-public extension NSAttributedStringKey {
+public extension NSAttributedString.Key {
     /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`.
     /// Its value is a `URL`.
-    public static let macchiatoImageSourceURL = NSAttributedStringKey("com.jeremywsherman.Macchiato.ImageSourceURL")
+    public static let macchiatoImageSourceURL = NSAttributedString.Key("com.jeremywsherman.Macchiato.ImageSourceURL")
 
     /// Mentions like `@name` have this applied. The value is a numeric `String`.
-    public static let macchiatoAccountID = NSAttributedStringKey("com.jeremywsherman.Macchiato.mention.AccountID")
+    public static let macchiatoAccountID = NSAttributedString.Key("com.jeremywsherman.Macchiato.mention.AccountID")
 
     /// Text like `#tag` has this applied. The value is a `String` like `"tag"` (i.e., omitting the hashmark).
-    public static let macchiatoHashtag = NSAttributedStringKey("com.jeremywsherman.Macchiato.Hashtag")
+    public static let macchiatoHashtag = NSAttributedString.Key("com.jeremywsherman.Macchiato.Hashtag")
 
     /// Text like `> quote` has this applied. The value is a strictly positive `Int`.
     /// In future, we might have a custom renderer stick a vertical bar to its left.
-    public static let macchiatoBlockquoteLevel = NSAttributedStringKey("com.jeremywsherman.Macchiato.blockquoteLevel")
+    public static let macchiatoBlockquoteLevel = NSAttributedString.Key("com.jeremywsherman.Macchiato.blockquoteLevel")
 }
 
 final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
@@ -67,7 +67,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
     private var result = NSMutableAttributedString()
 
-    typealias Attributes = [NSAttributedStringKey: Any]
+    typealias Attributes = [NSAttributedString.Key: Any]
     private var attributesStack = [Attributes]()
 
     /// The attributes stack is not popped at the end of one of these elements.
@@ -330,7 +330,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyItalicAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let current = attributes[NSAttributedStringKey.font] as? UIFont
+        let current = attributes[NSAttributedString.Key.font] as? UIFont
         let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
         let font = toggle(.traitItalic, of: current) ?? UIFont.italicSystemFont(ofSize: pointSize)
         var italicized = attributes
@@ -338,7 +338,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         return italicized
     }
 
-    static func toggle(_ trait: UIFontDescriptorSymbolicTraits, of font: UIFont?) -> UIFont? {
+    static func toggle(_ trait: UIFontDescriptor.SymbolicTraits, of font: UIFont?) -> UIFont? {
         guard let current = font else {
             return nil
         }
@@ -355,7 +355,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyBoldAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let current = attributes[NSAttributedStringKey.font] as? UIFont
+        let current = attributes[NSAttributedString.Key.font] as? UIFont
         let pointSize = (current ?? UIFont.preferredFont(forTextStyle: .body)).pointSize
         let font = toggle(.traitBold, of: current) ?? UIFont.boldSystemFont(ofSize: pointSize)
         var bolded = attributes
@@ -366,7 +366,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     static func applyCodeAttributes(to attributes: Attributes) -> Attributes {
         // (jeremy-w/2017-01-22)XXX: We might need to sniff for "are we in a Title[1-3] header tag?" scenario
         // and use that instead of .body as the text style.
-        let current = (attributes[NSAttributedStringKey.font] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+        let current = (attributes[NSAttributedString.Key.font] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
         let font = makeMonospaceByHookOrByCrook(current)
         var codified = attributes
         codified[.font] = font
@@ -426,7 +426,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
                 superscripted[NSSuperscriptAttributeName] = 1.0
             }
         #else
-            let current = (attributes[NSAttributedStringKey.font] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
+        let current = (attributes[NSAttributedString.Key.font] as? UIFont) ?? UIFont.preferredFont(forTextStyle: .body)
             let descriptor = current.fontDescriptor
             let font = UIFont(descriptor: descriptor, size: descriptor.pointSize / 2)
             superscripted[.font] = font
@@ -437,7 +437,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
 
     static func applyStrikethroughAttributes(to attributes: Attributes) -> Attributes {
         var strikethroughAttributes = attributes
-        strikethroughAttributes[.strikethroughStyle] = NSUnderlineStyle.styleSingle.rawValue
+        strikethroughAttributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
         return strikethroughAttributes
     }
 

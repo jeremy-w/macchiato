@@ -13,7 +13,7 @@ func toast(title: String) {
     DispatchQueue.main.async {
         let toaster = ToastViewController(title: title)
         let window = toaster.hostWindow(for: UIScreen.main, statusBarHeight: UIApplication.shared.statusBarFrame.maxY)
-        UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, title)
+        UIAccessibility.post(notification: .announcement, argument: title)
 
         window.isHidden = false
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(5)) {
@@ -72,7 +72,7 @@ extension ToastViewController {
         let fittingSize = CGSize(width: screenBounds.size.width, height: view.sizeThatFits(screenBounds.size).height)
         let window = UIWindow(frame: CGRect(origin: CGPoint(x: 0, y: statusBarHeight), size: fittingSize))
         window.rootViewController = self
-        window.windowLevel = UIWindowLevelAlert
+        window.windowLevel = .alert
         window.screen = screen
         return window
     }
