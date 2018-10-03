@@ -43,12 +43,15 @@ class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerController
         requestCompletion = { _ in }
     }
 
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String: Any]) {
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+    ) {
         defer { controller.dismiss(animated: true, completion: nil) }
 
         print("IMAGE PICKER: DEBUG: User picked a photo: info", info)
-        let edited = info[UIImagePickerControllerEditedImage] as? UIImage
-        let raw = info[UIImagePickerControllerOriginalImage] as? UIImage
+        let edited = info[.editedImage] as? UIImage
+        let raw = info[.originalImage] as? UIImage
         guard let image = edited ?? raw else {
             print("IMAGE PICKER: ERROR: Claimed finished picking, but neither edited nor raw image present! info", info)
             finish(with: nil)
@@ -56,8 +59,8 @@ class ImagePickerPhotoProvider: NSObject, PhotoProvider, UIImagePickerController
         }
 
         // (jeremy-w/2017-02-22)FIXME: Fish out original data from Photo Library
-        let jpeg = UIImageJPEGRepresentation(image, 0.9)
-        guard let data = jpeg ?? UIImagePNGRepresentation(image) else {
+        let jpeg = image.jpegData(compressionQuality: 0.9)
+        guard let data = jpeg ?? image.pngData() else {
             print("IMAGE PICKER: ERROR: Failed to get data for image", image, "- info", info)
             finish(with: nil)
             return

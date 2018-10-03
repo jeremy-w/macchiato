@@ -8,7 +8,7 @@ class ButtonCell: UITableViewCell {
         guard let label = label else { return }
 
         label.text = text
-        label.accessibilityTraits = label.accessibilityTraits | UIAccessibilityTraitButton
+        label.accessibilityTraits.insert(.button)
     }
 
     override var textLabel: UILabel? {

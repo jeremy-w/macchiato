@@ -71,7 +71,7 @@ class LogInViewController: UIViewController {
 
             NotificationCenter.default.addObserver(
                 self, selector: #selector(updateButtonDisabled),
-                name: .UITextFieldTextDidChange, object: textField)
+                name: UITextField.textDidChangeNotification, object: textField)
         }
     }
 }
