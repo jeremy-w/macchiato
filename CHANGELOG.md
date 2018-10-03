@@ -3,6 +3,10 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (20) - 2018-10-03
+This is a maintenance release.
+
+
 ### 1.0 (19) - 2018-07-07
 This is a maintenance release.
 
