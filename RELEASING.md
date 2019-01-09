@@ -26,7 +26,11 @@
   NOTE: You can't combine `--all` and `--tags`,
   and `--all` doesn't include tags. Fun, that.
 
-- Visit iTunes Connect once the build goes through, drop in the changelog entry
-  in the "what to test" bit, add it for testing, and push it out to testers.
+- [Visit App Store Connect][asc-tf] once the build goes through,
+  drop in the changelog entry in the "what to test" bit,
+  add it for testing, and push it out to testers.
+
+  [asc-tf]: https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1195479159/testflight
 
 - Announce the release by posting to 10C.
+  (Only if it wasn't just a "keep TestFlight working" release.)
