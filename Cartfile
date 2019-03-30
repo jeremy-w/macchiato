@@ -3,4 +3,4 @@
 # Supports macOS and iOS.
 # Version 3.x supports Swift 3.
 # Version 4.x supports Swift 4.
-github "onevcat/Kingfisher" ~> 4.10
+github "onevcat/Kingfisher" ~> 5.3
