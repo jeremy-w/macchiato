@@ -537,10 +537,9 @@
 			};
 			buildConfigurationList = 3F2E28F91DA9B9F200519C9E /* Build configuration list for PBXProject "Macchiato" */;
 			compatibilityVersion = "Xcode 9.3";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
