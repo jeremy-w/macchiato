@@ -3,6 +3,16 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 1.0 (22) - 2019-03-29
+Removed:
+
+- iOS 9.3 support. iOS 10.0 or later is now required.
+
+Changed:
+
+- Second- and third-party components have been updated: Xcode 10.2, Swift 5.0, and Kingfisher 5.3.1.
+
+
 ### 1.0 (21) - 2019-01-08
 This is a maintenance release.
 
