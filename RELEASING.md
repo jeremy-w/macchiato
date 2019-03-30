@@ -10,6 +10,8 @@
   :wq
   ```
 
+- Update ThirdPartyLicenses.txt if any libraries were updated.
+
 - Update change log by looking at past merges and what's in the
   [latest milestone](https://gitlab.com/jeremy-w/macchiato/milestones).
 
