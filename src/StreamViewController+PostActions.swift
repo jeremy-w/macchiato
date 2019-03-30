@@ -134,7 +134,7 @@ extension StreamViewController {
         case .repost:
             postRepository?.repost(post: post, completion: { (result) in
                 guard let stream = self.stream
-                , let index = stream.posts.index(where: { $0.id == post.id }) else { return }
+                , let index = stream.posts.firstIndex(where: { $0.id == post.id }) else { return }
 
                 do {
                     let _ = try result.unwrap()

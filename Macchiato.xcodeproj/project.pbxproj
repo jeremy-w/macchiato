@@ -523,13 +523,13 @@
 					3F2E28FD1DA9B9F200519C9E = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 6ZA93RH52B;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					3F2E29131DA9B9F200519C9E = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 6ZA93RH52B;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3F2E28FD1DA9B9F200519C9E;
 					};
@@ -857,6 +857,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.Macchiato;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -877,6 +878,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.Macchiato;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -894,6 +896,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.MacchiatoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Macchiato.app/Macchiato";
 			};
 			name = Debug;
@@ -912,6 +915,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.MacchiatoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Macchiato.app/Macchiato";
 			};
 			name = Release;

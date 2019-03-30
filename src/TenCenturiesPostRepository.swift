@@ -238,7 +238,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let pins = ["pin.black", "pin.blue", "pin.red", "pin.green", "pin.orange", "pin.yellow"]
         let colors: [Post.PinColor] = [.black, .blue, .red, .green, .orange, .yellow]
         assert(pins.count == colors.count, "pins.count \(pins.count) != colors.count \(colors.count)")
-        return pins.index(of: text).map { colors[$0] }
+        return pins.firstIndex(of: text).map { colors[$0] }
     }
 
     func parseMentions(from array: [JSONDictionary]) throws -> [Post.Mention] {
