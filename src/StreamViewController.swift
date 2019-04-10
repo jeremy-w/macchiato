@@ -207,7 +207,7 @@ class StreamViewController: UITableViewController {
         if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
             DispatchQueue.main.async {
                 let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: nil, style: .default, handler: nil))
+                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "button"), style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
         }

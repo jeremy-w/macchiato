@@ -3,6 +3,11 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 2.0 (23) - 2019-04-XX
+Fixed:
+
+- Crash when attempting to show a 10Centuries error message.
+
 ### 1.0 (22) - 2019-03-29
 Removed:
 
