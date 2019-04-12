@@ -23,7 +23,7 @@ extension Stream.View {
     var path: String {
         switch self {
         case .global:
-            return "/content/blurbs/global"
+            return "/api/posts/global"
 
         case .home:
             return "/content/blurbs/home"
@@ -76,11 +76,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     // MARK: - Parses posts from a stream
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
     func find(stream: Stream, options: [PostRepositoryFindOption] = [], completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: stream.view.path, relativeTo: TenCenturies.baseURL)!
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-        let query = queryItems(for: options) + stream.view.queryItems
-        components.queryItems = query.isEmpty ? nil : query
-        let request = URLRequest(url: components.url!)
+        let request = URLRequest(url: type(of: self).url(for: stream.view, with: options))
 
         let _ = send(request: request) { result in
             let result = Result.of { () -> [Post] in
@@ -93,7 +89,17 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
     }
 
-    func queryItems(for options: [PostRepositoryFindOption]) -> [URLQueryItem] {
+    static func url(for view: Stream.View, with options: [PostRepositoryFindOption] = []) -> URL {
+        // 10Cv5 example for global:
+        // https://nice.social/api/posts/global?types=post.article,post.blog,post.bookmark,post.note,post.photo,post.quotation,post.todo&since=1554925972&count=75
+        let url = URL(string: view.path, relativeTo: TenCenturies.baseURL)!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let query = queryItems(for: options) + view.queryItems
+        components.queryItems = query.isEmpty ? nil : query
+        return components.url!
+    }
+
+    static func queryItems(for options: [PostRepositoryFindOption]) -> [URLQueryItem] {
         return options.map { (option: PostRepositoryFindOption) -> URLQueryItem in
             switch option {
             case let .atMost(count):

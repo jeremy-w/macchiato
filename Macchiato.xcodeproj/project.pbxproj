@@ -74,6 +74,8 @@
 		3F8144F91E31CD2D001E25EC /* FakeSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F81E31CD2D001E25EC /* FakeSessionManager.swift */; };
 		3F8144FD1E34633F001E25EC /* HTMLToAttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144FC1E34633F001E25EC /* HTMLToAttributedString.swift */; };
 		3F8145001E346357001E25EC /* HTMLToAttributedStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144FE1E346354001E25EC /* HTMLToAttributedStringTests.swift */; };
+		3F97CA492260242100E947B9 /* TenCenturiesServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F97CA482260242100E947B9 /* TenCenturiesServiceTests.swift */; };
+		3F97CA4B226025A600E947B9 /* TenCenturiesPostRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F97CA4A226025A600E947B9 /* TenCenturiesPostRepositoryTests.swift */; };
 		3F9CE5E11DBAF96400E176F4 /* Collection+Indexing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */; };
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E61DBD7C5200E176F4 /* Account.swift */; };
@@ -163,6 +165,8 @@
 		3F8144FB1E331C29001E25EC /* Markdown.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Markdown.playground; sourceTree = "<group>"; };
 		3F8144FC1E34633F001E25EC /* HTMLToAttributedString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLToAttributedString.swift; sourceTree = "<group>"; };
 		3F8144FE1E346354001E25EC /* HTMLToAttributedStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLToAttributedStringTests.swift; sourceTree = "<group>"; };
+		3F97CA482260242100E947B9 /* TenCenturiesServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TenCenturiesServiceTests.swift; sourceTree = "<group>"; };
+		3F97CA4A226025A600E947B9 /* TenCenturiesPostRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TenCenturiesPostRepositoryTests.swift; sourceTree = "<group>"; };
 		3F9CE5E01DBAF96400E176F4 /* Collection+Indexing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+Indexing.swift"; sourceTree = "<group>"; };
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E61DBD7C5200E176F4 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
@@ -324,6 +328,8 @@
 			isa = PBXGroup;
 			children = (
 				3F6A07621E2DB7DA00A56072 /* FormEncodingTests.swift */,
+				3F97CA482260242100E947B9 /* TenCenturiesServiceTests.swift */,
+				3F97CA4A226025A600E947B9 /* TenCenturiesPostRepositoryTests.swift */,
 			);
 			name = "Accessing Outside Content";
 			sourceTree = "<group>";
@@ -677,6 +683,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F97CA492260242100E947B9 /* TenCenturiesServiceTests.swift in Sources */,
 				3F6A07631E2DB7DA00A56072 /* FormEncodingTests.swift in Sources */,
 				3F2E29AB1DB1933B00519C9E /* KeychainIntegration.swift in Sources */,
 				3F8145001E346357001E25EC /* HTMLToAttributedStringTests.swift in Sources */,
@@ -686,6 +693,7 @@
 				3F6A076E1E3066A100A56072 /* PostTests.swift in Sources */,
 				3F6A07711E30676700A56072 /* ComposePostViewControllerTests.swift in Sources */,
 				3F52CF271E46B9B1002D92BC /* PostImageViewControllerTests.swift in Sources */,
+				3F97CA4B226025A600E947B9 /* TenCenturiesPostRepositoryTests.swift in Sources */,
 				3F6A07771E306A1200A56072 /* ComposePostActionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
