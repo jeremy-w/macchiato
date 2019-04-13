@@ -155,7 +155,9 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
         if post.updated != post.created {
             info.append("updated: \(PostCell.dateFormatter.string(from: post.updated))")
         }
-        info.append("client: \(post.client)")
+        if let client = post.client {
+            info.append("client: \(client)")
+        }
         info.append("id: \(post.id)")
         if post.deleted { info.append("deleted!") }
         if let thread = post.thread {

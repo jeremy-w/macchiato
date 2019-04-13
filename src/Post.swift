@@ -9,7 +9,8 @@ struct Post {
     let privacy: String
     let thread: (root: String, replyTo: String)?
     let parentID: String?
-    let client: String
+    /// Not provided in Global, but is provided in threads.
+    let client: String?
 
     let mentions: [Mention]
 
