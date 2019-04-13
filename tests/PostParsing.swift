@@ -88,6 +88,15 @@ class PostParsing: XCTestCase {
         XCTAssertEqual(post.id, "ffd9955a-9b51-d2cd-bc53-4d70673f8e3a", "should treat .guid as post.id")
     }
 
+    func testParsingMarkdown() {
+        do {
+            let post = try subject.parsePost(from: exampleLoggedOutPost)
+            XCTAssertEqual(post.content, "@larand cool. Let me know if there\u{2019}s anything not quite right. There will be more updates rolling out in about 11 hours.")
+        } catch {
+            return XCTFail("parsing failed: \(error)")
+        }
+    }
+
     var capturedPostWithThreadInfo: JSONDictionary {
         /*
          This is the result of:
@@ -176,6 +185,46 @@ class PostParsing: XCTestCase {
              "can_edit": false
             }
             """) as! [String: Any]
+    }
+
+    /**
+     Appears to omit: site, channel, client, attributes.
+     */
+    var exampleLoggedOutPost: JSONDictionary {
+        return try! PropertyListSerialization.propertyList(from: """
+        {
+            "canonical_url" = "https://matigo.ca/note/dcca727e-6bd9-433c-1284-e989073bdc1c";
+            content = "<p><span class=\\"account\\" data-guid=\\"0f3bca0a-5932-11e8-b49f-54ee758049c3\\">@larand</span> cool. Let me know if there\\U2019s anything not quite right. There will be more updates rolling out in about 11 hours.</p>";
+            "expires_at" = 0;
+            "expires_unix" = 0;
+            guid = "dcca727e-6bd9-433c-1284-e989073bdc1c";
+            mentions =     {
+                as = "@larand";
+                guid = "0f3bca0a-5932-11e8-b49f-54ee758049c3";
+                "is_you" = 0;
+            };
+            meta = 0;
+            persona =     {
+                as = "@matigo";
+                avatar = "https://matigo.ca/avatars/jason_fox_box.jpg";
+                guid = "07d2f4ec-545f-11e8-99a0-54ee758049c3";
+                "is_you" = 0;
+                name = Jason;
+                "profile_url" = "https://matigo.ca/07d2f4ec-545f-11e8-99a0-54ee758049c3/profile";
+                "you_follow" = 0;
+            };
+            privacy = "visibility.public";
+            "publish_at" = "2019-04-13T02:52:41Z";
+            "publish_unix" = 1555123961;
+            "reply_to" = "https://larryanderson.org/note/659c083b-c4b9-845c-e269-8d26b3abfe82";
+            tags = 0;
+            text = "@larand cool. Let me know if there\\U2019s anything not quite right. There will be more updates rolling out in about 11 hours.";
+            title = 0;
+            type = "post.note";
+            "updated_at" = "2019-04-13T02:52:41Z";
+            "updated_unix" = 1555123961;
+        }
+        """.data(using: .utf8)!, options: [], format: nil) as! JSONDictionary
     }
 }
 

@@ -166,13 +166,10 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
         var html = try? unpack(post, "content") as String
         var markdown = try? unpack(post, "text") as String
-        let lacksContent = html != nil || markdown != nil
+        let lacksContent = html != nil && markdown != nil
         if lacksContent && isPrivate {
             markdown = NSLocalizedString("*Post Is Private*", comment: "private post Markdown content")
             html = NSLocalizedString("<em>Post Is Private</em>", comment: "private post HTML content")
-        } else {
-            markdown = nil
-            html = nil
         }
 
         if isPrivate && lacksContent {
