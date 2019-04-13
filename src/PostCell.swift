@@ -147,17 +147,40 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
         return label
     }
 
+    static let geoFormatter = LengthFormatter()
+
     func info(from post: Post) -> [String] {
         var info = [String]()
+
         if post.created != post.published {
             info.append("created: \(PostCell.dateFormatter.string(from: post.created))")
         }
         if post.updated != post.created {
             info.append("updated: \(PostCell.dateFormatter.string(from: post.updated))")
         }
-        if let client = post.client {
-            info.append("client: \(client)")
+
+        if let geo = post.geo {
+            var geoString = geo.name
+            if !geoString.isEmpty { geoString.append(" ") }
+
+            if geo.latitude != nil || geo.longitude != nil {
+                let lat = geo.latitude.map(String.init(describing:)) ?? "—"
+                let lon = geo.longitude.map(String.init(describing:)) ?? "—"
+
+                geoString.append(lat)
+                geoString.append("°,")
+                geoString.append(lon)
+                geoString.append("° ")
+            }
+
+            if let meters = geo.altitude {
+                let formattedAltitude = type(of: self).geoFormatter.string(fromMeters: meters)
+                geoString.append(formattedAltitude)
+            }
+
+            info.append(geoString)
         }
+
         info.append("id: \(post.id)")
         if post.deleted { info.append("deleted!") }
         if let thread = post.thread {
@@ -166,6 +189,10 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
         }
         if let parentID = post.parentID {
             info.append("parent: \(parentID)")
+        }
+
+        if let client = post.client {
+            info.append("client: \(client)")
         }
 
         let you = post.you

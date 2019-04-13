@@ -1,15 +1,14 @@
-- geo tagging - should at least display this in attributes; inside the post is:
+- show post title (in attributes for now)
 
-  ----
-  meta =     {
-      geo =         {
-          altitude = 0;
-          description = "@Toys R Us";
-          latitude = 0;
-          longitude = 0;
-      };
-  };
-  ----
+- posting:
+    - checking if auth'd
+    - authing
+    - posting
+    - editing
+    - image upload - though Nice flubbed it for me, so
+
+- tags
+- check we can read out geo of 0,0 0m.
 
 - seem to be mis-parsing this post and falling back on Markdown rather than rendering the pre-formatted code correctly:
 
@@ -43,9 +42,18 @@
       "updated_unix" = 1555126800;
   }
   ----
-- posting:
-    - checking if auth'd
-    - authing
-    - posting
-    - editing
-    - image upload - though Nice flubbed it for me, so
+
+
+HTML: ERROR: Failed to parse string with error: Error Domain=NSXMLParserErrorDomain Code=111 "(null)" - string: <body><p>Huh, my image attachment didn't show up.</p> <p><em>ETA:</em> Oh, because the file upload returned an error. :&#92; That the UI didn't show me. Out of space in a bucket, maybe?</p> <pre><code>&#92;"errors&#92;":[{&#92;"name&#92;":&#92;"Behold&nbsp;10Cv5&nbsp;Global&nbsp;-&nbsp;Simulator&nbsp;Screen&nbsp;Shot&nbsp;-&nbsp;iPhone&nbsp;X&nbsp;-&nbsp;2019-04-12&nbsp;at&nbsp;23.31.57.png&#92;",&#92;"size&#92;":900917,&#92;"type&#92;":&#92;"image&#92;&#92;/png&#92;",&#92;"reason&#92;":&#92;"Could&nbsp;Not&nbsp;Record&nbsp;File&nbsp;Data&#92;"}</code></pre></body>
+
+XML_ERR_USER_STOP
+
+https://stackoverflow.com/questions/20454853/nsxmlparsererrordomain-111
+
+"There isn't a lot of documentation on XML_ERR_USER_STOP in libxml2, but from reading the changeset, it looks like it's a fast-fail when the parser sees an unexpected EOF."
+
+* POSTCELL: WARNING: Failed to create URL from HREF: http://{name}.10centuries.org - in post with ID Optional("705c15ab-f5d7-d329-1d32-017e3d880173")
+
+Expected - there's a fake URL in there with a placeholder from Matigo.
+
+

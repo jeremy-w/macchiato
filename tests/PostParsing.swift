@@ -106,6 +106,13 @@ class PostParsing: XCTestCase {
         }
     }
 
+    func testParsingGeo() {
+        let geoJsonString = "{\"meta\":{\"geo\":{\"longitude\":false,\"latitude\":false,\"altitude\":false,\"description\":\"@Toys R Us\"}}}"
+        let geoDict = try! unjson(string: geoJsonString) as! JSONDictionary
+        let geo = subject.parseGeo(from: geoDict)
+        XCTAssertEqual(geo, Post.Geo(name: "@Toys R Us", latitude: nil, longitude: nil, altitude: nil))
+    }
+
     var capturedPostWithThreadInfo: JSONDictionary {
         /*
          This is the result of:

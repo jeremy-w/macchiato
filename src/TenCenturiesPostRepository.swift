@@ -144,6 +144,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             mentions = []
         }
 
+        let geo = parseGeo(from: post)
+
         let you = try parseYou(from: post, mentions: mentions)
         let isPrivate = you.cannotSee
 
@@ -207,7 +209,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
             parentID: (parent != nil) ? parentID : String?.none,
-            client: (try? parseClientName(from: post)) ?? "—",
+            client: (try? parseClientName(from: post)),
             mentions: mentions,
             created: created,
             updated: updated,
@@ -215,12 +217,30 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             deleted: (try? unpack(post, "is_deleted")) ?? false,
             you: you,
             stars: stars,
-            parent: parent)
+            parent: parent,
+            geo: geo)
     }
 
-    func parseClientName(from post: JSONDictionary) throws -> String {
+    func parseGeo(from post: JSONDictionary) -> Post.Geo? {
+        guard let geo = try? unpack(unpack(post, "meta"), "geo") as JSONDictionary else {
+            return nil
+        }
+
+        let name = try? unpack(geo, "description") as String
+
+        // 10Cv5 sends "false" for missing values.
+        // That coerces to Double as 0.0. And answers yes to `is Double`. Yay.
+        // I'm not convinced we'll still parse an actual lat/lon or altitude of 0 correctly. :(
+        let lat: Double? = geo["latitude"] is Bool ? nil : try? unpack(geo, "latitude")
+        let lng: Double? = geo["longitude"] is Bool ? nil : try? unpack(geo, "longitude")
+        let altitude: Double? = geo["altitude"] is Bool ? nil : try? unpack(geo, "altitude")
+
+        return Post.Geo(name: name ?? "", latitude: lat, longitude: lng, altitude: altitude)
+    }
+
+    func parseClientName(from post: JSONDictionary) throws -> String? {
         guard let client = try? unpack(post, "client") as JSONDictionary else {
-            return NSLocalizedString("(requires log-in)", comment: "client name fallback text when logged-out")
+            return nil
         }
 
         return try unpack(client, "name")

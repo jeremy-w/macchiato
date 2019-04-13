@@ -44,6 +44,8 @@ struct Post {
         return parent as? Post
     }
 
+    let geo: Geo?
+
     static func makeFake() -> Post {
         let now = Date()
         let text = Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " ")
@@ -63,7 +65,8 @@ struct Post {
             deleted: false,
             you: You(),
             stars: [],
-            parent: nil)
+            parent: nil,
+            geo: nil)
     }
 
     static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
@@ -92,7 +95,8 @@ struct Post {
             deleted: false,
             you: You(),
             stars: [],
-            parent: nil)
+            parent: nil,
+            geo: nil)
     }
 }
 
@@ -126,7 +130,8 @@ extension Post {
             deleted: deleted,
             you: you,
             stars: stars,
-            parent: originalPost)
+            parent: originalPost,
+            geo: geo)
         return withUpdatedOriginalPost
     }
 
@@ -254,6 +259,13 @@ extension Post {
         case blog = "post.blog"
         case photo = "post.photo"
         case todo = "post.todo"
+    }
+
+    struct Geo: Equatable {
+        let name: String
+        let latitude: Double?
+        let longitude: Double?
+        let altitude: Double?
     }
 }
 
