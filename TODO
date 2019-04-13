@@ -1,6 +1,3 @@
-- blog posts don't seem to show up in stock global stream for me
-    - probably need to pass ALL the post types like Nice does
-
 - geo tagging - should at least display this in attributes; inside the post is:
 
   ----

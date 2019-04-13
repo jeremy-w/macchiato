@@ -241,6 +241,19 @@ extension Post {
         case red
         case yellow
     }
+
+    enum Flavor: String, Equatable, CaseIterable {
+        case article = "post.article"
+        case bookmark = "post.bookmark"
+        case note = "post.note"
+        case quote = "post.quotation"
+
+        // The rest I've seen Nice ask for with Global,
+        // but they aren't doc'd.
+        case blog = "post.blog"
+        case photo = "post.photo"
+        case todo = "post.todo"
+    }
 }
 
 

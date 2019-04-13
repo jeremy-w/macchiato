@@ -14,4 +14,5 @@ enum PostRepositoryFindOption {
     case atMost(Int)
     case before(Date)
     case after(Date)
+    case flavors(Set<Post.Flavor>)
 }

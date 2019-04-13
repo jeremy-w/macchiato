@@ -26,30 +26,28 @@ extension Stream.View {
             return "/api/posts/global"
 
         case .home:
-            return "/content/blurbs/home"
+            return "/api/posts/home"
 
         case .pinned:
-            return "/content/blurbs/pins"
+            return "/api/posts/pins"
 
         case .mentions:
-            return "/content/blurbs/mentions"
+            return "/api/posts/mentions"
 
         case .interactions:
-            return "/content/blurbs/interactions"
+            return "/api/posts/interactions"
 
         case .starters:
-            return "/content/blurbs/starters"
+            return "/api/posts/starters"
 
         case .private_:
-            return "/content/blurbs/private"
+            return "/api/posts/private"
 
         case .starred:
-            return "/content/blurbs/stars"
+            return "/api/posts/stars"
 
-        case .thread:
-            // Requires -d post_id=post.thread.root
-            // Alternatively, hit /content/social/thread with -d thread_id=post.thread.root.
-            return "/content/blurbs/thread"
+        case let .thread(root):
+            return "/api/posts/\(root)/thread"
         }
     }
 
@@ -94,7 +92,9 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         // https://nice.social/api/posts/global?types=post.article,post.blog,post.bookmark,post.note,post.photo,post.quotation,post.todo&since=1554925972&count=75
         let url = URL(string: view.path, relativeTo: TenCenturies.baseURL)!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-        let query = queryItems(for: options) + view.queryItems
+        // (jeremy-w/2019-04-13)TODO: 10Cv5: Let the user opt out of seeing some kinds of posts.
+        let postKindsSelectedByUserOneDayMaybe = Set(Post.Flavor.allCases).streamQueryItem
+        let query = queryItems(for: options) + view.queryItems + [postKindsSelectedByUserOneDayMaybe]
         components.queryItems = query.isEmpty ? nil : query
         return components.url!
     }
@@ -110,6 +110,9 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
             case let .after(date):
                 return URLQueryItem(name: "since_unix", value: String(describing: date.timeIntervalSince1970))
+
+            case let .flavors(flavors):
+                return flavors.streamQueryItem
             }
         }
     }
@@ -431,5 +434,12 @@ func hex(for pin: Post.PinColor) -> String {
     case .orange: return "#ffa500"
     case .red: return "#ff0000"
     case .yellow: return "#ffff00"
+    }
+}
+
+extension Set where Element == Post.Flavor {
+    var streamQueryItem: URLQueryItem {
+        let commaSeparatedFlavorStrings = self.map { $0.rawValue }.joined(separator: ",")
+        return URLQueryItem(name: "types", value: commaSeparatedFlavorStrings)
     }
 }
