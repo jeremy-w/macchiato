@@ -127,47 +127,47 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parsePost(from post: JSONDictionary) throws -> Post {
-        let postID = String(describing: try unpack(post, "id") as Any)
-        let you = try parseYou(from: post)
+        let postID = String(describing: try unpack(post, "guid") as Any)
+
+        // (2019-04-12)!!!: Likely bug: "mentions" can be an object, not an array, when there's just one
+        let mentions: [Post.Mention]
+        if let rawMentionsArray = try? unpack(post, "mentions") as [JSONDictionary],
+            let parsedMentions = try? parseMentions(from: rawMentionsArray) {
+            mentions = parsedMentions
+        } else if let rawSingularMention = try? unpack(post, "mentions") as JSONDictionary,
+            let mention = try? parse(mention: rawSingularMention) {
+            mentions = [mention]
+        } else {
+            mentions = []
+        }
+
+        let you = try parseYou(from: post, mentions: mentions)
         let isPrivate = you.cannotSee
 
-        let accounts = try unpack(post, "account", default: []) as [JSONDictionary]
-        let account: Account?
+        let rawAccount = try unpack(post, "persona", default: [:]) as JSONDictionary
+        let account: Account
         do {
-            account = try accounts.first.map { try TenCenturiesAccountRepository.parseAccount(from: $0) }
+            account = try TenCenturiesAccountRepository.parseAccount(from: rawAccount)
         } catch {
-            print("PARSE: ERROR: Failed to parse account from \(accounts): \(error)")
+            // (jeremy-w/2019-04-12)TODO: Could a post's author be somehow private, so that we need a private account placeholder?
+            // Hard to encounter the edge cases around post visibility.
+            print("PARSE: ERROR: Failed to parse account from \(rawAccount): \(error)")
             account = Account.makeFake()
         }
 
-        // Doing try? "thread" then try? wrapper.map leads to a doubly-optional (String, String)??
-        // as the Optional.map and try? gang-up on things. Yuck. Could flatMap at the end, but pretty unreadable by that point.
         let thread: (root: String, replyTo: String)?
         do {
-            let wrapper: JSONDictionary = try unpack(post, "thread")
-            func cast(_ value: Double) -> String {
-                return String(UInt64(value))
-            }
-            thread = try (root: cast(unpack(wrapper, "thread_id")), replyTo: cast(unpack(wrapper, "reply_to")))
+            let rootGUID = try unpack(unpack(post, "thread"), "guid") as String
+            let replyToGUID = try unpack(post, "reply_to") as String
+            thread = (root: rootGUID, replyTo: replyToGUID)
         } catch {
             thread = nil
         }
 
-        let mentions: [JSONDictionary]
-        do {
-            mentions = try unpack(post, "mentions")
-        } catch {
-            mentions = []
-        }
-
-        var lacksContent = true
-        let markdown: String?
-        let html: String?
-        if let content = try? unpack(post, "content") as JSONDictionary {
-            markdown = try? unpack(content, "text")
-            html = try? unpack(content, "html")
-            lacksContent = false
-        } else if isPrivate {
+        var html = try? unpack(post, "content") as String
+        var markdown = try? unpack(post, "text") as String
+        let lacksContent = html != nil || markdown != nil
+        if lacksContent && isPrivate {
             markdown = NSLocalizedString("*Post Is Private*", comment: "private post Markdown content")
             html = NSLocalizedString("<em>Post Is Private</em>", comment: "private post HTML content")
         } else {
@@ -192,21 +192,22 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
 
         let defaultDate = Date()
-        let created = Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970)
         let updated = Date(timeIntervalSince1970: (try? unpack(post, "updated_unix")) ?? defaultDate.timeIntervalSince1970)
         let published = Date(timeIntervalSince1970: (try? unpack(post, "publish_unix")) ?? defaultDate.timeIntervalSince1970)
+        // (jeremy-w/2019-04-12)TODO: Confirm 10Cv5 dropped "created_unix" from Post
+        let created = (try? unpack(post, "created_unix") as TimeInterval).map(Date.init(timeIntervalSince1970:)) ?? published
 
         let stars = parseStars(from: post["stars"])
         return Post(
             id: postID,
-            account: account ?? (isPrivate ? Account.makePrivate() : Account.makeFake()),
+            account: account,
             content: markdown ?? "—",
             html: html ?? "<p>—</p>",
             privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
             parentID: (parent != nil) ? parentID : String?.none,
             client: (try? unpack(unpack(post, "client"), "name")) ?? "—",
-            mentions: (try? parseMentions(from: mentions)) ?? [],
+            mentions: mentions,
             created: created,
             updated: updated,
             published: published,
@@ -216,22 +217,47 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             parent: parent)
     }
 
-    func parseYou(from post: JSONDictionary) throws -> Post.You {
-        // Invisible posts have only visible, muted, and deleted.
-        let pinColor: Post.PinColor?
-        if let pinned = post["you_pinned"] {
-            pinColor = parseYouPinned(pinned)
-        } else {
-            pinColor = nil
+    /**
+     Parses information about the logged-in user's relationship to the post.
+
+     If you're not logged-in, this is all dummy data.
+     */
+    func parseYou(from post: JSONDictionary, mentions: [Post.Mention]) throws -> Post.You {
+        // (jeremy-w/2019-04-12)TODO: Mark Post.you as optional.
+        /**
+         Example JSON:
+
+         ```
+             "attributes": {
+             "pin": "pin.none",
+             "starred": false,
+             "muted": false,
+             "points": 0
+         }
+         ```
+
+         I have no idea what "points" is.
+         */
+        guard let attributes = try? unpack(post, "attributes") as JSONDictionary else {
+            return Post.You()
         }
 
+        // Invisible posts have only visible, muted, and deleted.
+        let pinColor = attributes["pin"].flatMap(parseYouPinned)
+
+        let wereMentioned = mentions.contains { $0.isYou }
         return Post.You(
-            wereMentioned: try unpack(post, "is_mention", default: false),
-            starred: try unpack(post, "you_starred", default: false),
+            wereMentioned: wereMentioned,
+            starred: try unpack(attributes, "starred", default: false),
             pinned: pinColor,
-            reposted: try unpack(post, "you_reposted", default: false),  // docs say "you_reblurbed" but are wrong
-            muted: try unpack(post, "is_muted"),
-            cannotSee: try !unpack(post, "is_visible"))
+
+            // (jeremy-w/2019-04-12)TODO: Does 10Cv5 not have / track reposts?
+            reposted: false,
+
+            muted: try unpack(attributes, "muted", default: false),
+
+            // (jeremy-w/2019-04-12)TODO: Does 10Cv5 not have a dedicated "is_visible" field?
+            cannotSee: try !unpack(post, "visible", default: true))
     }
 
     func parseYouPinned(_ rawPinned: Any) -> Post.PinColor? {
@@ -257,10 +283,12 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             return String(string[string.index(after: string.startIndex)...])
         }
 
+        let name = stripPrefixedAtSign(from: try unpack(mention, "as"))
         return Post.Mention(
-            name: stripPrefixedAtSign(from: try unpack(mention, "name")),
-            id: String(describing: try unpack(mention, "id") as Any),
-            current: stripPrefixedAtSign(from: try unpack(mention, "current")))
+            name: name,
+            id: String(describing: try unpack(mention, "guid") as Any),
+            current: name,
+            isYou: try unpack(mention, "is_you", default: false))
     }
 
     func parseStars(from json: Any?) -> [Post.Star] {

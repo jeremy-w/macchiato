@@ -221,14 +221,16 @@ extension Post {
     }
 
     struct Mention {
-        /// The account name at the time of the mention.
+        /// The account name at the time of the mention. `.as`
         let name: String
 
-        /// The account ID.
+        /// The account GUID.
         let id: String
 
         /// The current account name - often the same as "name".
         let current: String
+
+        let isYou: Bool
     }
 
     enum PinColor {

@@ -31,51 +31,74 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
         }
     }
 
+    /**
+     10Cv5 seems to have dropped a lot of fields within a post.
+     Did these disappear entirely? Or just not inlined in the post response?
+
+     Example JSON from a post:
+
+     ```
+     "persona": {
+                   "guid": "07d2f4ec-545f-11e8-99a0-54ee758049c3",
+                   "as": "@matigo",
+                   "name": "Jason",
+                   "avatar": "https://matigo.ca/avatars/jason_fox_box.jpg",
+                   "follow": {
+                     "url": "https://matigo.ca/feeds/matigo.json",
+                     "rss": "https://matigo.ca/feeds/matigo.xml"
+                   },
+                   "is_active": true,
+                   "is_you": false,
+                   "profile_url": "https://matigo.ca/profile/matigo",
+                   "created_at": "2012-08-01T00:00:00Z",
+                   "created_unix": 1343779200,
+                   "updated_at": "2018-05-17T19:07:26Z",
+                   "updated_unix": 1526584046
+                 }
+     ```
+     */
     static func parseAccount(from dict: JSONDictionary) throws -> Account {
-        let nameDict = try unpack(dict, "name") as JSONDictionary
+        let guid = String(describing: try unpack(dict, "guid") as Any)
 
-        let verifiedDict = try unpack(dict, "verified") as JSONDictionary
-        let verified: URL?
-        if try unpack(verifiedDict, "is_verified") {
-            verified = URL(string: try unpack(verifiedDict, "url"))
-        } else {
-            verified = nil
-        }
+        let rawUsername = try unpack(dict, "as", default: guid)
+        let username = rawUsername.hasPrefix("@") ? String(rawUsername.dropFirst(1)) : rawUsername
 
-        let descriptionMarkdown: String
-        let descriptionHTML: String
-        if let descDict = try? unpack(dict, "description") as JSONDictionary {
-            descriptionMarkdown = (try? unpack(descDict, "text")) ?? ""
-            descriptionHTML = (try? unpack(descDict, "html")) ?? ""
-        } else {
-            descriptionMarkdown = ""
-            descriptionHTML = ""
-        }
+        let name = try unpack(dict, "name", default: username) as String
 
         let defaultDate = Date.distantPast
         let created = (try? unpack(dict, "created_at")).flatMap({ parseISODate(from: $0) }) ?? defaultDate
 
-        let isEvangelist = (try? unpack(dict, "evangelist")) ?? false
         let followsYou = (try? unpack(dict, "follows_you")) ?? false
         let youFollow = (try? unpack(dict, "you_follow")) ?? false
         let isMuted = (try? unpack(dict, "is_muted")) ?? false
         let isSilenced = (try? unpack(dict, "is_silenced")) ?? false
 
         return Account(
-            id: String(describing: try unpack(dict, "id") as Any),
-            username: try unpack(dict, "username"),
-            name: (first: try unpack(nameDict, "first_name"), last: try unpack(nameDict, "last_name"), display: try unpack(nameDict, "display")),
-            avatarURL: parseAvatarURL(dict["avatar_url"]),
-            verified: verified,
-            descriptionMarkdown: descriptionMarkdown,
-            descriptionHTML: descriptionHTML,
-            timezone: try unpack(dict, "timezone"),
-            counts: try unpack(dict, "counts"),
+            id: guid,
+            username: username,
+            // (jeremy-w/2019-04-12)TODO: Drop structured Account.name tupled in favor of flat "name" string for 10Cv5
+            name: (first: "", last: "", display: name),
+            avatarURL: parseAvatarURL(dict["avatar"]),
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.verified dropped in 10Cv5
+            verified: nil,
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.descriptionMarkdown dropped in 10Cv5
+            descriptionMarkdown: "",
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.descriptionHTML dropped in 10Cv5
+            descriptionHTML: "",
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.timezone dropped in 10Cv5
+            timezone: try unpack(dict, "timezone", default: ""),
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.counts dropped in 10Cv5
+            counts: try unpack(dict, "counts", default: [:]),
             createdAt: created,
-            isEvangelist: isEvangelist,
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.isEvangelist dropped in 10Cv5
+            isEvangelist: false,
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.followsYou dropped in 10Cv5
             followsYou: followsYou,
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.youFollow dropped in 10Cv5
             youFollow: youFollow,
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.isMuted dropped in 10Cv5
             isMuted: isMuted,
+            // (jeremy-w/2019-04-12)TODO: Delete field Account.isSilenced dropped in 10Cv5
             isSilenced: isSilenced
         )
     }
@@ -85,7 +108,7 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
             return Account.defaultAvatarURL
         }
 
-        guard let url = URL(string: "https:" + string) else {
+        guard let url = URL(string: string) else {
             return Account.defaultAvatarURL
         }
         return url

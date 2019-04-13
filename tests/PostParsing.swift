@@ -11,8 +11,9 @@ class PostParsing: XCTestCase {
                 return XCTFail("failed to parse any thread info from post")
             }
 
-            XCTAssertEqual(thread.root, "78779", "failed to correctly parse threadID AKA root")
-            XCTAssertEqual(thread.replyTo, "78786", "failed to correctly parse replyTo")
+            XCTAssertEqual(thread.root, "a7a4b37c-2a87-c758-4d5a-6aa5920eaf07", "failed to correctly parse .thread.guid aka thread.root")
+            // (jeremy-w/2019-04-12)TODO: To handle decentralization, this will need to become a URL.
+            XCTAssertEqual(thread.replyTo, "https://phoneboy.info/note/a7a4b37c-2a87-c758-4d5a-6aa5920eaf07", "failed to correctly parse .reply_to")
         } catch {
             return XCTFail("parsing failed completely: \(error)")
         }
@@ -22,10 +23,9 @@ class PostParsing: XCTestCase {
         do {
             let post = try subject.parsePost(from: capturedPostWithThreadInfo)
             let expected = [
-                Post.Mention(name: "skematica", id: "12", current: "skematica"),
-                Post.Mention(name: "larand", id: "26", current: "larand"),
+                Post.Mention(name: "phoneboy", id: "15e9a17d-9407-11e8-bbd7-54ee758049c3", current: "phoneboy", isYou: false),
             ]
-            XCTAssertEqual(post.mentions.count, expected.count, "count of mentions doesn't match")
+            XCTAssertEqual(post.mentions.count, expected.count, "count of mentions doesn't match mentions=\(post.mentions)")
             for (i, (actual, intended)) in zip(post.mentions, expected).enumerated() {
                 XCTAssertEqual(actual, intended, "bogus mention parsing at index \(i)")
             }
@@ -36,26 +36,20 @@ class PostParsing: XCTestCase {
 
     func testParsingAccount() {
         do {
-            let post = try subject.parsePost(from: capturedPostWithThreadInfo)
-            XCTAssertEqual(post.author, "gtwilson", "author")
-            XCTAssertEqual(post.account.id, "91", "id")
-            XCTAssertEqual(post.account.avatarURL, URL(string: "https://cdn.10centuries.org/p7E6pB/6bce7312df48d9061391d17301b04192.jpg")!, "avatar URL")
-            XCTAssertEqual(post.account.counts, [
-                "following": 38,
-                "followers": 22,
-                "stars": 77,
-                "tinyposts": 494,
-                "microposts": 1065,
-                "shortposts": 261,
-                "longposts": 4,
-                "blogposts": 4,
-                "podcasts": 0], "counts")
+            let rawAccount = try unpack(capturedPostWithThreadInfo, "persona") as JSONDictionary
+            let account = try TenCenturiesAccountRepository.parseAccount(from: rawAccount)
+            XCTAssertEqual(account.username, "matigo", ".persona.as should become post.author aka post.account.username")
+            XCTAssertEqual(account.id, "07d2f4ec-545f-11e8-99a0-54ee758049c3", ".guid should become post.id")
+            XCTAssertEqual(account.avatarURL, URL(string: "https://matigo.ca/avatars/jason_fox_box.jpg")!, ".persona.avatar should become post.account.avatarURL")
+            /* (jeremy-w/2019-04-12)TODO: Delete Account.counts field */
+            XCTAssertEqual(account.counts, [:], "counts does not exist in 10Cv5")
         } catch {
             return XCTFail("parsing failed completely: \(error)")
         }
     }
 
     func testParsingPostWithVisibilityNoneSkipsPost() {
+        // (jeremy-w/2019-04-12)FIXME: Needs updating for v5
         guard let exampleHiddenPost = (try? unjson(string: "{\n"
             + "   \"id\": 111724,\n"
             + "   \"is_visible\": false,\n"
@@ -86,124 +80,100 @@ class PostParsing: XCTestCase {
         }
     }
 
+    func testParsingPostId() {
+        let result = Result.of { return try subject.parsePost(from: capturedPostWithThreadInfo) }
+        guard case let .success(post) = result else {
+            return XCTFail("parsing failed with error: \(result)")
+        }
+        XCTAssertEqual(post.id, "ffd9955a-9b51-d2cd-bc53-4d70673f8e3a", "should treat .guid as post.id")
+    }
+
     var capturedPostWithThreadInfo: JSONDictionary {
+        /*
+         This is the result of:
+                curl -H'accept: application/json' https://matigo.ca/api/post/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a | jq .data[0]
+
+         Found by munging the canonical URL of:
+                https://matigo.ca/note/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a
+
+         from thread:
+                https://nice.social/api/posts/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a/thread?simple=Y
+         */
         return try! unjson(string: """
             {
-              "id": 78788,
-              "parent_id": false,
-              "title": "",
-              "slug": "78788",
-              "type": "post.micro",
-              "privacy": "visibility.public",
-              "guid": "1ea3ce889bb872499d339d572834f765aa1c8a27",
-              "content": {
-                "text": "@larand Well, he did manage to hit the moon eventually. \\n\\n\\/\\/ @skematica",
-                "html": "<p><span class=\\"account\\" data-account-id=\\"26\\"><span class=\\"account\\" data-account-id=\\"26\\">@larand<\\/span><\\/span> Well, he did manage to hit the moon eventually.<\\/p><p>\\/\\/ <span class=\\"account\\" data-account-id=\\"12\\">@skematica<\\/span><\\/p>",
-                "summary": false,
-                "banner": false,
-                "is_edited": false
-              },
-              "audio": false,
-              "tags": false,
-              "files": false,
-              "urls": {
-                "canonical_url": "\\/post\\/78788",
-                "full_url": "10centuries.org\\/post\\/78788",
-                "alt_url": "10centuries.org\\/78788",
-                "is_https": true
-              },
-              "thread": {
-                "thread_id": 78779,
-                "reply_to": 78786,
-                "is_selected": false
-              },
-              "mentions": [
-                {
-                  "id": 12,
-                  "name": "@skematica",
-                  "current": "@skematica"
-                },
-                {
-                  "id": 26,
-                  "name": "@larand",
-                  "current": "@larand"
-                }
-              ],
-              "account": [
-                {
-                  "id": 91,
-                  "avatar_url": "\\/\\/cdn.10centuries.org\\/p7E6pB\\/6bce7312df48d9061391d17301b04192.jpg",
-                  "username": "gtwilson",
-                  "canonical_url": "https:\\/\\/10centuries.org\\/profile\\/gtwilson",
-                  "podcast_rss": false,
-                  "name": {
-                    "first_name": "Tom",
-                    "last_name": "Wilson",
-                    "display": "Tom Wilson"
-                  },
-                  "counts": {
-                    "following": 38,
-                    "followers": 22,
-                    "stars": 77,
-                    "tinyposts": 494,
-                    "microposts": 1065,
-                    "shortposts": 261,
-                    "longposts": 4,
-                    "blogposts": 4,
-                    "podcasts": 0
-                  },
-                  "description": {
-                    "text": "Software developer. Husband. Wage slave.\\nhttp:\\/\\/eee-eye-eee.io",
-                    "html": "<p>Software developer. Husband. Wage slave.<br \\/> <a target=\\"_blank\\" href=\\"http:\\/\\/eee-eye-eee.io\\">http:\\/\\/eee-eye-eee.io<\\/a><\\/p>"
-                  },
-                  "created_at": "2016-09-06T18:48:25Z",
-                  "timezone": "US\\/Eastern",
-                  "verified": {
-                    "is_verified": false,
-                    "url": ""
-                  },
-                  "annotations": false,
-                  "cover_image": false,
-                  "evangelist": false,
-                  "follows_you": true,
-                  "you_follow": true,
-                  "is_muted": false,
-                  "is_silenced": false
-                }
-              ],
-              "channel": {
-                "id": 1,
-                "owner_id": false,
-                "type": "channel.global",
-                "privacy": "visibility.public",
-                "guid": "d9ba5a8d768d0dbd9fc9c3ea4c8e183b2aa7336c",
-                "created_at": "2015-08-01T00:00:00Z",
-                "created_unix": 1438387200,
-                "updated_at": "2015-08-01T00:00:00Z",
-                "updated_unix": 1438387200
-              },
-              "client": {
-                "hash": "a4e797c491b139358ab6d58acf7f11733102cc9c",
-                "name": "Cappuccino"
-              },
-              "created_at": "2016-10-09T18:11:52Z",
-              "created_unix": 1476036712,
-              "publish_at": "2016-10-09T18:11:52Z",
-              "publish_unix": 1476036712,
-              "updated_at": "2016-10-09T18:11:52Z",
-              "updated_unix": 1476036712,
-              "expires_at": false,
-              "expires_unix": false,
-              "is_mention": false,
-              "you_starred": false,
-              "you_pinned": false,
-              "you_reposted": false,
-              "reposts": 0,
-              "stars": false,
-              "parent": false,
-              "is_visible": true,
-              "is_muted": false,
-              "is_deleted": false
+             "guid": "ffd9955a-9b51-d2cd-bc53-4d70673f8e3a",
+             "type": "post.note",
+             "thread": {
+               "guid": "a7a4b37c-2a87-c758-4d5a-6aa5920eaf07",
+               "count": 4
+             },
+             "privacy": "visibility.public",
+             "persona": {
+               "guid": "07d2f4ec-545f-11e8-99a0-54ee758049c3",
+               "as": "@matigo",
+               "name": "Jason",
+               "avatar": "https://matigo.ca/avatars/jason_fox_box.jpg",
+               "follow": {
+                 "url": "https://matigo.ca/feeds/matigo.json",
+                 "rss": "https://matigo.ca/feeds/matigo.xml"
+               },
+               "is_active": true,
+               "is_you": false,
+               "profile_url": "https://matigo.ca/profile/matigo",
+               "created_at": "2012-08-01T00:00:00Z",
+               "created_unix": 1343779200,
+               "updated_at": "2018-05-17T19:07:26Z",
+               "updated_unix": 1526584046
+             },
+             "title": false,
+             "content": "<p><span class=\\"account\\" data-guid=\\"15e9a17d-9407-11e8-bbd7-54ee758049c3\\">@phoneboy</span> you use it for your own site. That said, it's now an optional variable. If you do not pass a <code>persona_guid</code> or <code>channel_guid</code>, then the defaults associated with the Account (based on the Auth Token) will be used.</p> <p>All you need to pass when publishing now is:</p> <p><code>content</code>: what you want to say<br><code>post_type</code>: what is it (post.note, post.article, post.bookmark, post.quotation)</p>",
+             "text": "@phoneboy you use it for your own site. That said, it's now an optional variable. If you do not pass a `persona_guid` or `channel_guid`, then the defaults associated with the Account (based on the Auth Token) will be used.\\n\\nAll you need to pass when publishing now is:\\n\\n`content`: what you want to say\\n`post_type`: what is it (post.note, post.article, post.bookmark, post.quotation)",
+             "publish_at": "2019-04-12T14:04:25Z",
+             "publish_unix": 1555077865,
+             "expires_at": false,
+             "expires_unix": false,
+             "updated_at": "2019-04-12T14:04:25Z",
+             "updated_unix": 1555077865,
+             "meta": false,
+             "tags": false,
+             "mentions": {
+               "guid": "15e9a17d-9407-11e8-bbd7-54ee758049c3",
+               "as": "@phoneboy",
+               "is_you": false
+             },
+             "canonical_url": "https://matigo.ca/note/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a",
+             "slug": "ffd9955a-9b51-d2cd-bc53-4d70673f8e3a",
+             "reply_to": "https://phoneboy.info/note/a7a4b37c-2a87-c758-4d5a-6aa5920eaf07",
+             "class": "h-entry p-in-reply-to",
+             "attributes": {
+               "pin": "pin.none",
+               "starred": false,
+               "muted": false,
+               "points": 0
+             },
+             "channel": {
+               "guid": "91c46924-5461-11e8-99a0-54ee758049c3",
+               "name": "Matigo dot See, eh?",
+               "type": "channel.site",
+               "privacy": "visibility.public",
+               "created_at": "2018-05-10T14:51:06Z",
+               "created_unix": 1525963866,
+               "updated_at": "2019-04-03T16:24:17Z",
+               "updated_unix": 1554308657
+             },
+             "site": {
+               "guid": "cc5346ea-9358-df5c-90ea-e27c343e4843",
+               "name": "Matigo dot See, eh?",
+               "description": "The Semi-Coherent Ramblings of a Canadian in Asia",
+               "keywords": "matigo, 10C, v5, development, dev",
+               "url": "https://matigo.ca"
+             },
+             "client": {
+               "guid": "7677e4c0-545e-11e8-99a0-54ee758049c3",
+               "name": "Default Client",
+               "logo": "https://matigo.ca/images/default.png"
+             },
+             "can_edit": false
             }
             """) as! [String: Any]
     }
