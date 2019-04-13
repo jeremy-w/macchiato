@@ -1,0 +1,54 @@
+- blog posts don't seem to show up in stock global stream for me
+    - probably need to pass ALL the post types like Nice does
+
+- geo tagging - should at least display this in attributes; inside the post is:
+
+  ----
+  meta =     {
+      geo =         {
+          altitude = 0;
+          description = "@Toys R Us";
+          latitude = 0;
+          longitude = 0;
+      };
+  };
+  ----
+
+- seem to be mis-parsing this post and falling back on Markdown rather than rendering the pre-formatted code correctly:
+
+  ----
+  {
+      "canonical_url" = "http://jws.10centuries.org/note/ad3e49e8-0a3d-c76f-723b-f98aca7ff541";
+      content = "<p>Huh, my image attachment didn't show up.</p> <p><em>ETA:</em> Oh, because the file upload returned an error. :&#92; That the UI didn't show me. Out of space in a bucket, maybe?</p> <pre><code>&#92;\"errors&#92;\":[{&#92;\"name&#92;\":&#92;\"Behold&nbsp;10Cv5&nbsp;Global&nbsp;-&nbsp;Simulator&nbsp;Screen&nbsp;Shot&nbsp;-&nbsp;iPhone&nbsp;X&nbsp;-&nbsp;2019-04-12&nbsp;at&nbsp;23.31.57.png&#92;\",&#92;\"size&#92;\":900917,&#92;\"type&#92;\":&#92;\"image&#92;&#92;/png&#92;\",&#92;\"reason&#92;\":&#92;\"Could&nbsp;Not&nbsp;Record&nbsp;File&nbsp;Data&#92;\"}</code></pre>";
+      "expires_at" = 0;
+      "expires_unix" = 0;
+      guid = "ad3e49e8-0a3d-c76f-723b-f98aca7ff541";
+      mentions = 0;
+      meta = 0;
+      persona =     {
+          as = "@jws";
+          avatar = "http://jws.10centuries.org/avatars/jws.jpeg";
+          guid = "15e9cdba-9407-11e8-bbd7-54ee758049c3";
+          "is_you" = 0;
+          name = jws;
+          "profile_url" = "http://jws.10centuries.org/15e9cdba-9407-11e8-bbd7-54ee758049c3/profile";
+          "you_follow" = 0;
+      };
+      privacy = "visibility.public";
+      "publish_at" = "2019-04-13T03:36:32Z";
+      "publish_unix" = 1555126592;
+      "reply_to" = 0;
+      tags = 0;
+      text = "Huh, my image attachment didn't show up.\n\n*ETA:* Oh, because the file upload returned an error. :\\ That the UI didn't show me. Out of space in a bucket, maybe?\n\n```\n\\\"errors\\\":[{\\\"name\\\":\\\"Behold 10Cv5 Global - Simulator Screen Shot - iPhone X - 2019-04-12 at 23.31.57.png\\\",\\\"size\\\":900917,\\\"type\\\":\\\"image\\\\/png\\\",\\\"reason\\\":\\\"Could Not Record File Data\\\"}\n```";
+      title = 0;
+      type = "post.note";
+      "updated_at" = "2019-04-13T03:40:00Z";
+      "updated_unix" = 1555126800;
+  }
+  ----
+- posting:
+    - checking if auth'd
+    - authing
+    - posting
+    - editing
+    - image upload - though Nice flubbed it for me, so
