@@ -97,6 +97,15 @@ class PostParsing: XCTestCase {
         }
     }
 
+    func testParsingClientName() {
+        do {
+            let clientName = try subject.parseClientName(from: capturedPostWithThreadInfo)
+            XCTAssertEqual(clientName, "Default Client")
+        } catch {
+            return XCTFail("parsing failed: \(error)")
+        }
+    }
+
     var capturedPostWithThreadInfo: JSONDictionary {
         /*
          This is the result of:

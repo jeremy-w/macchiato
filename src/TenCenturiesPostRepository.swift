@@ -195,6 +195,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let created = (try? unpack(post, "created_unix") as TimeInterval).map(Date.init(timeIntervalSince1970:)) ?? published
 
         let stars = parseStars(from: post["stars"])
+        // (jeremy-w/2019-04-12)TODO: Add 10v5 "title" field to Post and show it
         return Post(
             id: postID,
             account: account,
@@ -203,7 +204,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
             parentID: (parent != nil) ? parentID : String?.none,
-            client: (try? unpack(unpack(post, "client"), "name")) ?? "—",
+            client: (try? parseClientName(from: post)) ?? "—",
             mentions: mentions,
             created: created,
             updated: updated,
@@ -212,6 +213,14 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             you: you,
             stars: stars,
             parent: parent)
+    }
+
+    func parseClientName(from post: JSONDictionary) throws -> String {
+        guard let client = try? unpack(post, "client") as JSONDictionary else {
+            return NSLocalizedString("(requires log-in)", comment: "client name fallback text when logged-out")
+        }
+
+        return try unpack(client, "name")
     }
 
     /**
