@@ -31,17 +31,17 @@ func makeAttributedString(fromHTML html: String) -> NSAttributedString? {
 public extension NSAttributedString.Key {
     /// All image elements with valid `src` URL will have this attribute set on the alt-text range in the text returned by `parse()`.
     /// Its value is a `URL`.
-    public static let macchiatoImageSourceURL = NSAttributedString.Key("com.jeremywsherman.Macchiato.ImageSourceURL")
+    static let macchiatoImageSourceURL = NSAttributedString.Key("com.jeremywsherman.Macchiato.ImageSourceURL")
 
     /// Mentions like `@name` have this applied. The value is a numeric `String`.
-    public static let macchiatoAccountID = NSAttributedString.Key("com.jeremywsherman.Macchiato.mention.AccountID")
+    static let macchiatoAccountID = NSAttributedString.Key("com.jeremywsherman.Macchiato.mention.AccountID")
 
     /// Text like `#tag` has this applied. The value is a `String` like `"tag"` (i.e., omitting the hashmark).
-    public static let macchiatoHashtag = NSAttributedString.Key("com.jeremywsherman.Macchiato.Hashtag")
+    static let macchiatoHashtag = NSAttributedString.Key("com.jeremywsherman.Macchiato.Hashtag")
 
     /// Text like `> quote` has this applied. The value is a strictly positive `Int`.
     /// In future, we might have a custom renderer stick a vertical bar to its left.
-    public static let macchiatoBlockquoteLevel = NSAttributedString.Key("com.jeremywsherman.Macchiato.blockquoteLevel")
+    static let macchiatoBlockquoteLevel = NSAttributedString.Key("com.jeremywsherman.Macchiato.blockquoteLevel")
 }
 
 final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
@@ -276,22 +276,19 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
      */
     func textAttachment(for url: URL) -> NSTextAttachment {
         let attachment = NSTextAttachment()
-        KingfisherManager.shared.retrieveImage(
-            with: url,
-            options: nil,
-            progressBlock: nil,
-            completionHandler: { (image, error, cacheType, url) in
-                if let image = image {
-                    print("HTML: DEBUG: Fetched image for", url as Any, ": image", image)
-                    attachment.image = image
-                    // (jeremy-w/2017-02-03)FIXME: This appears not to actually trigger a re-render. :(
-                    // So you have to scroll away and back to get it in cache to see it.
-                    // And then it winds up too wide anyway. Maybe needs a custom text attachment subclass
-                    // to get proper sizing.
-                } else {
-                    print("HTML: ERROR: Failed to fetch image for", url as Any, ": error", error as Any)
-                }
-            })
+        KingfisherManager.shared.retrieveImage(with: url) { (result: Kingfisher.Result<RetrieveImageResult, KingfisherError>) in
+            do {
+                let image = try result.get().image
+                print("HTML: DEBUG: Fetched image for", url as Any, ": image", image)
+                attachment.image = image
+                // (jeremy-w/2017-02-03)FIXME: This appears not to actually trigger a re-render. :(
+                // So you have to scroll away and back to get it in cache to see it.
+                // And then it winds up too wide anyway. Maybe needs a custom text attachment subclass
+                // to get proper sizing.
+            } catch {
+                print("HTML: ERROR: Failed to fetch image for", url as Any, ": error", error as Any)
+            }
+        }
         return attachment
     }
 
