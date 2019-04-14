@@ -21,6 +21,16 @@ class TenCenturiesSessionManager {
         user = TenCenturiesSessionManager.load(account: account)
     }
 
+    func destroySession() {
+        guard let user = user else { return }
+
+        print("AUTH: WARNING: Destroying session for account=«\(user.account)»")
+        Keychain.delete(account: user.account, service: "10Centuries")
+
+        let userWithoutPassword = User(account: user.account, token: "")
+        self.user = userWithoutPassword
+    }
+
     struct User {
         /// Confusingly, this is actually an email address. But it might not always be!
         let account: String
@@ -105,7 +115,7 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     var authenticator: RequestAuthenticator { return self }
 
     func logOut() {
-        var request = URLRequest(url: URL(string: "/auth/logout", relativeTo: TenCenturies.baseURL)!)
+        var request = URLRequest(url: URL(string: "/api/auth/logout", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
         /*
          If you're already logged out, you'll see:
@@ -134,12 +144,13 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     }
 
     func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void) {
-        var request = URLRequest(url: URL(string: "/auth/login", relativeTo: TenCenturies.baseURL)!)
+        var request = URLRequest(url: URL(string: "/api/auth/login", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
         request.attachURLEncodedFormData([
-            URLQueryItem(name: "client_guid", value: clientGUID),
-            URLQueryItem(name: "acctname", value: account),
-            URLQueryItem(name: "acctpass", value: password)
+            // 10Cv5 doesn't seem to have client GUIDs yet.
+            // URLQueryItem(name: "client_guid", value: clientGUID),
+            URLQueryItem(name: "account_name", value: account),
+            URLQueryItem(name: "account_pass", value: password)
             ])
         let _ = send(request: request) { (result) in
             let result = Result.of { () -> Bool in
@@ -152,6 +163,29 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
                 return true
             }
             completion(result)
+        }
+    }
+
+    /// Returns `true` when we had a valid session, but not any more.
+    func destroySessionIfExpired(completion: @escaping (Bool) -> Void) {
+        var didExpireSession = false
+        guard canAuthenticate else {
+            return completion(didExpireSession)
+        }
+
+        var request = URLRequest(url: URL(string: "/api/auth/status", relativeTo: TenCenturies.baseURL)!)
+        request.httpMethod = "POST"
+        let _ = send(request: request) { (result) in
+            if case let .failure(error) = result {
+                if let error = error as? TenCenturiesError, case let .api(_, text, _) = error {
+                    // There aren't any error codes, just strings. But we don't want to sign someone out accidentally.
+                    if text == "Invalid or Expired Token Supplied" {
+                        self.destroySession()
+                        didExpireSession = true
+                    }
+                }
+            }
+            completion(didExpireSession)
         }
     }
 }

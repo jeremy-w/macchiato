@@ -3,6 +3,8 @@ protocol SessionManager: class {
 
     func logOut()
     func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void)
+
+    func destroySessionIfExpired(completion: @escaping (Bool) -> Void)
 }
 
 

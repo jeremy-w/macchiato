@@ -25,9 +25,6 @@ class Identity {
     }
 
     func update(using accountRepository: AccountRepository) {
-        // (jeremy-w/2019-04-14)FIXME: This fails unless logged-in.
-        // We should teach SessionManager how to check for valid token, then caller can check that.
-        // And then TenC repo can check if we have any token at all and preemptively fail without hitting backend.
         accountRepository.account(id: "me") { (result) in
             do {
                 self.account = try result.unwrap()

@@ -35,7 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
 
         wireUpUIPostLaunch()
-        identity.update(using: services.accountRepository)
+        services.sessionManager.destroySessionIfExpired { result in
+            print("AppDelegate.didFinishLaunching: Finished expired token check result=\(result). We may need to update UI more proactively on token change in future.")
+            self.identity.update(using: self.services.accountRepository)
+        }
         return true
     }
 

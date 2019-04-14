@@ -31,13 +31,18 @@ enum Keychain {
         return true
     }
 
-    static func find(account: String, service: String) -> Data? {
+    private static func buildQuery(account: String, service: String) -> NSDictionary {
         let query: NSDictionary = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,
             kSecAttrService: service,
             kSecReturnData: true,
-            ]
+        ]
+        return query
+    }
+
+    static func find(account: String, service: String) -> Data? {
+        let query = buildQuery(account: account, service: service)
         var result: CFTypeRef?
         let status = SecItemCopyMatching(query, &result)
         guard status == errSecSuccess else {
@@ -54,5 +59,15 @@ enum Keychain {
         }
         print("AUTH: DEBUG: Found \(data.count) bytes of data for account «\(account)» with service «\(service)».")
         return data
+    }
+
+    static func delete(account: String, service: String) {
+        let query = buildQuery(account: account, service: service)
+        let status = SecItemDelete(query)
+        guard status == errSecSuccess else {
+            print("AUTH: ERROR: Failed to delete token from keychain: error \(status) - query \(query)")
+            return
+        }
+        print("AUTH: DEBUG: Deleted token for account=«\(account)» service=«\(service)»")
     }
 }
