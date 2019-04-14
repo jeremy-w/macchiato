@@ -31,6 +31,10 @@ class TenCenturiesSessionManager {
 
 // MARK: - Authenticates requests
 extension TenCenturiesSessionManager: RequestAuthenticator {
+    var canAuthenticate: Bool {
+        return user?.token != nil
+    }
+
     func authenticate(request unauthenticated: URLRequest) -> URLRequest {
         guard let token = user?.token else { return unauthenticated }
 

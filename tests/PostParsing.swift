@@ -253,6 +253,8 @@ class PostParsing: XCTestCase {
 }
 
 struct DummyRequestAuthenticator: RequestAuthenticator {
+    var canAuthenticate = true
+
     func authenticate(request: URLRequest) -> URLRequest {
         return request
     }
