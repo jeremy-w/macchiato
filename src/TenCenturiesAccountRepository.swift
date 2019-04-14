@@ -18,7 +18,7 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
             }
         }
 
-        let path = "/users/" + id
+        let path = "/api/account/\(id)/bio"
         guard let url = URL(string: path, relativeTo: TenCenturies.baseURL) else {
             let badURL = TenCenturiesError.badURL(string: path, info: ["relativeTo": TenCenturies.baseURL])
             print("ACCOUNTS: ERROR: Failed to build URL:", String(reflecting: badURL))
