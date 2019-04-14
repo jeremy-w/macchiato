@@ -146,11 +146,13 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void) {
         var request = URLRequest(url: URL(string: "/api/auth/login", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
+        let niceDotSocialClientGuid = "7677e4c0-545e-11e8-99a0-54ee758049c3"
         request.attachURLEncodedFormData([
             // 10Cv5 doesn't seem to have client GUIDs yet.
-            // URLQueryItem(name: "client_guid", value: clientGUID),
+            URLQueryItem(name: "client_guid", value: niceDotSocialClientGuid),
             URLQueryItem(name: "account_name", value: account),
-            URLQueryItem(name: "account_pass", value: password)
+            URLQueryItem(name: "account_pass", value: password),
+            URLQueryItem(name: "channel_guid", value: "889ab024-90a8-11e8-bbd7-54ee758049c3")
             ])
         let _ = send(request: request) { (result) in
             let result = Result.of { () -> Bool in
