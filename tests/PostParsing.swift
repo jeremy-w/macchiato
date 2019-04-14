@@ -113,6 +113,14 @@ class PostParsing: XCTestCase {
         XCTAssertEqual(geo, Post.Geo(name: "@Toys R Us", latitude: nil, longitude: nil, altitude: nil))
     }
 
+    func testParsingTitle() {
+        let result = Result.of { return try subject.parsePost(from: capturedPostWithThreadInfo) }
+        guard case let .success(post) = result else {
+            return XCTFail("parsing failed with error: \(result)")
+        }
+        XCTAssertEqual(post.title, "either a title or boolean false")
+    }
+
     var capturedPostWithThreadInfo: JSONDictionary {
         /*
          This is the result of:
@@ -150,7 +158,7 @@ class PostParsing: XCTestCase {
                "updated_at": "2018-05-17T19:07:26Z",
                "updated_unix": 1526584046
              },
-             "title": false,
+             "title": "either a title or boolean false",
              "content": "<p><span class=\\"account\\" data-guid=\\"15e9a17d-9407-11e8-bbd7-54ee758049c3\\">@phoneboy</span> you use it for your own site. That said, it's now an optional variable. If you do not pass a <code>persona_guid</code> or <code>channel_guid</code>, then the defaults associated with the Account (based on the Auth Token) will be used.</p> <p>All you need to pass when publishing now is:</p> <p><code>content</code>: what you want to say<br><code>post_type</code>: what is it (post.note, post.article, post.bookmark, post.quotation)</p>",
              "text": "@phoneboy you use it for your own site. That said, it's now an optional variable. If you do not pass a `persona_guid` or `channel_guid`, then the defaults associated with the Account (based on the Auth Token) will be used.\\n\\nAll you need to pass when publishing now is:\\n\\n`content`: what you want to say\\n`post_type`: what is it (post.note, post.article, post.bookmark, post.quotation)",
              "publish_at": "2019-04-12T14:04:25Z",

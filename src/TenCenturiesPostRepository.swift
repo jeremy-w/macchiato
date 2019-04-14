@@ -145,6 +145,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
 
         let geo = parseGeo(from: post)
+        let title = (try? unpack(post, "title") as String) ?? ""
 
         let you = try parseYou(from: post, mentions: mentions)
         let isPrivate = you.cannotSee
@@ -218,7 +219,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             you: you,
             stars: stars,
             parent: parent,
-            geo: geo)
+            geo: geo,
+            title: title)
     }
 
     func parseGeo(from post: JSONDictionary) -> Post.Geo? {

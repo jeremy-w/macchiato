@@ -45,6 +45,7 @@ struct Post {
     }
 
     let geo: Geo?
+    let title: String
 
     static func makeFake() -> Post {
         let now = Date()
@@ -66,7 +67,8 @@ struct Post {
             you: You(),
             stars: [],
             parent: nil,
-            geo: nil)
+            geo: nil,
+            title: "")
     }
 
     static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
@@ -96,7 +98,8 @@ struct Post {
             you: You(),
             stars: [],
             parent: nil,
-            geo: nil)
+            geo: nil,
+            title: "")
     }
 }
 
@@ -131,7 +134,8 @@ extension Post {
             you: you,
             stars: stars,
             parent: originalPost,
-            geo: geo)
+            geo: geo,
+            title: title)
         return withUpdatedOriginalPost
     }
 

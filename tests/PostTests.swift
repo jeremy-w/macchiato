@@ -9,7 +9,7 @@ class PostTests: XCTestCase {
         let post = Post(
             id: "id", account: Account.makeFake(), content: "whatever", html: "<p>whatever</p>", privacy: "privacy", thread: nil, parentID: nil, client: "client",
             mentions: [other, author],
-            created: Date(), updated: Date(), published: Date(), deleted: false, you: Post.You(), stars: [], parent: nil, geo: nil)
+            created: Date(), updated: Date(), published: Date(), deleted: false, you: Post.You(), stars: [], parent: nil, geo: nil, title: "")
 
         let reply = post.replyTemplate(notMentioning: [authorHandle])
 
