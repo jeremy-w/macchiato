@@ -138,17 +138,18 @@ class StreamViewController: UITableViewController {
     }
 
     func header(for post: Post) -> UIView? {
-        if post.originalPost != nil {
-            let repostFormat = NSLocalizedString("Reposted by: @%@", comment: "%@ is username")
-            let author = String.localizedStringWithFormat(repostFormat, post.account.username)
-
-            let banner = BylineView.makeView()
-            banner.configure(imageURL: post.account.avatarURL, author: author, date: post.published)
-            return banner
+        let isRepost = post.originalPost != nil
+        if isRepost {
+            return buildRepostBanner(reposter: post.account, repostDate: post.published)
         }
 
-        guard stream?.view == .interactions else { return nil }
+        let isSpecificallyHighlightingPostInteractions = stream?.view == .interactions
+        guard isSpecificallyHighlightingPostInteractions else { return nil }
 
+        return labelDescribingInteractionsWithLoggedInUsersPost(post)
+    }
+
+    func labelDescribingInteractionsWithLoggedInUsersPost(_ post: Post) -> UILabel? {
         let names = post.stars.map({ $0.userAtName })
         guard !names.isEmpty else { return nil }
 
@@ -167,6 +168,15 @@ class StreamViewController: UITableViewController {
 
         label.text = text
         return label
+    }
+
+    func buildRepostBanner(reposter account: Account, repostDate: Date) -> BylineView {
+        let repostFormat = NSLocalizedString("Reposted by: @%@", comment: "%@ is username")
+        let author = String.localizedStringWithFormat(repostFormat, account.username)
+
+        let banner = BylineView.makeView()
+        banner.configure(imageURL: account.avatarURL, author: author, date: repostDate)
+        return banner
     }
 
 
