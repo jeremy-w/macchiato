@@ -1,5 +1,3 @@
-- show post title (in attributes for now)
-
 - posting:
     - checking if auth'd
     - authing
