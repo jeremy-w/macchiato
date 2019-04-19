@@ -136,7 +136,8 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         case "sup":
             attributesStack.append(TenCenturiesHTMLParser.applySuperscriptAttributes(to: currentAttributes))
 
-        case "strike":
+        case "strike":  fallthrough
+        case "del":
             attributesStack.append(TenCenturiesHTMLParser.applyStrikethroughAttributes(to: currentAttributes))
 
         case "a":

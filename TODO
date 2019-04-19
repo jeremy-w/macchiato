@@ -5,8 +5,11 @@
 - verify other post actions still work
 
 - tags
+- adding geo
 - check we can read out geo of 0,0 0m.
-- handle <del> element (strikethrough) as in https://jws.10centuries.org/note/47aef69f-6951-1916-68e0-8d976150e919
+
+- ability to post different post types - quote, bookmark, title, etc.
+- share extension for quote / bookmark?
 
 - seem to be mis-parsing this post and falling back on Markdown rather than rendering the pre-formatted code correctly:
 
