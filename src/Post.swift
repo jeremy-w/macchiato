@@ -218,6 +218,7 @@ extension Post {
 
 extension Post {
     struct You {
+        var authored: Bool = false
         var wereMentioned: Bool = false
         var starred: Bool = false
         var pinned: PinColor?

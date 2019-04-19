@@ -57,6 +57,7 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         let parser = XMLParser(data: data)
         parser.delegate = self
         guard parser.parse() else {
+            print("ERROR: XML parsing failed at line=\(parser.lineNumber) column=\(parser.columnNumber). Partial result=\(result) attributesStack=\(attributesStack) atStartOfListItem=\(atStartOfListItem)")
             let error = parser.parserError ?? TenCenturiesError.other(
                 message: "HTML parsing failed without any parserError",
                 info: ["data": data, "source": source])

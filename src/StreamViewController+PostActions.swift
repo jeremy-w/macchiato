@@ -44,7 +44,7 @@ extension StreamViewController {
                 ? NSLocalizedString("Pin", comment: "button")
                 : NSLocalizedString("Edit Pin", comment: "button"), .pin(at: point)),
             (NSLocalizedString("Repost", comment: "button"), .repost),
-            (((post.account.id == identity.account?.id)
+            (((post.you.authored || post.account.id == identity.account?.id)
                 ? NSLocalizedString("Edit", comment: "button")
                 : ""), .edit),
             (NSLocalizedString("View Thread", comment: "button"), .viewThread),

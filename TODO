@@ -1,7 +1,3 @@
-- posting:
-    - posting
-    - editing
-
 - image upload - though Nice flubbed it for me, so
 - trim any streams that don't work with v5
 - fix "View in WebView" for new URLs

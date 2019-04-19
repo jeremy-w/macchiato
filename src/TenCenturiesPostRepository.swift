@@ -164,8 +164,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let thread: (root: String, replyTo: String)?
         do {
             let rootGUID = try unpack(unpack(post, "thread"), "guid") as String
-            let replyToGUID = try unpack(post, "reply_to") as String
-            thread = (root: rootGUID, replyTo: replyToGUID)
+            let replyToURL = try unpack(post, "reply_to") as String
+            thread = (root: rootGUID, replyTo: replyToURL)
         } catch {
             thread = nil
         }
@@ -269,15 +269,17 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
          I have no idea what "points" is.
          */
+        let authored: Bool = (try? unpack(unpack(post, "persona"), "is_you")) ?? false
         let wereMentioned = mentions.contains { $0.isYou }
         guard let attributes = try? unpack(post, "attributes") as JSONDictionary else {
-            return Post.You(wereMentioned: wereMentioned, starred: false, pinned: nil, reposted: false, muted: false, cannotSee: false)
+            return Post.You(authored: authored, wereMentioned: wereMentioned, starred: false, pinned: nil, reposted: false, muted: false, cannotSee: false)
         }
 
         // Invisible posts have only visible, muted, and deleted.
         let pinColor = attributes["pin"].flatMap(parseYouPinned)
 
         return Post.You(
+            authored: authored,
             wereMentioned: wereMentioned,
             starred: try unpack(attributes, "starred", default: false),
             pinned: pinColor,
@@ -347,7 +349,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Saves posts
     func save(post: EditingPost, completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: "/content/write", relativeTo: TenCenturies.baseURL)!
+        let url = URL(string: "/api/posts/write", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = json(for: post)
@@ -363,11 +365,17 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func json(for post: EditingPost) -> Data {
-        let json: JSONDictionary = [
+        var json: JSONDictionary = [
             "content": post.content,
-            "post_id": post.updating ?? "",
-            "reply_to": post.replyTo ?? "",
-            ]
+            "post_type": post.flavor.rawValue,
+        ]
+        if let updating = post.updating {
+            json["guid"] = updating
+        }
+        if let replyToURL = post.replyTo {
+            json["reply_to"] = replyToURL
+        }
+
         // swiftlint:disable:next force_try
         return try! JSONSerialization.data(withJSONObject: json, options: [])
     }

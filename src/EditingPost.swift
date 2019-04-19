@@ -1,18 +1,22 @@
 typealias PostID = String
 
 struct EditingPost {
+    // (jeremy-w/2019-04-18)TODO: We may want to support other flavors in future, like quote.
+    let flavor: Post.Flavor = Post.Flavor.note
     var content: String
 
-    let channel = 1
     let updating: PostID?
-    let replyTo: PostID?
+    let replyTo: String?
+
+    // (jeremy-w/2019-04-18)TODO: Title, tags, geocoding, etc.
+    // See: "Publishing a Post" at https://docs.10centuries.org/posts
 }
 
 
 extension EditingPost {
     init(content: String, for action: ComposePostAction) {
         let updating: PostID?
-        let replyTo: PostID?
+        let replyTo: String?
         switch action {
         case .newThread:
             updating = nil
