@@ -63,6 +63,8 @@ class StreamViewController: UITableViewController {
     }
 
     var isLoggedIn: Bool {
+        // (jeremy-w/2019-04-18)FIXME: As long as we have valid auth token, we can post. Even if we can't fetch Account.
+        // This is why my "Account.makeFake()" as identity.account hack works so well.
         return identity.account != nil
     }
 

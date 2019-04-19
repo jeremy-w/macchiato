@@ -269,14 +269,14 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
          I have no idea what "points" is.
          */
+        let wereMentioned = mentions.contains { $0.isYou }
         guard let attributes = try? unpack(post, "attributes") as JSONDictionary else {
-            return Post.You()
+            return Post.You(wereMentioned: wereMentioned, starred: false, pinned: nil, reposted: false, muted: false, cannotSee: false)
         }
 
         // Invisible posts have only visible, muted, and deleted.
         let pinColor = attributes["pin"].flatMap(parseYouPinned)
 
-        let wereMentioned = mentions.contains { $0.isYou }
         return Post.You(
             wereMentioned: wereMentioned,
             starred: try unpack(attributes, "starred", default: false),
