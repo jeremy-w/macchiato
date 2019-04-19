@@ -61,10 +61,10 @@ struct Account {
 
 
 extension Account {
-    static func makeFake() -> Account {
+    static func makeFake(username: String = "someone") -> Account {
         return Account(
             id: "123456789",
-            username: "someone",
+            username: username,
             name: (
                 first: "Someone",
                 last: "Fake",

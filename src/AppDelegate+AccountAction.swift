@@ -95,16 +95,21 @@ extension AppDelegate {
             }
 
 
+        // (jeremy-w/2019-04-13)TODO: Allow viewing an account's posts. Joanna would like this.
         case let .viewPosts(from: account):
+            NSLog("TODO: \(#function): .viewPosts of \(account)")
             break
 
         case let .viewStars(by: account):
+            NSLog("TODO: \(#function): .viewStars of \(account)")
             break
 
         case let .viewAccountsFollowing(account: account):
+            NSLog("TODO: \(#function): .viewAccountsFollowing \(account)")
             break
 
         case let .viewAccountsFollowed(by: account):
+            NSLog("TODO: \(#function): .viewAccountsFollowed by \(account)")
             break
         }
     }

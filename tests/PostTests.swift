@@ -4,12 +4,12 @@ import XCTest
 class PostTests: XCTestCase {
     func testReplyTemplateOmitsHandlesAsRequested() {
         let authorHandle = "author"
-        let other = Post.Mention(name: "other", id: "other", current: "other")
-        let author = Post.Mention(name: authorHandle, id: "other", current: authorHandle)
+        let other = Post.Mention(name: "other", id: "other", current: "other", isYou: false)
+        let author = Post.Mention(name: authorHandle, id: "other", current: authorHandle, isYou: true)
         let post = Post(
             id: "id", account: Account.makeFake(), content: "whatever", html: "<p>whatever</p>", privacy: "privacy", thread: nil, parentID: nil, client: "client",
             mentions: [other, author],
-            created: Date(), updated: Date(), published: Date(), deleted: false, you: Post.You(), stars: [], parent: nil)
+            created: Date(), updated: Date(), published: Date(), deleted: false, you: Post.You(), stars: [], parent: nil, geo: nil, title: "")
 
         let reply = post.replyTemplate(notMentioning: [authorHandle])
 

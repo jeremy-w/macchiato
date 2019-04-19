@@ -9,7 +9,8 @@ struct Post {
     let privacy: String
     let thread: (root: String, replyTo: String)?
     let parentID: String?
-    let client: String
+    /// Not provided in Global, but is provided in threads.
+    let client: String?
 
     let mentions: [Mention]
 
@@ -43,6 +44,9 @@ struct Post {
         return parent as? Post
     }
 
+    let geo: Geo?
+    let title: String
+
     static func makeFake() -> Post {
         let now = Date()
         let text = Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " ")
@@ -62,7 +66,9 @@ struct Post {
             deleted: false,
             you: You(),
             stars: [],
-            parent: nil)
+            parent: nil,
+            geo: nil,
+            title: "")
     }
 
     static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
@@ -91,7 +97,9 @@ struct Post {
             deleted: false,
             you: You(),
             stars: [],
-            parent: nil)
+            parent: nil,
+            geo: nil,
+            title: "")
     }
 }
 
@@ -125,7 +133,9 @@ extension Post {
             deleted: deleted,
             you: you,
             stars: stars,
-            parent: originalPost)
+            parent: originalPost,
+            geo: geo,
+            title: title)
         return withUpdatedOriginalPost
     }
 
@@ -208,6 +218,7 @@ extension Post {
 
 extension Post {
     struct You {
+        var authored: Bool = false
         var wereMentioned: Bool = false
         var starred: Bool = false
         var pinned: PinColor?
@@ -221,14 +232,16 @@ extension Post {
     }
 
     struct Mention {
-        /// The account name at the time of the mention.
+        /// The account name at the time of the mention. `.as`
         let name: String
 
-        /// The account ID.
+        /// The account GUID.
         let id: String
 
         /// The current account name - often the same as "name".
         let current: String
+
+        let isYou: Bool
     }
 
     enum PinColor {
@@ -238,6 +251,26 @@ extension Post {
         case orange
         case red
         case yellow
+    }
+
+    enum Flavor: String, Equatable, CaseIterable {
+        case article = "post.article"
+        case bookmark = "post.bookmark"
+        case note = "post.note"
+        case quote = "post.quotation"
+
+        // The rest I've seen Nice ask for with Global,
+        // but they aren't doc'd.
+        case blog = "post.blog"
+        case photo = "post.photo"
+        case todo = "post.todo"
+    }
+
+    struct Geo: Equatable {
+        let name: String
+        let latitude: Double?
+        let longitude: Double?
+        let altitude: Double?
     }
 }
 

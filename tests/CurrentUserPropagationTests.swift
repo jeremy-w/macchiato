@@ -12,7 +12,7 @@ class CurrentUserPropagationTests: XCTestCase {
 
         XCTAssertNil(streamVC.navigationItem.rightBarButtonItem, "no New Post button before identity has account")
         XCTAssertFalse(streamVC.isLoggedIn, "not logged in before identity has account")
-        identity.update(using: FakeAccountRepository())
+        identity.update(account: Account.makeFake())
         expectation(forNotification: NSNotification.Name(rawValue: Notification.Name.identityDidChange.rawValue), object: identity, handler: nil)
         waitForExpectations(timeout: 0.5, handler: nil)
 
@@ -23,7 +23,7 @@ class CurrentUserPropagationTests: XCTestCase {
 
 class SpyingAccountRepository: AccountRepository {
     var accountWasCalled: (id: String, completion: (Result<Account>) -> Void)?
-    func account(id: String, completion: @escaping (Result<Account>) -> Void) {
+    func bioForPersona(id: String, completion: @escaping (Result<Account>) -> Void) {
         accountWasCalled = (id, completion)
     }
 

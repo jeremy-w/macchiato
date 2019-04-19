@@ -1,0 +1,79 @@
+- image upload - though Nice flubbed it for me, so
+- fix "View in WebView" for new URLs
+- fix account viewing - need to fetch the full account vs using what's embedded in a post. the embed can be a useful stop-gap while loading, but those -1 values are gross.
+- trim any streams that don't work with v5
+- drop "Repost" action if no longer relevant
+- verify other post actions still work
+
+- tags
+- adding geo
+- check we can read out geo of 0,0 0m.
+
+- ability to post different post types - quote, bookmark, title, etc.
+- share extension for quote / bookmark?
+
+- seem to be mis-parsing this post and falling back on Markdown rather than rendering the pre-formatted code correctly:
+
+  ----
+  {
+      "canonical_url" = "http://jws.10centuries.org/note/ad3e49e8-0a3d-c76f-723b-f98aca7ff541";
+      content = "<p>Huh, my image attachment didn't show up.</p> <p><em>ETA:</em> Oh, because the file upload returned an error. :&#92; That the UI didn't show me. Out of space in a bucket, maybe?</p> <pre><code>&#92;\"errors&#92;\":[{&#92;\"name&#92;\":&#92;\"Behold&nbsp;10Cv5&nbsp;Global&nbsp;-&nbsp;Simulator&nbsp;Screen&nbsp;Shot&nbsp;-&nbsp;iPhone&nbsp;X&nbsp;-&nbsp;2019-04-12&nbsp;at&nbsp;23.31.57.png&#92;\",&#92;\"size&#92;\":900917,&#92;\"type&#92;\":&#92;\"image&#92;&#92;/png&#92;\",&#92;\"reason&#92;\":&#92;\"Could&nbsp;Not&nbsp;Record&nbsp;File&nbsp;Data&#92;\"}</code></pre>";
+      "expires_at" = 0;
+      "expires_unix" = 0;
+      guid = "ad3e49e8-0a3d-c76f-723b-f98aca7ff541";
+      mentions = 0;
+      meta = 0;
+      persona =     {
+          as = "@jws";
+          avatar = "http://jws.10centuries.org/avatars/jws.jpeg";
+          guid = "15e9cdba-9407-11e8-bbd7-54ee758049c3";
+          "is_you" = 0;
+          name = jws;
+          "profile_url" = "http://jws.10centuries.org/15e9cdba-9407-11e8-bbd7-54ee758049c3/profile";
+          "you_follow" = 0;
+      };
+      privacy = "visibility.public";
+      "publish_at" = "2019-04-13T03:36:32Z";
+      "publish_unix" = 1555126592;
+      "reply_to" = 0;
+      tags = 0;
+      text = "Huh, my image attachment didn't show up.\n\n*ETA:* Oh, because the file upload returned an error. :\\ That the UI didn't show me. Out of space in a bucket, maybe?\n\n```\n\\\"errors\\\":[{\\\"name\\\":\\\"Behold 10Cv5 Global - Simulator Screen Shot - iPhone X - 2019-04-12 at 23.31.57.png\\\",\\\"size\\\":900917,\\\"type\\\":\\\"image\\\\/png\\\",\\\"reason\\\":\\\"Could Not Record File Data\\\"}\n```";
+      title = 0;
+      type = "post.note";
+      "updated_at" = "2019-04-13T03:40:00Z";
+      "updated_unix" = 1555126800;
+  }
+  ----
+
+
+HTML: ERROR: Failed to parse string with error: Error Domain=NSXMLParserErrorDomain Code=111 "(null)" - string: <body><p>Huh, my image attachment didn't show up.</p> <p><em>ETA:</em> Oh, because the file upload returned an error. :&#92; That the UI didn't show me. Out of space in a bucket, maybe?</p> <pre><code>&#92;"errors&#92;":[{&#92;"name&#92;":&#92;"Behold&nbsp;10Cv5&nbsp;Global&nbsp;-&nbsp;Simulator&nbsp;Screen&nbsp;Shot&nbsp;-&nbsp;iPhone&nbsp;X&nbsp;-&nbsp;2019-04-12&nbsp;at&nbsp;23.31.57.png&#92;",&#92;"size&#92;":900917,&#92;"type&#92;":&#92;"image&#92;&#92;/png&#92;",&#92;"reason&#92;":&#92;"Could&nbsp;Not&nbsp;Record&nbsp;File&nbsp;Data&#92;"}</code></pre></body>
+
+XML_ERR_USER_STOP
+
+https://stackoverflow.com/questions/20454853/nsxmlparsererrordomain-111
+
+"There isn't a lot of documentation on XML_ERR_USER_STOP in libxml2, but from reading the changeset, it looks like it's a fast-fail when the parser sees an unexpected EOF."
+
+Dumped the parser location for a different case of this:
+
+<body><p><span class="account" data-guid="15ea0169-9407-11e8-bbd7-54ee758049c3">@nitinkhanna</span> This work
+s:</p> <pre><code>curl&nbsp;&#92;<br />&nbsp;&nbsp;-H'Accept:&nbsp;application/json'&nbsp;&#92;<br />&nbsp;&nbsp;-H"Auth
+orization:&nbsp;$tenc_auth"&nbsp;&#92;<br />&nbsp;&nbsp;https://nice.social/api/posts/write&nbsp;&#92;<br />&nbsp;&nbsp;
+-XPOST&nbsp;&#92;<br />&nbsp;&nbsp;-H'Content-Type:&nbsp;application/json'&nbsp;&#92;<br />&nbsp;&nbsp;—data&nbsp;'{"con
+tent":&nbsp;"Hello&nbsp;from&nbsp;curl.",&nbsp;"post_type":&nbsp;"post.note"}'</code></pre><p>/<span class="account" dat
+a-guid="07d2f4ec-545f-11e8-99a0-54ee758049c3">@matigo</span></p></body>
+
+There, it's barfing at char 138, which is the # in &#92;.
+This numeric character reference ought to be legit - it's ASCII decimal 92,
+which is the backslash.
+
+* POSTCELL: WARNING: Failed to create URL from HREF: http://{name}.10centuries.org - in post with ID Optional("705c15ab-f5d7-d329-1d32-017e3d880173")
+
+Expected - there's a fake URL in there with a placeholder from Matigo.
+
+---
+
+Example post:
+
+curl -H'Accept: application/json' -H"Authorization: $tenc_auth" https://nice.social/api/posts/write -XPOST -H'Content-Type: application/json' --data '{"content": "Hello from curl.", "post_type": "post.note"}'
+{"meta":{"code":200,"text":false,"list":false,"more":false},"data":[{"guid":"edc0ff1a-27b2-5f45-e9fe-df8ec462f762","type":"post.note","thread":{"guid":"edc0ff1a-27b2-5f45-e9fe-df8ec462f762","count":1},"privacy":"visibility.public","persona":{"guid":"15e9cdba-9407-11e8-bbd7-54ee758049c3","as":"@jws","name":"jws","avatar":"https:\/\/jws.10centuries.org\/avatars\/jws.jpeg","follow":{"url":"https:\/\/jws.10centuries.org\/feeds\/jws.json","rss":"https:\/\/jws.10centuries.org\/feeds\/jws.xml"},"is_active":true,"is_you":true,"profile_url":"https:\/\/jws.10centuries.org\/profile\/jws","created_at":"2016-02-17T04:05:36Z","created_unix":1455681936,"updated_at":"2018-07-30T14:44:38Z","updated_unix":1532961878},"title":false,"content":"<p>Hello from curl.<\/p>","text":"Hello from curl.","publish_at":"2019-04-19T02:19:08Z","publish_unix":1555640348,"expires_at":false,"expires_unix":false,"updated_at":"2019-04-19T02:19:08Z","updated_unix":1555640348,"meta":false,"tags":false,"mentions":false,"canonical_url":"https:\/\/jws.10centuries.org\/note\/edc0ff1a-27b2-5f45-e9fe-df8ec462f762","slug":"edc0ff1a-27b2-5f45-e9fe-df8ec462f762","reply_to":false,"class":"h-entry","attributes":{"pin":"pin.none","starred":false,"muted":false,"points":0},"channel":{"guid":"73d46790-9409-11e8-bbd7-54ee758049c3","name":"A Lovely 10Centuries Blog","type":"channel.site","privacy":"visibility.public","created_at":"2018-07-30T15:01:35Z","created_unix":1532962895,"updated_at":"2018-07-30T15:01:35Z","updated_unix":1532962895},"site":{"guid":"436255ec-1549-cc18-e019-8acfa79faab9","name":"A Lovely 10Centuries Blog","description":"","keywords":"","url":"https:\/\/jws.10centuries.org"},"client":{"guid":"7677e4c0-545e-11e8-99a0-54ee758049c3","name":"Default Client","logo":"https:\/\/jws.10centuries.org\/images\/default.png"},"can_edit":true}]}

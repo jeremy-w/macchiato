@@ -21,6 +21,16 @@ class TenCenturiesSessionManager {
         user = TenCenturiesSessionManager.load(account: account)
     }
 
+    func destroySession() {
+        guard let user = user else { return }
+
+        print("AUTH: WARNING: Destroying session for account=«\(user.account)»")
+        Keychain.delete(account: user.account, service: "10Centuries")
+
+        let userWithoutPassword = User(account: user.account, token: "")
+        self.user = userWithoutPassword
+    }
+
     struct User {
         /// Confusingly, this is actually an email address. But it might not always be!
         let account: String
@@ -31,6 +41,10 @@ class TenCenturiesSessionManager {
 
 // MARK: - Authenticates requests
 extension TenCenturiesSessionManager: RequestAuthenticator {
+    var canAuthenticate: Bool {
+        return user?.token != nil
+    }
+
     func authenticate(request unauthenticated: URLRequest) -> URLRequest {
         guard let token = user?.token else { return unauthenticated }
 
@@ -101,7 +115,7 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     var authenticator: RequestAuthenticator { return self }
 
     func logOut() {
-        var request = URLRequest(url: URL(string: "/auth/logout", relativeTo: TenCenturies.baseURL)!)
+        var request = URLRequest(url: URL(string: "/api/auth/logout", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
         /*
          If you're already logged out, you'll see:
@@ -130,12 +144,15 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
     }
 
     func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void) {
-        var request = URLRequest(url: URL(string: "/auth/login", relativeTo: TenCenturies.baseURL)!)
+        var request = URLRequest(url: URL(string: "/api/auth/login", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
+        let niceDotSocialClientGuid = "7677e4c0-545e-11e8-99a0-54ee758049c3"
         request.attachURLEncodedFormData([
-            URLQueryItem(name: "client_guid", value: clientGUID),
-            URLQueryItem(name: "acctname", value: account),
-            URLQueryItem(name: "acctpass", value: password)
+            // 10Cv5 only has one client so far. And anyone can yank the GUID out of the Nice.social page.
+            URLQueryItem(name: "client_guid", value: niceDotSocialClientGuid),
+            URLQueryItem(name: "account_name", value: account),
+            URLQueryItem(name: "account_pass", value: password),
+            URLQueryItem(name: "channel_guid", value: "889ab024-90a8-11e8-bbd7-54ee758049c3")
             ])
         let _ = send(request: request) { (result) in
             let result = Result.of { () -> Bool in
@@ -149,5 +166,40 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
             }
             completion(result)
         }
+    }
+
+    func destroySessionIfExpired(completion: @escaping (Account?) -> Void) {
+        guard canAuthenticate else {
+            return completion(nil)
+        }
+
+        var request = URLRequest(url: URL(string: "/api/auth/status", relativeTo: TenCenturies.baseURL)!)
+        request.httpMethod = "POST"
+        let _ = send(request: request) { (result) in
+            switch (result) {
+            case let .failure(error):
+                print("DEBUG: /api/auth/status responded with an error:", error)
+                if let error = error as? TenCenturiesError, case let .api(_, text, _) = error {
+                    // There aren't any error codes, just strings. But we don't want to sign someone out accidentally.
+                    if text == "Invalid or Expired Token Supplied" {
+                        self.destroySession()
+                    }
+                    // otherwise, we'll be able to try again later.
+                }
+                return completion(nil)
+
+            case let .success(jsonDictionary):
+                print("DEBUG: /api/auth/status completed successfully. We must still be logged-in!")
+                let account = self.parseAccountFromAuthStatusResponse(jsonDictionary)
+                return completion(account)
+            }
+        }
+    }
+
+    func parseAccountFromAuthStatusResponse(_ jsonDictionary: JSONDictionary) -> Account {
+        // (jeremy-w/2019-04-18)FIXME: This is totally not implemented. And…maybe it doesn't matter. Are we not using this anywhere?
+        print("TODO: Actually parse account from auth status response. For now, punting with a fake account.")
+        _ = jsonDictionary
+        return Account.makeFake()
     }
 }

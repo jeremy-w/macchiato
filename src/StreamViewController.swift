@@ -63,6 +63,8 @@ class StreamViewController: UITableViewController {
     }
 
     var isLoggedIn: Bool {
+        // (jeremy-w/2019-04-18)FIXME: As long as we have valid auth token, we can post. Even if we can't fetch Account.
+        // This is why my "Account.makeFake()" as identity.account hack works so well.
         return identity.account != nil
     }
 
@@ -138,17 +140,18 @@ class StreamViewController: UITableViewController {
     }
 
     func header(for post: Post) -> UIView? {
-        if post.originalPost != nil {
-            let repostFormat = NSLocalizedString("Reposted by: @%@", comment: "%@ is username")
-            let author = String.localizedStringWithFormat(repostFormat, post.account.username)
-
-            let banner = BylineView.makeView()
-            banner.configure(imageURL: post.account.avatarURL, author: author, date: post.published)
-            return banner
+        let isRepost = post.originalPost != nil
+        if isRepost {
+            return buildRepostBanner(reposter: post.account, repostDate: post.published)
         }
 
-        guard stream?.view == .interactions else { return nil }
+        let isSpecificallyHighlightingPostInteractions = stream?.view == .interactions
+        guard isSpecificallyHighlightingPostInteractions else { return nil }
 
+        return labelDescribingInteractionsWithLoggedInUsersPost(post)
+    }
+
+    func labelDescribingInteractionsWithLoggedInUsersPost(_ post: Post) -> UILabel? {
         let names = post.stars.map({ $0.userAtName })
         guard !names.isEmpty else { return nil }
 
@@ -167,6 +170,15 @@ class StreamViewController: UITableViewController {
 
         label.text = text
         return label
+    }
+
+    func buildRepostBanner(reposter account: Account, repostDate: Date) -> BylineView {
+        let repostFormat = NSLocalizedString("Reposted by: @%@", comment: "%@ is username")
+        let author = String.localizedStringWithFormat(repostFormat, account.username)
+
+        let banner = BylineView.makeView()
+        banner.configure(imageURL: account.avatarURL, author: author, date: repostDate)
+        return banner
     }
 
 
@@ -207,7 +219,7 @@ class StreamViewController: UITableViewController {
         if case let TenCenturiesError.api(code: _, text: text, comment: _) = error {
             DispatchQueue.main.async {
                 let alert = UIAlertController(title: text, message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: nil, style: .default, handler: nil))
+                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "button"), style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
         }

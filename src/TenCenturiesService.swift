@@ -1,7 +1,7 @@
 import Foundation
 
 enum TenCenturies {
-    static let baseURL = URL(string: "https://api.10centuries.org")!
+    static let baseURL = URL(string: "https://nice.social")!
 }
 
 /**

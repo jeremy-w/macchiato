@@ -3,6 +3,21 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 2.0 (23) - 2019-04-XX
+Fixed:
+
+- Crash when attempting to show a 10Centuries error message.
+
+Changed:
+
+- Supports 10Cv5 rather than 10Cv4.
+
+New:
+
+- Displays any non-empty post title above the post.
+- Displays any post geo-tag info in post attributes.
+
+
 ### 1.0 (22) - 2019-03-29
 Removed:
 

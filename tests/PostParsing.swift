@@ -11,8 +11,9 @@ class PostParsing: XCTestCase {
                 return XCTFail("failed to parse any thread info from post")
             }
 
-            XCTAssertEqual(thread.root, "78779", "failed to correctly parse threadID AKA root")
-            XCTAssertEqual(thread.replyTo, "78786", "failed to correctly parse replyTo")
+            XCTAssertEqual(thread.root, "a7a4b37c-2a87-c758-4d5a-6aa5920eaf07", "failed to correctly parse .thread.guid aka thread.root")
+            // (jeremy-w/2019-04-12)TODO: To handle decentralization, this will need to become a URL.
+            XCTAssertEqual(thread.replyTo, "https://phoneboy.info/note/a7a4b37c-2a87-c758-4d5a-6aa5920eaf07", "failed to correctly parse .reply_to")
         } catch {
             return XCTFail("parsing failed completely: \(error)")
         }
@@ -22,10 +23,9 @@ class PostParsing: XCTestCase {
         do {
             let post = try subject.parsePost(from: capturedPostWithThreadInfo)
             let expected = [
-                Post.Mention(name: "skematica", id: "12", current: "skematica"),
-                Post.Mention(name: "larand", id: "26", current: "larand"),
+                Post.Mention(name: "phoneboy", id: "15e9a17d-9407-11e8-bbd7-54ee758049c3", current: "phoneboy", isYou: false),
             ]
-            XCTAssertEqual(post.mentions.count, expected.count, "count of mentions doesn't match")
+            XCTAssertEqual(post.mentions.count, expected.count, "count of mentions doesn't match mentions=\(post.mentions)")
             for (i, (actual, intended)) in zip(post.mentions, expected).enumerated() {
                 XCTAssertEqual(actual, intended, "bogus mention parsing at index \(i)")
             }
@@ -36,26 +36,20 @@ class PostParsing: XCTestCase {
 
     func testParsingAccount() {
         do {
-            let post = try subject.parsePost(from: capturedPostWithThreadInfo)
-            XCTAssertEqual(post.author, "gtwilson", "author")
-            XCTAssertEqual(post.account.id, "91", "id")
-            XCTAssertEqual(post.account.avatarURL, URL(string: "https://cdn.10centuries.org/p7E6pB/6bce7312df48d9061391d17301b04192.jpg")!, "avatar URL")
-            XCTAssertEqual(post.account.counts, [
-                "following": 38,
-                "followers": 22,
-                "stars": 77,
-                "tinyposts": 494,
-                "microposts": 1065,
-                "shortposts": 261,
-                "longposts": 4,
-                "blogposts": 4,
-                "podcasts": 0], "counts")
+            let rawAccount = try unpack(capturedPostWithThreadInfo, "persona") as JSONDictionary
+            let account = try TenCenturiesAccountRepository.parseAccount(from: rawAccount)
+            XCTAssertEqual(account.username, "matigo", ".persona.as should become post.author aka post.account.username")
+            XCTAssertEqual(account.id, "07d2f4ec-545f-11e8-99a0-54ee758049c3", ".guid should become post.id")
+            XCTAssertEqual(account.avatarURL, URL(string: "https://matigo.ca/avatars/jason_fox_box.jpg")!, ".persona.avatar should become post.account.avatarURL")
+            /* (jeremy-w/2019-04-12)TODO: Delete Account.counts field */
+            XCTAssertEqual(account.counts, [:], "counts does not exist in 10Cv5")
         } catch {
             return XCTFail("parsing failed completely: \(error)")
         }
     }
 
     func testParsingPostWithVisibilityNoneSkipsPost() {
+        // (jeremy-w/2019-04-12)FIXME: Needs updating for v5
         guard let exampleHiddenPost = (try? unjson(string: "{\n"
             + "   \"id\": 111724,\n"
             + "   \"is_visible\": false,\n"
@@ -86,12 +80,181 @@ class PostParsing: XCTestCase {
         }
     }
 
+    func testParsingPostId() {
+        let result = Result.of { return try subject.parsePost(from: capturedPostWithThreadInfo) }
+        guard case let .success(post) = result else {
+            return XCTFail("parsing failed with error: \(result)")
+        }
+        XCTAssertEqual(post.id, "ffd9955a-9b51-d2cd-bc53-4d70673f8e3a", "should treat .guid as post.id")
+    }
+
+    func testParsingMarkdown() {
+        do {
+            let post = try subject.parsePost(from: exampleLoggedOutPost)
+            XCTAssertEqual(post.content, "@larand cool. Let me know if there\u{2019}s anything not quite right. There will be more updates rolling out in about 11 hours.")
+        } catch {
+            return XCTFail("parsing failed: \(error)")
+        }
+    }
+
+    func testParsingClientName() {
+        do {
+            let clientName = try subject.parseClientName(from: capturedPostWithThreadInfo)
+            XCTAssertEqual(clientName, "Default Client")
+        } catch {
+            return XCTFail("parsing failed: \(error)")
+        }
+    }
+
+    func testParsingGeo() {
+        let geoJsonString = "{\"meta\":{\"geo\":{\"longitude\":false,\"latitude\":false,\"altitude\":false,\"description\":\"@Toys R Us\"}}}"
+        let geoDict = try! unjson(string: geoJsonString) as! JSONDictionary
+        let geo = subject.parseGeo(from: geoDict)
+        XCTAssertEqual(geo, Post.Geo(name: "@Toys R Us", latitude: nil, longitude: nil, altitude: nil))
+    }
+
+    func testParsingTitle() {
+        let result = Result.of { return try subject.parsePost(from: capturedPostWithThreadInfo) }
+        guard case let .success(post) = result else {
+            return XCTFail("parsing failed with error: \(result)")
+        }
+        XCTAssertEqual(post.title, "either a title or boolean false")
+    }
+
     var capturedPostWithThreadInfo: JSONDictionary {
-        return try! unjson(string: "{\n  \"id\": 78788,\n  \"parent_id\": false,\n  \"title\": \"\",\n  \"slug\": \"78788\",\n  \"type\": \"post.micro\",\n  \"privacy\": \"visibility.public\",\n  \"guid\": \"1ea3ce889bb872499d339d572834f765aa1c8a27\",\n  \"content\": {\n    \"text\": \"@larand Well, he did manage to hit the moon eventually. \\n\\n\\/\\/ @skematica\",\n    \"html\": \"<p><span class=\\\"account\\\" data-account-id=\\\"26\\\"><span class=\\\"account\\\" data-account-id=\\\"26\\\">@larand<\\/span><\\/span> Well, he did manage to hit the moon eventually.<\\/p><p>\\/\\/ <span class=\\\"account\\\" data-account-id=\\\"12\\\">@skematica<\\/span><\\/p>\",\n    \"summary\": false,\n    \"banner\": false,\n    \"is_edited\": false\n  },\n  \"audio\": false,\n  \"tags\": false,\n  \"files\": false,\n  \"urls\": {\n    \"canonical_url\": \"\\/post\\/78788\",\n    \"full_url\": \"10centuries.org\\/post\\/78788\",\n    \"alt_url\": \"10centuries.org\\/78788\",\n    \"is_https\": true\n  },\n  \"thread\": {\n    \"thread_id\": 78779,\n    \"reply_to\": 78786,\n    \"is_selected\": false\n  },\n  \"mentions\": [\n    {\n      \"id\": 12,\n      \"name\": \"@skematica\",\n      \"current\": \"@skematica\"\n    },\n    {\n      \"id\": 26,\n      \"name\": \"@larand\",\n      \"current\": \"@larand\"\n    }\n  ],\n  \"account\": [\n    {\n      \"id\": 91,\n      \"avatar_url\": \"\\/\\/cdn.10centuries.org\\/p7E6pB\\/6bce7312df48d9061391d17301b04192.jpg\",\n      \"username\": \"gtwilson\",\n      \"canonical_url\": \"https:\\/\\/10centuries.org\\/profile\\/gtwilson\",\n      \"podcast_rss\": false,\n      \"name\": {\n        \"first_name\": \"Tom\",\n        \"last_name\": \"Wilson\",\n        \"display\": \"Tom Wilson\"\n      },\n      \"counts\": {\n        \"following\": 38,\n        \"followers\": 22,\n        \"stars\": 77,\n        \"tinyposts\": 494,\n        \"microposts\": 1065,\n        \"shortposts\": 261,\n        \"longposts\": 4,\n        \"blogposts\": 4,\n        \"podcasts\": 0\n      },\n      \"description\": {\n        \"text\": \"Software developer. Husband. Wage slave.\\nhttp:\\/\\/eee-eye-eee.io\",\n        \"html\": \"<p>Software developer. Husband. Wage slave.<br \\/> <a target=\\\"_blank\\\" href=\\\"http:\\/\\/eee-eye-eee.io\\\">http:\\/\\/eee-eye-eee.io<\\/a><\\/p>\"\n      },\n      \"created_at\": \"2016-09-06T18:48:25Z\",\n      \"timezone\": \"US\\/Eastern\",\n      \"verified\": {\n        \"is_verified\": false,\n        \"url\": \"\"\n      },\n      \"annotations\": false,\n      \"cover_image\": false,\n      \"evangelist\": false,\n      \"follows_you\": true,\n      \"you_follow\": true,\n      \"is_muted\": false,\n      \"is_silenced\": false\n    }\n  ],\n  \"channel\": {\n    \"id\": 1,\n    \"owner_id\": false,\n    \"type\": \"channel.global\",\n    \"privacy\": \"visibility.public\",\n    \"guid\": \"d9ba5a8d768d0dbd9fc9c3ea4c8e183b2aa7336c\",\n    \"created_at\": \"2015-08-01T00:00:00Z\",\n    \"created_unix\": 1438387200,\n    \"updated_at\": \"2015-08-01T00:00:00Z\",\n    \"updated_unix\": 1438387200\n  },\n  \"client\": {\n    \"hash\": \"a4e797c491b139358ab6d58acf7f11733102cc9c\",\n    \"name\": \"Cappuccino\"\n  },\n  \"created_at\": \"2016-10-09T18:11:52Z\",\n  \"created_unix\": 1476036712,\n  \"publish_at\": \"2016-10-09T18:11:52Z\",\n  \"publish_unix\": 1476036712,\n  \"updated_at\": \"2016-10-09T18:11:52Z\",\n  \"updated_unix\": 1476036712,\n  \"expires_at\": false,\n  \"expires_unix\": false,\n  \"is_mention\": false,\n  \"you_starred\": false,\n  \"you_pinned\": false,\n  \"you_reposted\": false,\n  \"reposts\": 0,\n  \"stars\": false,\n  \"parent\": false,\n  \"is_visible\": true,\n  \"is_muted\": false,\n  \"is_deleted\": false\n}") as! [String: Any]
+        /*
+         This is the result of:
+                curl -H'accept: application/json' https://matigo.ca/api/post/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a | jq .data[0]
+
+         Found by munging the canonical URL of:
+                https://matigo.ca/note/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a
+
+         from thread:
+                https://nice.social/api/posts/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a/thread?simple=Y
+         */
+        return try! unjson(string: """
+            {
+             "guid": "ffd9955a-9b51-d2cd-bc53-4d70673f8e3a",
+             "type": "post.note",
+             "thread": {
+               "guid": "a7a4b37c-2a87-c758-4d5a-6aa5920eaf07",
+               "count": 4
+             },
+             "privacy": "visibility.public",
+             "persona": {
+               "guid": "07d2f4ec-545f-11e8-99a0-54ee758049c3",
+               "as": "@matigo",
+               "name": "Jason",
+               "avatar": "https://matigo.ca/avatars/jason_fox_box.jpg",
+               "follow": {
+                 "url": "https://matigo.ca/feeds/matigo.json",
+                 "rss": "https://matigo.ca/feeds/matigo.xml"
+               },
+               "is_active": true,
+               "is_you": false,
+               "profile_url": "https://matigo.ca/profile/matigo",
+               "created_at": "2012-08-01T00:00:00Z",
+               "created_unix": 1343779200,
+               "updated_at": "2018-05-17T19:07:26Z",
+               "updated_unix": 1526584046
+             },
+             "title": "either a title or boolean false",
+             "content": "<p><span class=\\"account\\" data-guid=\\"15e9a17d-9407-11e8-bbd7-54ee758049c3\\">@phoneboy</span> you use it for your own site. That said, it's now an optional variable. If you do not pass a <code>persona_guid</code> or <code>channel_guid</code>, then the defaults associated with the Account (based on the Auth Token) will be used.</p> <p>All you need to pass when publishing now is:</p> <p><code>content</code>: what you want to say<br><code>post_type</code>: what is it (post.note, post.article, post.bookmark, post.quotation)</p>",
+             "text": "@phoneboy you use it for your own site. That said, it's now an optional variable. If you do not pass a `persona_guid` or `channel_guid`, then the defaults associated with the Account (based on the Auth Token) will be used.\\n\\nAll you need to pass when publishing now is:\\n\\n`content`: what you want to say\\n`post_type`: what is it (post.note, post.article, post.bookmark, post.quotation)",
+             "publish_at": "2019-04-12T14:04:25Z",
+             "publish_unix": 1555077865,
+             "expires_at": false,
+             "expires_unix": false,
+             "updated_at": "2019-04-12T14:04:25Z",
+             "updated_unix": 1555077865,
+             "meta": false,
+             "tags": false,
+             "mentions": {
+               "guid": "15e9a17d-9407-11e8-bbd7-54ee758049c3",
+               "as": "@phoneboy",
+               "is_you": false
+             },
+             "canonical_url": "https://matigo.ca/note/ffd9955a-9b51-d2cd-bc53-4d70673f8e3a",
+             "slug": "ffd9955a-9b51-d2cd-bc53-4d70673f8e3a",
+             "reply_to": "https://phoneboy.info/note/a7a4b37c-2a87-c758-4d5a-6aa5920eaf07",
+             "class": "h-entry p-in-reply-to",
+             "attributes": {
+               "pin": "pin.none",
+               "starred": false,
+               "muted": false,
+               "points": 0
+             },
+             "channel": {
+               "guid": "91c46924-5461-11e8-99a0-54ee758049c3",
+               "name": "Matigo dot See, eh?",
+               "type": "channel.site",
+               "privacy": "visibility.public",
+               "created_at": "2018-05-10T14:51:06Z",
+               "created_unix": 1525963866,
+               "updated_at": "2019-04-03T16:24:17Z",
+               "updated_unix": 1554308657
+             },
+             "site": {
+               "guid": "cc5346ea-9358-df5c-90ea-e27c343e4843",
+               "name": "Matigo dot See, eh?",
+               "description": "The Semi-Coherent Ramblings of a Canadian in Asia",
+               "keywords": "matigo, 10C, v5, development, dev",
+               "url": "https://matigo.ca"
+             },
+             "client": {
+               "guid": "7677e4c0-545e-11e8-99a0-54ee758049c3",
+               "name": "Default Client",
+               "logo": "https://matigo.ca/images/default.png"
+             },
+             "can_edit": false
+            }
+            """) as! [String: Any]
+    }
+
+    /**
+     Appears to omit: site, channel, client, attributes.
+     */
+    var exampleLoggedOutPost: JSONDictionary {
+        return try! PropertyListSerialization.propertyList(from: """
+        {
+            "canonical_url" = "https://matigo.ca/note/dcca727e-6bd9-433c-1284-e989073bdc1c";
+            content = "<p><span class=\\"account\\" data-guid=\\"0f3bca0a-5932-11e8-b49f-54ee758049c3\\">@larand</span> cool. Let me know if there\\U2019s anything not quite right. There will be more updates rolling out in about 11 hours.</p>";
+            "expires_at" = 0;
+            "expires_unix" = 0;
+            guid = "dcca727e-6bd9-433c-1284-e989073bdc1c";
+            mentions =     {
+                as = "@larand";
+                guid = "0f3bca0a-5932-11e8-b49f-54ee758049c3";
+                "is_you" = 0;
+            };
+            meta = 0;
+            persona =     {
+                as = "@matigo";
+                avatar = "https://matigo.ca/avatars/jason_fox_box.jpg";
+                guid = "07d2f4ec-545f-11e8-99a0-54ee758049c3";
+                "is_you" = 0;
+                name = Jason;
+                "profile_url" = "https://matigo.ca/07d2f4ec-545f-11e8-99a0-54ee758049c3/profile";
+                "you_follow" = 0;
+            };
+            privacy = "visibility.public";
+            "publish_at" = "2019-04-13T02:52:41Z";
+            "publish_unix" = 1555123961;
+            "reply_to" = "https://larryanderson.org/note/659c083b-c4b9-845c-e269-8d26b3abfe82";
+            tags = 0;
+            text = "@larand cool. Let me know if there\\U2019s anything not quite right. There will be more updates rolling out in about 11 hours.";
+            title = 0;
+            type = "post.note";
+            "updated_at" = "2019-04-13T02:52:41Z";
+            "updated_unix" = 1555123961;
+        }
+        """.data(using: .utf8)!, options: [], format: nil) as! JSONDictionary
     }
 }
 
 struct DummyRequestAuthenticator: RequestAuthenticator {
+    var canAuthenticate = true
+
     func authenticate(request: URLRequest) -> URLRequest {
         return request
     }

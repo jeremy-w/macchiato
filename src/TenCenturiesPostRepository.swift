@@ -23,33 +23,31 @@ extension Stream.View {
     var path: String {
         switch self {
         case .global:
-            return "/content/blurbs/global"
+            return "/api/posts/global"
 
         case .home:
-            return "/content/blurbs/home"
+            return "/api/posts/home"
 
         case .pinned:
-            return "/content/blurbs/pins"
+            return "/api/posts/pins"
 
         case .mentions:
-            return "/content/blurbs/mentions"
+            return "/api/posts/mentions"
 
         case .interactions:
-            return "/content/blurbs/interactions"
+            return "/api/posts/interactions"
 
         case .starters:
-            return "/content/blurbs/starters"
+            return "/api/posts/starters"
 
         case .private_:
-            return "/content/blurbs/private"
+            return "/api/posts/private"
 
         case .starred:
-            return "/content/blurbs/stars"
+            return "/api/posts/stars"
 
-        case .thread:
-            // Requires -d post_id=post.thread.root
-            // Alternatively, hit /content/social/thread with -d thread_id=post.thread.root.
-            return "/content/blurbs/thread"
+        case let .thread(root):
+            return "/api/posts/\(root)/thread"
         }
     }
 
@@ -76,11 +74,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     // MARK: - Parses posts from a stream
     // (@jeremy-w/2016-10-09)TODO: Handle since_id, prefix new posts
     func find(stream: Stream, options: [PostRepositoryFindOption] = [], completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: stream.view.path, relativeTo: TenCenturies.baseURL)!
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-        let query = queryItems(for: options) + stream.view.queryItems
-        components.queryItems = query.isEmpty ? nil : query
-        let request = URLRequest(url: components.url!)
+        let request = URLRequest(url: type(of: self).url(for: stream.view, with: options))
 
         let _ = send(request: request) { result in
             let result = Result.of { () -> [Post] in
@@ -93,7 +87,19 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
     }
 
-    func queryItems(for options: [PostRepositoryFindOption]) -> [URLQueryItem] {
+    static func url(for view: Stream.View, with options: [PostRepositoryFindOption] = []) -> URL {
+        // 10Cv5 example for global:
+        // https://nice.social/api/posts/global?types=post.article,post.blog,post.bookmark,post.note,post.photo,post.quotation,post.todo&since=1554925972&count=75
+        let url = URL(string: view.path, relativeTo: TenCenturies.baseURL)!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        // (jeremy-w/2019-04-13)TODO: 10Cv5: Let the user opt out of seeing some kinds of posts.
+        let postKindsSelectedByUserOneDayMaybe = Set(Post.Flavor.allCases).streamQueryItem
+        let query = queryItems(for: options) + view.queryItems + [postKindsSelectedByUserOneDayMaybe]
+        components.queryItems = query.isEmpty ? nil : query
+        return components.url!
+    }
+
+    static func queryItems(for options: [PostRepositoryFindOption]) -> [URLQueryItem] {
         return options.map { (option: PostRepositoryFindOption) -> URLQueryItem in
             switch option {
             case let .atMost(count):
@@ -104,6 +110,9 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
             case let .after(date):
                 return URLQueryItem(name: "since_unix", value: String(describing: date.timeIntervalSince1970))
+
+            case let .flavors(flavors):
+                return flavors.streamQueryItem
             }
         }
     }
@@ -121,52 +130,52 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func parsePost(from post: JSONDictionary) throws -> Post {
-        let postID = String(describing: try unpack(post, "id") as Any)
-        let you = try parseYou(from: post)
+        let postID = String(describing: try unpack(post, "guid") as Any)
+
+        // (2019-04-12)!!!: Likely bug: "mentions" can be an object, not an array, when there's just one
+        let mentions: [Post.Mention]
+        if let rawMentionsArray = try? unpack(post, "mentions") as [JSONDictionary],
+            let parsedMentions = try? parseMentions(from: rawMentionsArray) {
+            mentions = parsedMentions
+        } else if let rawSingularMention = try? unpack(post, "mentions") as JSONDictionary,
+            let mention = try? parse(mention: rawSingularMention) {
+            mentions = [mention]
+        } else {
+            mentions = []
+        }
+
+        let geo = parseGeo(from: post)
+        let title = (try? unpack(post, "title") as String) ?? ""
+
+        let you = try parseYou(from: post, mentions: mentions)
         let isPrivate = you.cannotSee
 
-        let accounts = try unpack(post, "account", default: []) as [JSONDictionary]
-        let account: Account?
+        let rawAccount = try unpack(post, "persona", default: [:]) as JSONDictionary
+        let account: Account
         do {
-            account = try accounts.first.map { try TenCenturiesAccountRepository.parseAccount(from: $0) }
+            account = try TenCenturiesAccountRepository.parseAccount(from: rawAccount)
         } catch {
-            print("PARSE: ERROR: Failed to parse account from \(accounts): \(error)")
+            // (jeremy-w/2019-04-12)TODO: Could a post's author be somehow private, so that we need a private account placeholder?
+            // Hard to encounter the edge cases around post visibility.
+            print("PARSE: ERROR: Failed to parse account from \(rawAccount): \(error)")
             account = Account.makeFake()
         }
 
-        // Doing try? "thread" then try? wrapper.map leads to a doubly-optional (String, String)??
-        // as the Optional.map and try? gang-up on things. Yuck. Could flatMap at the end, but pretty unreadable by that point.
         let thread: (root: String, replyTo: String)?
         do {
-            let wrapper: JSONDictionary = try unpack(post, "thread")
-            func cast(_ value: Double) -> String {
-                return String(UInt64(value))
-            }
-            thread = try (root: cast(unpack(wrapper, "thread_id")), replyTo: cast(unpack(wrapper, "reply_to")))
+            let rootGUID = try unpack(unpack(post, "thread"), "guid") as String
+            let replyToURL = try unpack(post, "reply_to") as String
+            thread = (root: rootGUID, replyTo: replyToURL)
         } catch {
             thread = nil
         }
 
-        let mentions: [JSONDictionary]
-        do {
-            mentions = try unpack(post, "mentions")
-        } catch {
-            mentions = []
-        }
-
-        var lacksContent = true
-        let markdown: String?
-        let html: String?
-        if let content = try? unpack(post, "content") as JSONDictionary {
-            markdown = try? unpack(content, "text")
-            html = try? unpack(content, "html")
-            lacksContent = false
-        } else if isPrivate {
+        var html = try? unpack(post, "content") as String
+        var markdown = try? unpack(post, "text") as String
+        let lacksContent = html != nil && markdown != nil
+        if lacksContent && isPrivate {
             markdown = NSLocalizedString("*Post Is Private*", comment: "private post Markdown content")
             html = NSLocalizedString("<em>Post Is Private</em>", comment: "private post HTML content")
-        } else {
-            markdown = nil
-            html = nil
         }
 
         if isPrivate && lacksContent {
@@ -186,46 +195,102 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
 
         let defaultDate = Date()
-        let created = Date(timeIntervalSince1970: (try? unpack(post, "created_unix")) ?? defaultDate.timeIntervalSince1970)
         let updated = Date(timeIntervalSince1970: (try? unpack(post, "updated_unix")) ?? defaultDate.timeIntervalSince1970)
         let published = Date(timeIntervalSince1970: (try? unpack(post, "publish_unix")) ?? defaultDate.timeIntervalSince1970)
+        // (jeremy-w/2019-04-12)TODO: Confirm 10Cv5 dropped "created_unix" from Post
+        let created = (try? unpack(post, "created_unix") as TimeInterval).map(Date.init(timeIntervalSince1970:)) ?? published
 
         let stars = parseStars(from: post["stars"])
+        // (jeremy-w/2019-04-12)TODO: Add 10v5 "title" field to Post and show it
         return Post(
             id: postID,
-            account: account ?? (isPrivate ? Account.makePrivate() : Account.makeFake()),
+            account: account,
             content: markdown ?? "—",
             html: html ?? "<p>—</p>",
             privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
             parentID: (parent != nil) ? parentID : String?.none,
-            client: (try? unpack(unpack(post, "client"), "name")) ?? "—",
-            mentions: (try? parseMentions(from: mentions)) ?? [],
+            client: (try? parseClientName(from: post)),
+            mentions: mentions,
             created: created,
             updated: updated,
             published: published,
             deleted: (try? unpack(post, "is_deleted")) ?? false,
             you: you,
             stars: stars,
-            parent: parent)
+            parent: parent,
+            geo: geo,
+            title: title)
     }
 
-    func parseYou(from post: JSONDictionary) throws -> Post.You {
-        // Invisible posts have only visible, muted, and deleted.
-        let pinColor: Post.PinColor?
-        if let pinned = post["you_pinned"] {
-            pinColor = parseYouPinned(pinned)
-        } else {
-            pinColor = nil
+    func parseGeo(from post: JSONDictionary) -> Post.Geo? {
+        guard let geo = try? unpack(unpack(post, "meta"), "geo") as JSONDictionary else {
+            return nil
         }
 
+        let name = try? unpack(geo, "description") as String
+
+        // 10Cv5 sends "false" for missing values.
+        // That coerces to Double as 0.0. And answers yes to `is Double`. Yay.
+        // I'm not convinced we'll still parse an actual lat/lon or altitude of 0 correctly. :(
+        let lat: Double? = geo["latitude"] is Bool ? nil : try? unpack(geo, "latitude")
+        let lng: Double? = geo["longitude"] is Bool ? nil : try? unpack(geo, "longitude")
+        let altitude: Double? = geo["altitude"] is Bool ? nil : try? unpack(geo, "altitude")
+
+        return Post.Geo(name: name ?? "", latitude: lat, longitude: lng, altitude: altitude)
+    }
+
+    func parseClientName(from post: JSONDictionary) throws -> String? {
+        guard let client = try? unpack(post, "client") as JSONDictionary else {
+            return nil
+        }
+
+        return try unpack(client, "name")
+    }
+
+    /**
+     Parses information about the logged-in user's relationship to the post.
+
+     If you're not logged-in, this is all dummy data.
+     */
+    func parseYou(from post: JSONDictionary, mentions: [Post.Mention]) throws -> Post.You {
+        // (jeremy-w/2019-04-12)TODO: Mark Post.you as optional.
+        /**
+         Example JSON:
+
+         ```
+             "attributes": {
+             "pin": "pin.none",
+             "starred": false,
+             "muted": false,
+             "points": 0
+         }
+         ```
+
+         I have no idea what "points" is.
+         */
+        let authored: Bool = (try? unpack(unpack(post, "persona"), "is_you")) ?? false
+        let wereMentioned = mentions.contains { $0.isYou }
+        guard let attributes = try? unpack(post, "attributes") as JSONDictionary else {
+            return Post.You(authored: authored, wereMentioned: wereMentioned, starred: false, pinned: nil, reposted: false, muted: false, cannotSee: false)
+        }
+
+        // Invisible posts have only visible, muted, and deleted.
+        let pinColor = attributes["pin"].flatMap(parseYouPinned)
+
         return Post.You(
-            wereMentioned: try unpack(post, "is_mention", default: false),
-            starred: try unpack(post, "you_starred", default: false),
+            authored: authored,
+            wereMentioned: wereMentioned,
+            starred: try unpack(attributes, "starred", default: false),
             pinned: pinColor,
-            reposted: try unpack(post, "you_reposted", default: false),  // docs say "you_reblurbed" but are wrong
-            muted: try unpack(post, "is_muted"),
-            cannotSee: try !unpack(post, "is_visible"))
+
+            // (jeremy-w/2019-04-12)TODO: Does 10Cv5 not have / track reposts?
+            reposted: false,
+
+            muted: try unpack(attributes, "muted", default: false),
+
+            // (jeremy-w/2019-04-12)TODO: Does 10Cv5 not have a dedicated "is_visible" field?
+            cannotSee: try !unpack(post, "visible", default: true))
     }
 
     func parseYouPinned(_ rawPinned: Any) -> Post.PinColor? {
@@ -251,10 +316,12 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             return String(string[string.index(after: string.startIndex)...])
         }
 
+        let name = stripPrefixedAtSign(from: try unpack(mention, "as"))
         return Post.Mention(
-            name: stripPrefixedAtSign(from: try unpack(mention, "name")),
-            id: String(describing: try unpack(mention, "id") as Any),
-            current: stripPrefixedAtSign(from: try unpack(mention, "current")))
+            name: name,
+            id: String(describing: try unpack(mention, "guid") as Any),
+            current: name,
+            isYou: try unpack(mention, "is_you", default: false))
     }
 
     func parseStars(from json: Any?) -> [Post.Star] {
@@ -282,7 +349,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Saves posts
     func save(post: EditingPost, completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: "/content/write", relativeTo: TenCenturies.baseURL)!
+        let url = URL(string: "/api/posts/write", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = json(for: post)
@@ -298,11 +365,17 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func json(for post: EditingPost) -> Data {
-        let json: JSONDictionary = [
+        var json: JSONDictionary = [
             "content": post.content,
-            "post_id": post.updating ?? "",
-            "reply_to": post.replyTo ?? "",
-            ]
+            "post_type": post.flavor.rawValue,
+        ]
+        if let updating = post.updating {
+            json["guid"] = updating
+        }
+        if let replyToURL = post.replyTo {
+            json["reply_to"] = replyToURL
+        }
+
         // swiftlint:disable:next force_try
         return try! JSONSerialization.data(withJSONObject: json, options: [])
     }
@@ -391,5 +464,12 @@ func hex(for pin: Post.PinColor) -> String {
     case .orange: return "#ffa500"
     case .red: return "#ff0000"
     case .yellow: return "#ffff00"
+    }
+}
+
+extension Set where Element == Post.Flavor {
+    var streamQueryItem: URLQueryItem {
+        let commaSeparatedFlavorStrings = self.map { $0.rawValue }.joined(separator: ",")
+        return URLQueryItem(name: "types", value: commaSeparatedFlavorStrings)
     }
 }

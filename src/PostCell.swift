@@ -54,8 +54,13 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
 
         if let topBin = topBin {
             emptyOut(topBin)
+
             headerView.map { topBin.addArrangedSubview($0) }
-            avatarToTopBin?.constant = (headerView != nil) ? 8 : 0
+
+            // Place any title last, so it's right by the post content.
+            self.buildPostTitleLabel(showing: post.title).map { topBin.addArrangedSubview($0) }
+
+            avatarToTopBin?.constant = topBin.arrangedSubviews.isEmpty ? 0 : 8
         }
 
         stackUpAdditionalInfo()
@@ -86,6 +91,20 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
         formatter.doesRelativeDateFormatting = true
         return formatter
     }()
+
+
+    // MARK: - Injects a title label above everything
+    func buildPostTitleLabel(showing title: String) -> UILabel? {
+        let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !title.isEmpty else { return nil }
+
+        let label = UILabel()
+        label.font = UIFont.preferredFont(forTextStyle: .title1, compatibleWith: self.traitCollection)
+        label.numberOfLines = 0
+        enableAutoContentSizeUpdates(for: label)
+        label.text = title
+        return label
+    }
 
 
     // MARK: - Alters background color to reflect mention status
@@ -147,15 +166,40 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
         return label
     }
 
+    static let geoFormatter = LengthFormatter()
+
     func info(from post: Post) -> [String] {
         var info = [String]()
+
         if post.created != post.published {
             info.append("created: \(PostCell.dateFormatter.string(from: post.created))")
         }
         if post.updated != post.created {
             info.append("updated: \(PostCell.dateFormatter.string(from: post.updated))")
         }
-        info.append("client: \(post.client)")
+
+        if let geo = post.geo {
+            var geoString = geo.name
+            if !geoString.isEmpty { geoString.append(" ") }
+
+            if geo.latitude != nil || geo.longitude != nil {
+                let lat = geo.latitude.map(String.init(describing:)) ?? "—"
+                let lon = geo.longitude.map(String.init(describing:)) ?? "—"
+
+                geoString.append(lat)
+                geoString.append("°,")
+                geoString.append(lon)
+                geoString.append("° ")
+            }
+
+            if let meters = geo.altitude {
+                let formattedAltitude = type(of: self).geoFormatter.string(fromMeters: meters)
+                geoString.append(formattedAltitude)
+            }
+
+            info.append(geoString)
+        }
+
         info.append("id: \(post.id)")
         if post.deleted { info.append("deleted!") }
         if let thread = post.thread {
@@ -164,6 +208,10 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
         }
         if let parentID = post.parentID {
             info.append("parent: \(parentID)")
+        }
+
+        if let client = post.client {
+            info.append("client: \(client)")
         }
 
         let you = post.you

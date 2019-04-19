@@ -13,4 +13,13 @@ class FakeSessionManager: SessionManager {
     init(loggedInAs email: String? = nil) {
         loggedInAccountName = email
     }
+
+    func destroySessionIfExpired(completion: @escaping (Account?) -> Void) {
+        guard let username = loggedInAccountName else {
+            return completion(nil)
+        }
+
+        let account = Account.makeFake(username: username)
+        completion(account)
+    }
 }
