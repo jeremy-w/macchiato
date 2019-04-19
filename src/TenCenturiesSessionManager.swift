@@ -148,7 +148,7 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
         request.httpMethod = "POST"
         let niceDotSocialClientGuid = "7677e4c0-545e-11e8-99a0-54ee758049c3"
         request.attachURLEncodedFormData([
-            // 10Cv5 doesn't seem to have client GUIDs yet.
+            // 10Cv5 only has one client so far. And anyone can yank the GUID out of the Nice.social page.
             URLQueryItem(name: "client_guid", value: niceDotSocialClientGuid),
             URLQueryItem(name: "account_name", value: account),
             URLQueryItem(name: "account_pass", value: password),
@@ -168,26 +168,38 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
         }
     }
 
-    /// Returns `true` when we had a valid session, but not any more.
-    func destroySessionIfExpired(completion: @escaping (Bool) -> Void) {
-        var didExpireSession = false
+    func destroySessionIfExpired(completion: @escaping (Account?) -> Void) {
         guard canAuthenticate else {
-            return completion(didExpireSession)
+            return completion(nil)
         }
 
         var request = URLRequest(url: URL(string: "/api/auth/status", relativeTo: TenCenturies.baseURL)!)
         request.httpMethod = "POST"
         let _ = send(request: request) { (result) in
-            if case let .failure(error) = result {
+            switch (result) {
+            case let .failure(error):
+                print("DEBUG: /api/auth/status responded with an error:", error)
                 if let error = error as? TenCenturiesError, case let .api(_, text, _) = error {
                     // There aren't any error codes, just strings. But we don't want to sign someone out accidentally.
                     if text == "Invalid or Expired Token Supplied" {
                         self.destroySession()
-                        didExpireSession = true
                     }
+                    // otherwise, we'll be able to try again later.
                 }
+                return completion(nil)
+
+            case let .success(jsonDictionary):
+                print("DEBUG: /api/auth/status completed successfully. We must still be logged-in!")
+                let account = self.parseAccountFromAuthStatusResponse(jsonDictionary)
+                return completion(account)
             }
-            completion(didExpireSession)
         }
+    }
+
+    func parseAccountFromAuthStatusResponse(_ jsonDictionary: JSONDictionary) -> Account {
+        // (jeremy-w/2019-04-18)FIXME: This is totally not implemented. And…maybe it doesn't matter. Are we not using this anywhere?
+        print("TODO: Actually parse account from auth status response. For now, punting with a fake account.")
+        _ = jsonDictionary
+        return Account.makeFake()
     }
 }

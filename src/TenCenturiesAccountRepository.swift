@@ -10,14 +10,7 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
 
 
     // MARK: - Retrieves accounts
-    func account(id: String, completion: @escaping (Result<Account>) -> Void) {
-        if id == "me" {
-            guard authenticator.canAuthenticate else {
-                let loginRequired = TenCenturiesError.other(message: NSLocalizedString("Log in in order to view your account info.", comment: "error text"), info: "requested account \"me\"")
-                return completion(.failure(loginRequired))
-            }
-        }
-
+    func bioForPersona(id: String, completion: @escaping (Result<Account>) -> Void) {
         let path = "/api/account/\(id)/bio"
         guard let url = URL(string: path, relativeTo: TenCenturies.baseURL) else {
             let badURL = TenCenturiesError.badURL(string: path, info: ["relativeTo": TenCenturies.baseURL])

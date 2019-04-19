@@ -1,11 +1,8 @@
 protocol AccountRepository {
     /**
-     - parameter id: The numeric ID of the user. (*Not* their handle.)
-
-       The special ID "me" fetches the logged-in user's info.
+     - parameter id: The numeric ID of the persona. (*Not* their handle.)
      */
-    func account(id: String, completion: @escaping (Result<Account>) -> Void)
-    // (jeremy-w/2019-04-14)FIXME: 10Cv5: There's now a public bio vs private profile distinction.
+    func bioForPersona(id: String, completion: @escaping (Result<Account>) -> Void)
 
     func follow(accountWithID: String, completion: @escaping (Result<Account>) -> Void)
     func unfollow(accountWithID: String, completion: @escaping (Result<Account>) -> Void)

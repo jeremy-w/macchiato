@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
         services = ServicePack.connectingTenCenturies(session: session)
         super.init()
-        beginFetchingCurrentUserAccount()
+        beginUpdatingIfCurrentUserAccountChanges()
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -35,11 +35,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
 
         wireUpUIPostLaunch()
-        services.sessionManager.destroySessionIfExpired { result in
-            print("AppDelegate.didFinishLaunching: Finished expired token check result=\(result). We may need to update UI more proactively on token change in future.")
-            self.identity.update(using: self.services.accountRepository)
-        }
+        confirmCurrentAccount()
         return true
+    }
+
+    func confirmCurrentAccount() {
+        services.sessionManager.destroySessionIfExpired { result in
+            print("AppDelegate.didFinishLaunching: Finished expired token check result=\(String(describing: result)). We may need to update UI more proactively on token change in future.")
+            guard  let account = result else { return }
+
+            self.identity.update(account: account)
+        }
     }
 
     func wireUpUIPostLaunch() {
@@ -52,15 +58,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     // MARK: - Tracks user's identity
     let identity = Identity()
     var loggedInUserDidChangeListener: Any?
-    func beginFetchingCurrentUserAccount() {
+    func beginUpdatingIfCurrentUserAccountChanges() {
         print("APP: DEBUG: Now listening for user account changes.")
         whenLoggedInUserChanges(then: { [weak self] in
             print("APP: INFO: Logged-in user changed; will update identity.")
             guard let my = self else { return }
 
-            my.identity.update(using: my.services.accountRepository)
+            my.confirmCurrentAccount()
         })
-        identity.update(using: services.accountRepository)
     }
 
     func whenLoggedInUserChanges(then call: @escaping () -> Void) {

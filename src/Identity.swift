@@ -24,16 +24,8 @@ class Identity {
         }
     }
 
-    func update(using accountRepository: AccountRepository) {
-        accountRepository.account(id: "me") { (result) in
-            do {
-                self.account = try result.unwrap()
-            } catch {
-                print("AUTH: ERROR: Failed fetching user account for logged-in user with error:", error)
-                // (jeremy-w/2017-01-28)???: Perhaps only clear if we get "Unauthorized"?
-                self.account = nil
-            }
-        }
+    func update(account: Account) {
+        self.account = account
     }
 
     func logOut() {
