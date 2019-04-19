@@ -3,7 +3,18 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
-### 2.0 (23) - 2019-04-XX
+### 2.0 (23) - 2019-04-18
+This release is the first after the cut-over to 10Cv5. (If that's news to you, see: https://matigo.ca/2019/04/10/server-down.) Its focus is re-enabling basic interaction with the 10C community. This release is less functional than the previous release was with 10Cv4, but since the previous release didn't support v5 at all, it's a big improvement over something that just crashes on launch.
+
+Basic post display is working.
+
+Login, posting, replying, and post editing work.
+
+View in WebView is broken, and other features haven't even been explored yet.
+
+Many of the streams in 10Cv4 may no longer apply to 10Cv5.
+If so, they will be removed in a future release.
+
 Fixed:
 
 - Crash when attempting to show a 10Centuries error message.
@@ -11,6 +22,8 @@ Fixed:
 Changed:
 
 - Supports 10Cv5 rather than 10Cv4.
+- Account display is only half-working now.
+- Image upload is as yet untested.
 
 New:
 
