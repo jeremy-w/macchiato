@@ -12,6 +12,7 @@
 
 - tags
 - check we can read out geo of 0,0 0m.
+- handle <del> element (strikethrough) as in https://jws.10centuries.org/note/47aef69f-6951-1916-68e0-8d976150e919
 
 - seem to be mis-parsing this post and falling back on Markdown rather than rendering the pre-formatted code correctly:
 
