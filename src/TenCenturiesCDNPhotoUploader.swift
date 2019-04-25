@@ -64,9 +64,22 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
                         throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
                     }
 
-                    let object = try JSONSerialization.jsonObject(with: data, options: [])
+                    let object: Any
+                    do {
+                        object = try JSONSerialization.jsonObject(with: data, options: [])
+                    } catch {
+                        print("API: ERROR: Data was not JSON. Let's hope it's plaintext. error=\(error)")
+                        object = ["meta": ["text": String(bytes: data, encoding: .utf8)]]
+                    }
+
                     guard let dict = object as? JSONDictionary else {
                         throw TenCenturiesError.badResponse(url: url, data: data, comment: "body is not a dict")
+                    }
+
+                    if let meta = dict["meta"] as? JSONDictionary,
+                        let errorMessage = meta["text"] as? String {
+                        let code = meta["code"] as? Int ?? -1
+                        throw TenCenturiesError.api(code: code, text: errorMessage, comment: "failed with: \(String(reflecting: request)) to \(url)")
                     }
                     return dict
                 }

@@ -46,8 +46,13 @@ extension TenCenturiesService {
                         throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
                     }
 
-                    let object = try JSONSerialization.jsonObject(with: data, options: [])
-                    //                print("API: VDEBUG: \(url): \(String(reflecting: object))")
+                    let object: Any
+                    do {
+                        object = try JSONSerialization.jsonObject(with: data, options: [])
+                    } catch {
+                        print("API: ERROR: Data was not JSON. Let's hope it's plaintext. error=\(error)")
+                        object = ["meta": ["text": String(bytes: data, encoding: .utf8)]]
+                    }
 
                     guard let dict = object as? JSONDictionary
                         , let meta = dict["meta"] as? JSONDictionary
