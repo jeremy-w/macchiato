@@ -418,7 +418,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func pin(post: Post, color: Post.PinColor?, completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: "/content/pin/\(post.id)", relativeTo: TenCenturies.baseURL)!
+        let url = URL(string: "/api/pin/\(post.id)", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         if let pin = color {
             request.httpMethod = "POST"
