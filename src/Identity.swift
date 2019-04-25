@@ -24,11 +24,16 @@ class Identity {
         }
     }
 
-    func update(account: Account) {
+    /// Selected persona GUID.
+    private(set) var persona: String?
+
+    func update(account: Account, persona: String? = nil) {
+        self.persona = persona ?? account.id
         self.account = account
     }
 
     func logOut() {
+        persona = nil
         account = nil
     }
 }
