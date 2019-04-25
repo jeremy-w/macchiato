@@ -157,7 +157,8 @@ extension Post {
 extension Post {
     func replyTemplate(notMentioning handles: [String]) -> String {
         let omit = Set(handles)
-        guard !omit.contains(account.username) else {
+        let isReplyToOwnPost = omit.contains(account.username)
+        guard !isReplyToOwnPost else {
             // Carry over current mentions, or supply an empty body.
             let sorted = orderedMentions
             guard let main = sorted.first?.current else {
