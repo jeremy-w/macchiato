@@ -174,7 +174,7 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
         }
 
         var request = URLRequest(url: URL(string: "/api/auth/status", relativeTo: TenCenturies.baseURL)!)
-        request.httpMethod = "POST"
+        request.httpMethod = "GET"
         let _ = send(request: request) { (result) in
             switch (result) {
             case let .failure(error):
