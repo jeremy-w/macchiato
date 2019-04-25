@@ -329,7 +329,7 @@ class StreamViewController: UITableViewController {
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
-        guard let author = identity.account else {
+        guard isLoggedIn else {
             print("STREAMVC", stream?.view as Any, ": ERROR: No current user - refusing to compose post.")
             return true
         }

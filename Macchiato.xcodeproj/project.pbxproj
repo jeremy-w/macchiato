@@ -79,6 +79,7 @@
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E61DBD7C5200E176F4 /* Account.swift */; };
 		3FB501B41E3F972600DC0642 /* ThirdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */; };
+		3FFC01E52271612000A33BE5 /* AuthenticatedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFC01E42271612000A33BE5 /* AuthenticatedAccount.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +170,7 @@
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E61DBD7C5200E176F4 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ThirdPartyLicenses.txt; sourceTree = SOURCE_ROOT; };
+		3FFC01E42271612000A33BE5 /* AuthenticatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatedAccount.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -439,6 +441,7 @@
 				3F8144EB1E31C17F001E25EC /* AccountRepository.swift */,
 				3F8144F21E31C9B9001E25EC /* FakeAccountRepository.swift */,
 				3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */,
+				3FFC01E42271612000A33BE5 /* AuthenticatedAccount.swift */,
 			);
 			name = Accounts;
 			sourceTree = "<group>";
@@ -634,6 +637,7 @@
 				3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */,
 				3F2E29461DAB12BB00519C9E /* SettingsViewController.swift in Sources */,
 				3F2E29B21DB252D200519C9E /* ComposePostViewController.swift in Sources */,
+				3FFC01E52271612000A33BE5 /* AuthenticatedAccount.swift in Sources */,
 				3F2E29A31DAFC6DD00519C9E /* URLRequest+FormEncoding.swift in Sources */,
 				3F2E29AD1DB1937500519C9E /* Keychain.swift in Sources */,
 				3F8144F51E31CC13001E25EC /* TenCenturiesServicePack.swift in Sources */,

@@ -27,7 +27,7 @@ extension StreamViewController {
             return { [weak self] _ in self?.take(action: action, on: target) }
         }
 
-        if post.account.id == identity.account?.id {
+        if post.account.isYou {
             alert.addAction(
                 UIAlertAction(
                     title: NSLocalizedString("Delete", comment: "delete post action button title"),
