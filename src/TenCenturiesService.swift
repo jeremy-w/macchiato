@@ -31,6 +31,10 @@ extension TenCenturiesService {
         let task = session.dataTask(with: request) { (data, response, error) in
             let result = Result.of { () throws -> JSONDictionary in
                 do {
+                    guard error == nil else {
+                        throw error!
+                    }
+
                     guard let response = response as? HTTPURLResponse else {
                         throw TenCenturiesError.notHTTP(url: url)
                     }
@@ -48,10 +52,6 @@ extension TenCenturiesService {
 
                     guard let data = data else {
                         throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
-                    }
-
-                    guard error == nil else {
-                        throw error!
                     }
 
                     let object = try JSONSerialization.jsonObject(with: data, options: [])
