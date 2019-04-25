@@ -1,7 +1,6 @@
 - improve error message when API returns not-JSON
 - fix star
 - fix pin
-- remove self-mentions when replying to a mention
 
 - image upload - though Nice flubbed it for me, so
 - fix "View in WebView" for new URLs
