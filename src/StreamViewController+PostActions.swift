@@ -97,7 +97,7 @@ extension StreamViewController {
 
         case .star:
             let isStarring = !post.you.starred
-            postRepository?.toggleStarred(post: post) { result in
+            postRepository?.toggleStarred(post: post, by: identity.persona ?? "me") { result in
                 do {
                     let starredPost = try result.unwrap()[0]
 

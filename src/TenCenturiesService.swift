@@ -39,7 +39,7 @@ extension TenCenturiesService {
                         throw TenCenturiesError.notHTTP(url: url)
                     }
 
-                    print("API: INFO: END \(url): \(response.statusCode): \(String(describing: data)) \(String(describing: error)) ")
+                    print("API: INFO: END \(url): statusCode=\(response.statusCode): data=\(String(describing: data)) error=\(String(describing: error)) ")
                     print("API: DEBUG: END: \(response)\n\(debugInfo(for: response))")
 
                     guard let data = data else {
