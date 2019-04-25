@@ -10,13 +10,13 @@ import Foundation
 
 extension AuthenticatedAccount {
     static func makeFake() -> AuthenticatedAccount {
-        return AuthenticatedAccount(account: AuthenticatedAccountMeta.makeFake(), distributors: [], isActive: true, updatedAt: Date(timeIntervalSince1970: 0), updatedUnix: 0)
+        return AuthenticatedAccount(account: AuthenticatedAccountMeta.makeFake(), distributors: [], isActive: true, updatedUnix: 0)
     }
 }
 
 extension AuthenticatedAccountMeta {
     static func makeFake() -> AuthenticatedAccountMeta {
-        return AuthenticatedAccountMeta(id: 42, displayName: "me", avatarURL: "", type: "account.madeup", isYou: true, createdAt: Date(timeIntervalSince1970: 0), createdUnix: 0, updatedAt: Date(timeIntervalSince1970: 0), updatedUnix: 0)
+        return AuthenticatedAccountMeta(id: 42, displayName: "me", avatarURL: "", type: "account.madeup", isYou: true, createdUnix: 0, updatedUnix: 0)
     }
 }
 
@@ -29,13 +29,11 @@ struct AuthenticatedAccount: Codable {
     let account: AuthenticatedAccountMeta
     let distributors: [Distributor]
     let isActive: Bool
-    let updatedAt: Date
     let updatedUnix: Int
 
     enum CodingKeys: String, CodingKey {
         case account, distributors
         case isActive = "is_active"
-        case updatedAt = "updated_at"
         case updatedUnix = "updated_unix"
     }
 }
@@ -44,9 +42,7 @@ struct AuthenticatedAccountMeta: Codable {
     let id: Int
     let displayName, avatarURL, type: String
     let isYou: Bool
-    let createdAt: Date
     let createdUnix: Int
-    let updatedAt: Date
     let updatedUnix: Int
 
     enum CodingKeys: String, CodingKey {
@@ -55,9 +51,7 @@ struct AuthenticatedAccountMeta: Codable {
         case avatarURL = "avatar_url"
         case type
         case isYou = "is_you"
-        case createdAt = "created_at"
         case createdUnix = "created_unix"
-        case updatedAt = "updated_at"
         case updatedUnix = "updated_unix"
     }
 }

@@ -198,13 +198,20 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
 
     func parseAccountFromAuthStatusResponse(_ jsonDictionary: JSONDictionary) -> AuthenticatedAccount {
         // We need access to the personas to star posts at least, so we do ultimately need to parse this.
-        guard let account = try? parseAuthenticatedAccount(from: jsonDictionary) else {
+        var account: AuthenticatedAccount?
+        do {
+            account = try (jsonDictionary["data"] as? JSONDictionary).map { try parseAuthenticatedAccount(from: $0) }
+            print("LOGIN: INFO: Logged in as account=\(String(describing: account))")
+        } catch {
+            print("LOGIN: ERROR: Failed to parse JSON \"data\" field as AuthenticatedAccount: error=\(error)")
+            account = nil
+        }
+
+        guard let nonNullAccount = account else {
             print("ERROR: Proceeding with fake account that cannot star posts after failing to parse current account from auth status response=\(jsonDictionary)")
             return AuthenticatedAccount.makeFake()
         }
-
-        print("INFO: Logged in as account=\(account)")
-        return account
+        return nonNullAccount
     }
 
     func parseAuthenticatedAccount(from dict: JSONDictionary) throws -> AuthenticatedAccount {
