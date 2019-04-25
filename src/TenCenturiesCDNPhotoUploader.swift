@@ -58,17 +58,6 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
                     guard let response = response as? HTTPURLResponse else {
                         throw TenCenturiesError.notHTTP(url: url)
                     }
-                    /*
-                     Rate limit headers look like:
-
-                     X-RateLimit-Limit: 500
-                     X-RateLimit-Remaining: 490
-                     X-RateLimit-Reset: 2866
-                     */
-                    let limits = RateLimit(headers: response.allHeaderFields)
-                    print("API: INFO: END \(url): "
-                        + "\(response.statusCode): \(String(describing: data)) \(String(describing: error)) "
-                        + "- RATELIMIT: \(limits.map { String(reflecting: $0) } ?? "(headers not found)")")
                     print("API: DEBUG: END: \(response)\n\(debugInfo(for: response))")
 
                     guard let data = data else {
