@@ -155,7 +155,7 @@ extension Post {
 
 
 extension Post {
-    func replyTemplate(notMentioning handles: [String]) -> String {
+    func replyTemplate() -> String {
         let isReplyToOwnPost = account.isYou
         guard !isReplyToOwnPost else {
             // Carry over current mentions, or supply an empty body.

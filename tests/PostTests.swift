@@ -11,7 +11,7 @@ class PostTests: XCTestCase {
             mentions: [other, author],
             created: Date(), updated: Date(), published: Date(), deleted: false, you: Post.You(), stars: [], parent: nil, geo: nil, title: "")
 
-        let reply = post.replyTemplate(notMentioning: [authorHandle])
+        let reply = post.replyTemplate()
 
         XCTAssertFalse(reply.contains(authorHandle), "should not mention author, but reply text was: \(reply)")
     }
