@@ -43,8 +43,11 @@ extension StreamViewController {
             (post.you.pinned == nil
                 ? NSLocalizedString("Pin", comment: "button")
                 : NSLocalizedString("Edit Pin", comment: "button"), .pin(at: point)),
-            (NSLocalizedString("Repost", comment: "button"), .repost),
-            (((post.you.authored || post.account.id == identity.account?.id)
+
+            // TODO: 10Cv5: Figure out how to repost again.
+            //(NSLocalizedString("Repost", comment: "button"), .repost),
+
+            (((post.you.authored || post.account.isYou)
                 ? NSLocalizedString("Edit", comment: "button")
                 : ""), .edit),
             (NSLocalizedString("View Thread", comment: "button"), .viewThread),

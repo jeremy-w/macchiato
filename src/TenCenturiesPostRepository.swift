@@ -440,6 +440,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 
     func repost(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
+        // TODO: 10Cv5: repost should probably be handled as posting a quotation? maybe?
         let url = URL(string: "/content/repost/\(post.id)", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
