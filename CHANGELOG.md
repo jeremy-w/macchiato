@@ -6,7 +6,8 @@ was archived, not necessarily when it became available for download.
 ### 2.0 (24) - 2019-04-XX
 Fixed:
 
-- Unwanted self-mention when replying to your own post or a post mentioning you. Thanks for the nudge, @joanna!
+- No longer mentions self when replying a post. Thanks for the nudge, @joanna!
+- Starring works again.
 
 Removed:
 
