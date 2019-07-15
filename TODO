@@ -1,6 +1,65 @@
 - limit precision of geo when formatting to +9.9(5)
 - fix image upload
 
+# IMAGE REQUEST
+POST https://nice.social/api/files/upload Content-Type:multipart/form-data cache-control:no-cache pragma_no-cache referer:https://nice.social/ TE:Trailers X-RequestedWith:XMLHttpRequest
+
+```
+-----------------------------194831696453256449299576348
+
+Content-Disposition: form-data; name="file"; filename="02 Relight Camera Prompt.png"
+
+Content-Type: image/png
+
+(binary follows)
+```
+# IMAGE RESPONSE
+text in post is: `![02 relight camera prompt](https://nice.social/files/3ohrYe/05299201c9084e986146f626de7a4c2e_medium.png)`
+aka: `![\(resp.data.files[0].name)](\(resp.data.files[0].medium))`
+
+```json
+{
+  "meta": {
+    "code": 200,
+    "text": false,
+    "list": false
+  },
+  "data": {
+    "files": [
+      {
+        "id": 844,
+        "name": "02 relight camera prompt.png",
+        "size": 1915819,
+        "type": "image/png",
+        "hash": "05299201c9084e986146f626de7a4c2e",
+        "guid": "53402830-a69c-11e9-a69f-54ee758049c3",
+        "cdn_url": "https://nice.social/files/3ohrYe/05299201c9084e986146f626de7a4c2e.png",
+        "medium": "https://nice.social/files/3ohrYe/05299201c9084e986146f626de7a4c2e_medium.png",
+        "thumb": "https://nice.social/files/3ohrYe/05299201c9084e986146f626de7a4c2e_thumb.png",
+        "meta": {
+          "image": {
+            "has_medium": true,
+            "has_thumb": true
+          }
+        },
+        "is_image": true,
+        "created_at": "2019-07-15T01:03:15Z",
+        "created_unix": 1563152595,
+        "updated_at": "2019-07-15T01:03:15Z",
+        "updated_unix": 1563152595
+      }
+    ],
+    "bucket": {
+      "files": 3,
+      "limit": 5368709120,
+      "used": 2726823
+    },
+    "errors": false
+  }
+}
+```
+
+
 - fix pin
 - BLOCKED: fix loading Starred Posts stream
     - Matigo confirmed this stream is not currently supported.
