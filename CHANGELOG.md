@@ -3,7 +3,7 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
-### 2.0 (24) - 2019-04-XX
+### 2.0 (24) - 2019-07-15
 Fixed:
 
 - No longer mentions self when replying a post. Thanks for the nudge, @joanna!
