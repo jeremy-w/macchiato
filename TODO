@@ -1,4 +1,3 @@
-- fix star (broken by backend - was working)
 - limit precision of geo when formatting to +9.9(5)
 - fix image upload
 

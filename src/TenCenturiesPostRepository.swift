@@ -402,7 +402,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
     // MARK: - Takes sundry other actions
     func toggleStarred(post: Post, by persona: String, completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: "/api/posts/\(post.id)/star", relativeTo: TenCenturies.baseURL)!
+        let url = URL(string: "/api/posts/star", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = post.you.starred ? "DELETE" : "POST"
         request.httpBody = try! JSONEncoder().encode(["persona_guid": persona, "guid": post.id])
