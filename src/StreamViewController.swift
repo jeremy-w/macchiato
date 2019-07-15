@@ -329,7 +329,7 @@ class StreamViewController: UITableViewController {
     func prepareToCreateNewThread(segue: UIStoryboardSegue, sender: Any?) -> Bool {
         guard segue.identifier == Segue.createNewThread.rawValue else { return false }
         guard let composer = segue.destination as? ComposePostViewController else { return true }
-        guard let author = identity.account else {
+        guard isLoggedIn else {
             print("STREAMVC", stream?.view as Any, ": ERROR: No current user - refusing to compose post.")
             return true
         }
@@ -345,7 +345,7 @@ class StreamViewController: UITableViewController {
         //
         // Really, we should be kicking the "spawn this thing" work out to _our_ delegate!
         guard let abomination: ComposePostViewControllerDelegate = UIApplication.shared.delegate as? AppDelegate else { return true }
-        composer.configure(delegate: abomination, postRepository: postRepository, action: action, author: author)
+        composer.configure(delegate: abomination, postRepository: postRepository, action: action)
         return true
     }
 

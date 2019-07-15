@@ -6,7 +6,7 @@ protocol SessionManager: class {
     func logIn(account: String, password: String, completion: @escaping (Result<Bool>) -> Void)
 
     /// Resolves to an account if we still have a session.
-    func destroySessionIfExpired(completion: @escaping (Account?) -> Void)
+    func destroySessionIfExpired(completion: @escaping (AuthenticatedAccount?) -> Void)
 }
 
 

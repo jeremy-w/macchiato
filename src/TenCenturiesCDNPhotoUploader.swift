@@ -51,33 +51,35 @@ class TenCenturiesCDNPhotoUploader: PhotoUploader, TenCenturiesService {
         let task = session.dataTask(with: request) { (data, response, error) in
             let result = Result.of { () throws -> JSONDictionary in
                 do {
+                    guard error == nil else {
+                        throw error!
+                    }
+
                     guard let response = response as? HTTPURLResponse else {
                         throw TenCenturiesError.notHTTP(url: url)
                     }
-                    /*
-                     Rate limit headers look like:
-
-                     X-RateLimit-Limit: 500
-                     X-RateLimit-Remaining: 490
-                     X-RateLimit-Reset: 2866
-                     */
-                    let limits = RateLimit(headers: response.allHeaderFields)
-                    print("API: INFO: END \(url): "
-                        + "\(response.statusCode): \(String(describing: data)) \(String(describing: error)) "
-                        + "- RATELIMIT: \(limits.map { String(reflecting: $0) } ?? "(headers not found)")")
                     print("API: DEBUG: END: \(response)\n\(debugInfo(for: response))")
 
                     guard let data = data else {
                         throw TenCenturiesError.badResponse(url: url, data: nil, comment: "no data received")
                     }
 
-                    guard error == nil else {
-                        throw error!
+                    let object: Any
+                    do {
+                        object = try JSONSerialization.jsonObject(with: data, options: [])
+                    } catch {
+                        print("API: ERROR: Data was not JSON. Let's hope it's plaintext. error=\(error)")
+                        object = ["meta": ["text": String(bytes: data, encoding: .utf8)]]
                     }
 
-                    let object = try JSONSerialization.jsonObject(with: data, options: [])
                     guard let dict = object as? JSONDictionary else {
                         throw TenCenturiesError.badResponse(url: url, data: data, comment: "body is not a dict")
+                    }
+
+                    if let meta = dict["meta"] as? JSONDictionary,
+                        let errorMessage = meta["text"] as? String {
+                        let code = meta["code"] as? Int ?? -1
+                        throw TenCenturiesError.api(code: code, text: errorMessage, comment: "failed with: \(String(reflecting: request)) to \(url)")
                     }
                     return dict
                 }

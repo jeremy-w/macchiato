@@ -7,14 +7,12 @@ protocol ComposePostViewControllerDelegate: class {
 class ComposePostViewController: UIViewController {
     var postRepository: PostRepository?
     var action: ComposePostAction = .newThread
-    var author: Account?
     weak var delegate: ComposePostViewControllerDelegate?
 
-    func configure(delegate: ComposePostViewControllerDelegate, postRepository: PostRepository, action: ComposePostAction, author: Account) {
+    func configure(delegate: ComposePostViewControllerDelegate, postRepository: PostRepository, action: ComposePostAction) {
         self.delegate = delegate
         self.postRepository = postRepository
         self.action = action
-        self.author = author
     }
 
     override func viewDidLoad() {
@@ -33,14 +31,7 @@ class ComposePostViewController: UIViewController {
     }
 
     func loadTextFromAction() {
-        let authorsUsername: [String]
-        if let name = author?.username {
-            authorsUsername = [name]
-        } else {
-            authorsUsername = []
-        }
-
-        textView?.text = action.template(notMentioning: authorsUsername)
+        textView?.text = action.template()
     }
 
     func positionInsertionPointInText() {

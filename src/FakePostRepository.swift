@@ -11,7 +11,7 @@ class FakePostRepository: PostRepository {
         completion(.success(Void()))
     }
 
-    func toggleStarred(post: Post, completion: @escaping (Result<[Post]>) -> Void) {
+    func toggleStarred(post: Post, by: String, completion: @escaping (Result<[Post]>) -> Void) {
         var updated = post
         updated.you.starred = !post.you.starred
         completion(.success([updated]))

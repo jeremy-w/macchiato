@@ -12,7 +12,7 @@ class CurrentUserPropagationTests: XCTestCase {
 
         XCTAssertNil(streamVC.navigationItem.rightBarButtonItem, "no New Post button before identity has account")
         XCTAssertFalse(streamVC.isLoggedIn, "not logged in before identity has account")
-        identity.update(account: Account.makeFake())
+        identity.update(account: AuthenticatedAccount.makeFake())
         expectation(forNotification: NSNotification.Name(rawValue: Notification.Name.identityDidChange.rawValue), object: identity, handler: nil)
         waitForExpectations(timeout: 0.5, handler: nil)
 

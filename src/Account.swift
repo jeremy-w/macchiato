@@ -3,6 +3,7 @@ import Foundation
 struct Account {
     let id: String
     let username: String
+    let isYou: Bool
 
     /// Like: `(first: "Jeremy W.", last: "Sherman", display: "jws")`
     let name: (first: String, last: String, display: String)
@@ -65,6 +66,7 @@ extension Account {
         return Account(
             id: "123456789",
             username: username,
+            isYou: false,
             name: (
                 first: "Someone",
                 last: "Fake",
@@ -88,6 +90,7 @@ extension Account {
         return Account(
             id: privateThing,
             username: privateThing,
+            isYou: false,
             name: (first: privateThing, last: privateThing, display: privateThing),
             avatarURL: Account.defaultAvatarURL,
             verified: nil,

@@ -72,10 +72,12 @@ class TenCenturiesAccountRepository: AccountRepository, TenCenturiesService {
         let youFollow = (try? unpack(dict, "you_follow")) ?? false
         let isMuted = (try? unpack(dict, "is_muted")) ?? false
         let isSilenced = (try? unpack(dict, "is_silenced")) ?? false
+        let isYou = (try? unpack(dict, "is_you")) ?? false
 
         return Account(
             id: guid,
             username: username,
+            isYou: isYou,
             // (jeremy-w/2019-04-12)TODO: Drop structured Account.name tupled in favor of flat "name" string for 10Cv5
             name: (first: "", last: "", display: name),
             avatarURL: parseAvatarURL(dict["avatar"]),

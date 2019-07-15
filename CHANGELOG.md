@@ -3,6 +3,17 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 2.0 (24) - 2019-07-15
+Fixed:
+
+- No longer mentions self when replying a post. Thanks for the nudge, @joanna!
+- Starring works again.
+
+Removed:
+
+- Repost action on posts.
+
+
 ### 2.0 (23) - 2019-04-18
 This release is the first after the cut-over to 10Cv5. (If that's news to you, see: https://matigo.ca/2019/04/10/server-down.) Its focus is re-enabling basic interaction with the 10C community. This release is less functional than the previous release was with 10Cv4, but since the previous release didn't support v5 at all, it's a big improvement over something that just crashes on launch.
 

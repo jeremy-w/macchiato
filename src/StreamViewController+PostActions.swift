@@ -27,7 +27,7 @@ extension StreamViewController {
             return { [weak self] _ in self?.take(action: action, on: target) }
         }
 
-        if post.account.id == identity.account?.id {
+        if post.account.isYou {
             alert.addAction(
                 UIAlertAction(
                     title: NSLocalizedString("Delete", comment: "delete post action button title"),
@@ -43,8 +43,11 @@ extension StreamViewController {
             (post.you.pinned == nil
                 ? NSLocalizedString("Pin", comment: "button")
                 : NSLocalizedString("Edit Pin", comment: "button"), .pin(at: point)),
-            (NSLocalizedString("Repost", comment: "button"), .repost),
-            (((post.you.authored || post.account.id == identity.account?.id)
+
+            // TODO: 10Cv5: Figure out how to repost again.
+            //(NSLocalizedString("Repost", comment: "button"), .repost),
+
+            (((post.you.authored || post.account.isYou)
                 ? NSLocalizedString("Edit", comment: "button")
                 : ""), .edit),
             (NSLocalizedString("View Thread", comment: "button"), .viewThread),
@@ -97,7 +100,7 @@ extension StreamViewController {
 
         case .star:
             let isStarring = !post.you.starred
-            postRepository?.toggleStarred(post: post) { result in
+            postRepository?.toggleStarred(post: post, by: identity.persona ?? "me") { result in
                 do {
                     let starredPost = try result.unwrap()[0]
 

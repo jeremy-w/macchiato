@@ -168,13 +168,13 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
         }
     }
 
-    func destroySessionIfExpired(completion: @escaping (Account?) -> Void) {
+    func destroySessionIfExpired(completion: @escaping (AuthenticatedAccount?) -> Void) {
         guard canAuthenticate else {
             return completion(nil)
         }
 
         var request = URLRequest(url: URL(string: "/api/auth/status", relativeTo: TenCenturies.baseURL)!)
-        request.httpMethod = "POST"
+        request.httpMethod = "GET"
         let _ = send(request: request) { (result) in
             switch (result) {
             case let .failure(error):
@@ -196,10 +196,27 @@ extension TenCenturiesSessionManager: SessionManager, TenCenturiesService {
         }
     }
 
-    func parseAccountFromAuthStatusResponse(_ jsonDictionary: JSONDictionary) -> Account {
-        // (jeremy-w/2019-04-18)FIXME: This is totally not implemented. And…maybe it doesn't matter. Are we not using this anywhere?
-        print("TODO: Actually parse account from auth status response. For now, punting with a fake account.")
-        _ = jsonDictionary
-        return Account.makeFake()
+    func parseAccountFromAuthStatusResponse(_ jsonDictionary: JSONDictionary) -> AuthenticatedAccount {
+        // We need access to the personas to star posts at least, so we do ultimately need to parse this.
+        var account: AuthenticatedAccount?
+        do {
+            account = try (jsonDictionary["data"] as? JSONDictionary).map { try parseAuthenticatedAccount(from: $0) }
+            print("LOGIN: INFO: Logged in as account=\(String(describing: account))")
+        } catch {
+            print("LOGIN: ERROR: Failed to parse JSON \"data\" field as AuthenticatedAccount: error=\(error)")
+            account = nil
+        }
+
+        guard let nonNullAccount = account else {
+            print("ERROR: Proceeding with fake account that cannot star posts after failing to parse current account from auth status response=\(jsonDictionary)")
+            return AuthenticatedAccount.makeFake()
+        }
+        return nonNullAccount
+    }
+
+    func parseAuthenticatedAccount(from dict: JSONDictionary) throws -> AuthenticatedAccount {
+        let data = try JSONSerialization.data(withJSONObject: dict, options: [])
+        let account = try JSONDecoder().decode(AuthenticatedAccount.self, from: data)
+        return account
     }
 }

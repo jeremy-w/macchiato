@@ -155,9 +155,9 @@ extension Post {
 
 
 extension Post {
-    func replyTemplate(notMentioning handles: [String]) -> String {
-        let omit = Set(handles)
-        guard !omit.contains(account.username) else {
+    func replyTemplate() -> String {
+        let isReplyToOwnPost = account.isYou
+        guard !isReplyToOwnPost else {
             // Carry over current mentions, or supply an empty body.
             let sorted = orderedMentions
             guard let main = sorted.first?.current else {
@@ -169,9 +169,7 @@ extension Post {
         }
 
         let main = account.username
-        let bystanders = mentions
-            .filter { $0.id != account.id && !omit.contains($0.current) }
-            .map { $0.current }
+        let bystanders = mentions.compactMap { $0.isYou ? nil : $0.current }
         return Post.replyTemplate(main: main, bystanders: bystanders)
     }
 
