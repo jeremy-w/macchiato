@@ -110,7 +110,7 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
     // MARK: - Alters background color to reflect mention status
     func highlightIfMention() {
         let isMention = (post?.you.wereMentioned ?? false)
-        backgroundColor = isMention ? #colorLiteral(red: 0.95, green: 0.9866666667, blue: 1, alpha: 1) : UIColor.white
+        backgroundColor = isMention ? #colorLiteral(red: 0.95, green: 0.9866666667, blue: 1, alpha: 1) : nil
     }
 
 
