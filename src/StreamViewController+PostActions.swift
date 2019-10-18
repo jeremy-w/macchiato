@@ -51,7 +51,8 @@ extension StreamViewController {
                 ? NSLocalizedString("Edit", comment: "button")
                 : ""), .edit),
             (NSLocalizedString("View Thread", comment: "button"), .viewThread),
-            (NSLocalizedString("View in WebView", comment: "button"), .webView),
+            // As of 2019-10-17, WebView URL seems bogus.
+            // (NSLocalizedString("View in WebView", comment: "button"), .webView),
         ] as [(String, PostAction)] {
             switch action {
             case .webView:
