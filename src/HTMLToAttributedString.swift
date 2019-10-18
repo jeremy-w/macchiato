@@ -369,9 +369,17 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         let font = makeMonospaceByHookOrByCrook(current)
         var codified = attributes
         codified[.font] = font
-        codified[.backgroundColor] = #colorLiteral(red: 0.9764705882, green: 0.9490196078, blue: 0.9568627451, alpha: 1)
-        codified[.foregroundColor] = #colorLiteral(red: 0.7803921569, green: 0.1450980392, blue: 0.1490196078, alpha: 1)
+        codified[.backgroundColor] = self.codeBackgroundColor
+        codified[.foregroundColor] = self.codeForegroundColor
         return codified
+    }
+
+    static var codeBackgroundColor: UIColor {
+        return #colorLiteral(red: 0.9764705882, green: 0.9490196078, blue: 0.9568627451, alpha: 1)
+    }
+
+    static var codeForegroundColor: UIColor {
+        return #colorLiteral(red: 0.7803921569, green: 0.1450980392, blue: 0.1490196078, alpha: 1)
     }
 
     static func makeMonospaceByHookOrByCrook(_ current: UIFont) -> UIFont {
