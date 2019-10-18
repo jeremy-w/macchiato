@@ -74,7 +74,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testAnchorWord() {
         let html = "<a target=\"_blank\" href=\"http://example.com\" title=\"ignored\">anchored</a>"
         let result = shouldMakeAttributedString(fromHTML: html)
-        guard let link = result.attribute(NSAttributedString.Key.link, at: 0, effectiveRange: nil) else {
+        guard let link = result.attribute(NSAttributedString.Key.macchiatoURL, at: 0, effectiveRange: nil) else {
             return XCTFail("expected to find link attribute at index 0 of attributed string: \(result)")
         }
 
@@ -138,7 +138,7 @@ class HTMLToAttributedStringTests: XCTestCase {
     func testHyperlinkedImage() {
         let html = "<a href=\"https://example.com/\"><img src=\"https://example.com/favicon.ico\" alt=\"alt text\" /></a>"
         let result = shouldMakeAttributedString(fromHTML: html)
-        XCTAssertNotNil(result.attribute(NSAttributedString.Key.link, at: 0, effectiveRange: nil), "should have link attribute in: \(result)")
+        XCTAssertNotNil(result.attribute(NSAttributedString.Key.macchiatoURL, at: 0, effectiveRange: nil), "should have link attribute in: \(result)")
 
         let string = result.string
         XCTAssertTrue(string.hasPrefix("["), "should start with [: \(string)")

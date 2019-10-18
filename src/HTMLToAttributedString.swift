@@ -42,6 +42,9 @@ public extension NSAttributedString.Key {
     /// Text like `> quote` has this applied. The value is a strictly positive `Int`.
     /// In future, we might have a custom renderer stick a vertical bar to its left.
     static let macchiatoBlockquoteLevel = NSAttributedString.Key("com.jeremywsherman.Macchiato.blockquoteLevel")
+
+    /// Unlike .link, this can actually be styled.
+    static let macchiatoURL = NSAttributedString.Key("com.jeremywsherman.Macchiato.URL")
 }
 
 final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
@@ -475,12 +478,9 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     }
 
     static func applyAnchorAttributes(href: String?, title: String?, to attributes: Attributes) -> Attributes {
-        // (jeremy-w/2017-01-22)TODO: This might need to also add underline or similar visual shift.
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
         var anchorAttributes = attributes
-        anchorAttributes[.link] = href ?? "about:blank"
-        // (jeremy-w/2019-10-18)FIXME: This isn't respected when the link is set. :\
-        // But we have to set .link or we don't parse out the URL to add a button.
+        anchorAttributes[.macchiatoURL] = href ?? "about:blank"
         anchorAttributes[.foregroundColor] = UIColor.systemBlue
         anchorAttributes[.underlineColor] = UIColor.systemBlue
         return anchorAttributes

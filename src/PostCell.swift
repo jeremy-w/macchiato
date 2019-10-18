@@ -259,7 +259,7 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
 
     func links(in text: NSAttributedString) -> [URL] {
         var urls = [URL]()
-        text.enumerateAttribute(NSAttributedString.Key.link, in: NSRange(location: 0, length: text.length), options: []) { (value, range, shouldStop) in
+        text.enumerateAttribute(NSAttributedString.Key.macchiatoURL, in: NSRange(location: 0, length: text.length), options: []) { (value, range, shouldStop) in
             // Gets called also for ranges where the attribute is nil.
             guard let value = value else { return }
 
