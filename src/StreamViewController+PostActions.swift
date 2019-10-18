@@ -51,8 +51,7 @@ extension StreamViewController {
                 ? NSLocalizedString("Edit", comment: "button")
                 : ""), .edit),
             (NSLocalizedString("View Thread", comment: "button"), .viewThread),
-            // As of 2019-10-17, WebView URL seems bogus.
-            // (NSLocalizedString("View in WebView", comment: "button"), .webView),
+            (NSLocalizedString("View in WebView", comment: "button"), .webView),
             (NSLocalizedString("Share", comment: "button"), .share),
         ] as [(String, PostAction)] {
             switch action {
@@ -165,7 +164,7 @@ extension StreamViewController {
             performSegue(withIdentifier: Segue.showThread.rawValue, sender: post)
 
         case .webView:
-            displayInWebView(URL(string: "https://social.10centuries.org/#\(post.id)")!)
+            displayInWebView(post.canonicalURL)
 
         case .share:
             share(post: post)
