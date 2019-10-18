@@ -375,11 +375,37 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
     }
 
     static var codeBackgroundColor: UIColor {
-        return #colorLiteral(red: 0.9764705882, green: 0.9490196078, blue: 0.9568627451, alpha: 1)
+        let lightModeColor = #colorLiteral(red: 0.9764705882, green: 0.9490196078, blue: 0.9568627451, alpha: 1)
+        if #available(iOS 13.0, *) {
+            return UIColor { (traits) -> UIColor in
+                switch traits.userInterfaceStyle {
+                case .dark:
+                    let darkModeColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+                    return darkModeColor
+
+                default:
+                    return lightModeColor
+                }
+            }
+        }
+        return lightModeColor
     }
 
     static var codeForegroundColor: UIColor {
-        return #colorLiteral(red: 0.7803921569, green: 0.1450980392, blue: 0.1490196078, alpha: 1)
+        let lightModeColor = #colorLiteral(red: 0.7803921569, green: 0.1450980392, blue: 0.1490196078, alpha: 1)
+        if #available(iOS 13.0, *) {
+            return UIColor { (traits) -> UIColor in
+                switch traits.userInterfaceStyle {
+                case .dark:
+                    let darkModeColor = #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)
+                    return darkModeColor
+
+                default:
+                    return lightModeColor
+                }
+            }
+        }
+        return lightModeColor
     }
 
     static func makeMonospaceByHookOrByCrook(_ current: UIFont) -> UIFont {
@@ -453,6 +479,10 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         // (jeremy-w/2017-01-22)XXX: Note we're ignoring the title - no idea what to do with that. :\
         var anchorAttributes = attributes
         anchorAttributes[.link] = href ?? "about:blank"
+        // (jeremy-w/2019-10-18)FIXME: This isn't respected when the link is set. :\
+        // But we have to set .link or we don't parse out the URL to add a button.
+        anchorAttributes[.foregroundColor] = UIColor.systemBlue
+        anchorAttributes[.underlineColor] = UIColor.systemBlue
         return anchorAttributes
     }
 
@@ -492,8 +522,25 @@ final class TenCenturiesHTMLParser: NSObject, XMLParserDelegate {
         paragraphStyle.headIndent += 12
         quoted[.paragraphStyle] = paragraphStyle
         quoted[.font] = UIFont.preferredFont(forTextStyle: .callout)
-        quoted[.foregroundColor] = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        quoted[.foregroundColor] = self.quoteForegroundColor
         quoted[.macchiatoBlockquoteLevel] = (quoted[.macchiatoBlockquoteLevel] as? Int ?? 0) + 1
         return quoted
+    }
+
+    static var quoteForegroundColor: UIColor {
+        let lightModeColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        if #available(iOS 13.0, *) {
+            return UIColor { (traits) -> UIColor in
+                switch traits.userInterfaceStyle {
+                case .dark:
+                    let darkModeColor = #colorLiteral(red: 0.8, green: 0.8, blue: 0.8, alpha: 1)
+                    return darkModeColor
+
+                default:
+                    return lightModeColor
+                }
+            }
+        }
+        return lightModeColor
     }
 }
