@@ -63,6 +63,9 @@ extension Stream.View {
 }
 
 
+/**
+ See: https://docs.10centuries.org/posts
+ */
 class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     let session: URLSession
     let authenticator: RequestAuthenticator
@@ -106,10 +109,11 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
                 return URLQueryItem(name: "count", value: "\(count)")
 
             case let .before(date):
-                return URLQueryItem(name: "before_unix", value: String(describing: date.timeIntervalSince1970))
+
+                return URLQueryItem(name: "until", value: String(describing: Decimal(date.timeIntervalSince1970)))
 
             case let .after(date):
-                return URLQueryItem(name: "since_unix", value: String(describing: date.timeIntervalSince1970))
+                return URLQueryItem(name: "since", value: String(describing: Decimal(date.timeIntervalSince1970)))
 
             case let .flavors(flavors):
                 return flavors.streamQueryItem
