@@ -189,6 +189,13 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
                 info: post)
         }
 
+        let canonicalURL: URL?
+        if let canonicalURLString = try? unpack(post, "canonical_url") as String {
+            canonicalURL = URL(string: canonicalURLString)
+        } else {
+            canonicalURL = nil
+        }
+
         // This is mostly "0" it seems, so we only show it if there's a |parent|, too.
         let parentID = post["parent_id"].map({ String(describing: $0) })
         let parent: Post?
@@ -211,6 +218,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             account: account,
             content: markdown ?? "—",
             html: html ?? "<p>—</p>",
+            canonicalURL: canonicalURL ?? URL(string: "https://nice.social/")!,
             privacy: (try? unpack(post, "privacy")) ?? "—",
             thread: thread,
             parentID: (parent != nil) ? parentID : String?.none,

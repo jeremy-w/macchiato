@@ -5,6 +5,7 @@ struct Post {
     let account: Account
     var content: String
     let html: String
+    let canonicalURL: URL
 
     let privacy: String
     let thread: (root: String, replyTo: String)?
@@ -55,6 +56,7 @@ struct Post {
             account: Account.makeFake(),
             content: text,
             html: "<p>" + text + "</p>",
+            canonicalURL: URL(string: "https://example.org/")!,
             privacy: "visibility.public",
             thread: nil,
             parentID: nil,
@@ -86,6 +88,7 @@ struct Post {
             account: Account.makeFake(),
             content: "**" + header + "**\n\n```\n" + body + "```\n",
             html: "<p><strong>" + header + "</strong></p><pre><code>" + body + "</pre></code>",
+            canonicalURL: URL(string: "https://example.org/")!,
             privacy: "visibility.public",
             thread: nil,
             parentID: nil,
@@ -122,6 +125,7 @@ extension Post {
             account: account,
             content: content,
             html: html,
+            canonicalURL: canonicalURL,
             privacy: privacy,
             thread: thread,
             parentID: parentID,
