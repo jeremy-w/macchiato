@@ -53,9 +53,10 @@ extension StreamViewController {
             (NSLocalizedString("View Thread", comment: "button"), .viewThread),
             // As of 2019-10-17, WebView URL seems bogus.
             // (NSLocalizedString("View in WebView", comment: "button"), .webView),
+            (NSLocalizedString("Share", comment: "button"), .share),
         ] as [(String, PostAction)] {
             switch action {
-            case .webView:
+            case .webView, .share:
                 break
 
             default:
@@ -165,7 +166,23 @@ extension StreamViewController {
 
         case .webView:
             displayInWebView(URL(string: "https://social.10centuries.org/#\(post.id)")!)
+
+        case .share:
+            share(post: post)
         }
+    }
+
+    func share(post: Post) {
+        /*
+         I hoped the user would be able to both copy text and send to Safari,
+         but it actually only seems to show the text as of iOS 13. :\
+
+         We'd need a custom action to copy URL.
+         */
+        let text = post.content
+        let url = post.canonicalURL
+        let vc = UIActivityViewController(activityItems: [text, url], applicationActivities: nil)
+        present(vc, animated: true)
     }
 
     func composePost(as action: ComposePostAction) {
@@ -267,5 +284,6 @@ extension StreamViewController {
         case delete
         case viewThread
         case webView
+        case share
     }
 }
