@@ -85,7 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let allStreams = [
             Stream.View.global,
             Stream.View.home,
-            Stream.View.starters,
+//            Stream.View.starters,  // 2019-10-17: dead
             Stream.View.mentions,
             Stream.View.interactions,
 
@@ -99,8 +99,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
              */
             // Stream.View.private_,
 
-            Stream.View.pinned,
-            Stream.View.starred,
+//            Stream.View.pinned,  // 2019-10-17: dead
+//            Stream.View.starred,  // 2019-10-17: dead
             ].map { Stream(view: $0) }
         master.configure(services: services, identity: identity, streams: allStreams)
     }
