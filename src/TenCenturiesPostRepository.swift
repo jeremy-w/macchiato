@@ -328,7 +328,9 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             return String(string[string.index(after: string.startIndex)...])
         }
 
-        let name = stripPrefixedAtSign(from: try unpack(mention, "as"))
+        // Threads use "as", global uses "name". Go figure.
+        let rawName: String = try unpack(mention, "name") ?? unpack(mention, "as")
+        let name = stripPrefixedAtSign(from: rawName)
         return Post.Mention(
             name: name,
             id: String(describing: try unpack(mention, "guid") as Any),
