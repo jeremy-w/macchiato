@@ -118,7 +118,7 @@ class Stream {
                 return NSLocalizedString("Mentions", comment: "stream name")
 
             case .interactions:
-                return NSLocalizedString("Interactions", comment: "stream name")
+                return NSLocalizedString("Stars & Pins", comment: "stream name")
 
             case .private_:
                 return NSLocalizedString("Private", comment: "stream name")
