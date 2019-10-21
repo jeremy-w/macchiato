@@ -203,7 +203,7 @@ extension StreamViewController {
                     handler: { _ in self.pin(post: post, with: nil) }))
         }
 
-        for color: Post.PinColor in [.black, .blue, .green, .orange, .yellow, .red] {
+        for color: Post.PinColor in [.blue, .green, .orange, .yellow, .red] {
             alert.addAction(
                 UIAlertAction(
                     title: String(describing: color).capitalized,
@@ -222,7 +222,7 @@ extension StreamViewController {
         guard let repo = self.postRepository else { return }
 
         let isPinning = color != nil
-        repo.pin(post: post, color: color) { (result) in
+        repo.pin(post: post, color: color, by: identity.persona ?? "me") { (result) in
             do {
                 let posts = try result.unwrap()
                 guard let pinnedPost = posts.first, let stream = self.stream else { return }

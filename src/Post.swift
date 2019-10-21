@@ -246,8 +246,7 @@ extension Post {
         let isYou: Bool
     }
 
-    enum PinColor {
-        case black
+    enum PinColor: CaseIterable {
         case blue
         case green
         case orange

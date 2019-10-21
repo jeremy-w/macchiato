@@ -6,7 +6,7 @@ protocol PostRepository {
     func delete(post: Post, completion: @escaping (Result<Void>) -> Void)
 
     func toggleStarred(post: Post, by persona: String, completion: @escaping (Result<[Post]>) -> Void)
-    func pin(post: Post, color: Post.PinColor?, completion: @escaping (Result<[Post]>) -> Void)
+    func pin(post: Post, color: Post.PinColor?, by persona: String, completion: @escaping (Result<[Post]>) -> Void)
     func repost(post: Post, completion: @escaping (Result<[Post]>) -> Void)
 }
 

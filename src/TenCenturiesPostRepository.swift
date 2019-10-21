@@ -312,8 +312,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
         guard let text = rawPinned as? String else { return nil }
 
-        let pins = ["pin.black", "pin.blue", "pin.red", "pin.green", "pin.orange", "pin.yellow"]
-        let colors: [Post.PinColor] = [.black, .blue, .red, .green, .orange, .yellow]
+        let pins = ["pin.blue", "pin.red", "pin.green", "pin.orange", "pin.yellow"]
+        let colors: [Post.PinColor] = [.blue, .green, .orange, .red, .yellow]
         assert(pins.count == colors.count, "pins.count \(pins.count) != colors.count \(colors.count)")
         return pins.firstIndex(of: text).map { colors[$0] }
     }
@@ -431,17 +431,17 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
     }
 
-    func pin(post: Post, color: Post.PinColor?, completion: @escaping (Result<[Post]>) -> Void) {
-        let url = URL(string: "/api/pin/\(post.id)", relativeTo: TenCenturies.baseURL)!
+    func pin(post: Post, color: Post.PinColor?, by persona: String, completion: @escaping (Result<[Post]>) -> Void) {
+        let url = URL(string: "/api/posts/pin/", relativeTo: TenCenturies.baseURL)!
         var request = URLRequest(url: url)
-        if let pin = color {
-            request.httpMethod = "POST"
-            request.httpBody = try! JSONSerialization.data(
-                withJSONObject: [ "color": hex(for: pin) ],
-                options: [])
-        } else {
-            request.httpMethod = "DELETE"
-        }
+        // Experimentally, POST "none" removed the pin, while DELETE had no effect.
+        // Nice.social doesn't seem support unpinning as of 2019-10-21 AFAICT.
+        request.httpMethod = "POST"  // color != nil ? "POST" : "DELETE"
+        request.httpBody = try! JSONEncoder().encode([
+                "persona_guid": persona,
+                "value": value(for: color),
+                "guid": post.id,
+            ])
         let _ = send(request: request) { (result) in
             do {
                 let wrapper = try result.unwrap()
@@ -470,11 +470,29 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
     }
 }
 
+func value(for pin: Post.PinColor?) -> String {
+    guard let pin = pin else { return "none" }
 
+    switch pin {
+    case .blue:
+        return "blue"
+
+    case .green:
+        return "green"
+
+    case .orange:
+        return "orange"
+
+    case .red:
+        return "red"
+
+    case .yellow:
+        return "yellow"
+    }
+}
 
 func hex(for pin: Post.PinColor) -> String {
     switch pin {
-    case .black: return "#000000"
     case .blue: return "#0000ff"
     case .green: return "#00ff00"
     case .orange: return "#ffa500"
