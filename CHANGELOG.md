@@ -3,6 +3,30 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 2.0 (25) - 2019-10-21
+New:
+
+- Macchiato supports Dark Mode under iOS 13.
+- "Share" post action shares the post's canonical URL.
+
+Changed:
+
+- The "Pinned" and "Starred" streams are no longer separate.
+- The "Interactions" stream is now named "Stars & Pins".
+
+Fixed:
+
+- Pinning works again.
+- All posts mentioning you are highlighted, not only those in threads.
+- "More Posts" button at end of stream loads more posts.
+- "View in WebView" works. It shows the dedicated page for that post.
+
+Removed:
+
+- The "Starters" stream no longer exists in 10Centuries v5 and has been removed.
+- The "Interactions" stream that showed others' interactions with your posts is no longer provided by 10Centuries v5. (The interactions you saw here with v2.0 (23) and (24) were your own interactions with others' posts.)
+
+
 ### 2.0 (24) - 2019-07-15
 Fixed:
 
