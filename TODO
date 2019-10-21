@@ -59,19 +59,6 @@ aka: `![\(resp.data.files[0].name)](\(resp.data.files[0].medium))`
 }
 ```
 
-
-- fix pin: POST https://nice.social/api/posts/pin
-  ```
-  {"persona_guid":"8cef9a65-ba46-937b-7590-686e8e7a6b3d",
-  "value":"red",
-  "guid":"ab70b035-37bb-c19e-e9f7-3827efa8ac73"}
-
-  var _valids = ['blue', 'green', 'orange', 'red', 'yellow', 'none'];
-
-  if ( _value === undefined || _value === false || _value === null || _value == 'pin.none' ) { _req = 'DELETE'; }
-  ```
-
-
 - image upload - though Nice flubbed it for me, so
 - fix account viewing - need to fetch the full account vs using what's embedded in a post. the embed can be a useful stop-gap while loading, but those -1 values are gross.
 
