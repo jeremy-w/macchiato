@@ -329,7 +329,12 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
 
         // Threads use "as", global uses "name". Go figure.
-        let rawName: String = try unpack(mention, "name") ?? unpack(mention, "as")
+        let maybeName = try? unpack(mention, "name") as String
+        let alsoMaybeName = try? unpack(mention, "as") as String
+        guard let rawName: String = maybeName ?? alsoMaybeName else {
+            throw TenCenturiesError.missingField(field: "name or as", object: mention)
+        }
+
         let name = stripPrefixedAtSign(from: rawName)
         return Post.Mention(
             name: name,
