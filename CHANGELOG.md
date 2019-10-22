@@ -3,6 +3,12 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
+### 2.0 (26) - ?
+Fixed:
+
+- Pin colors are no longer mis-reported.
+- The background of the login page is no longer transparent. Thanks, @matigo!
+
 ### 2.0 (25) - 2019-10-21
 New:
 
