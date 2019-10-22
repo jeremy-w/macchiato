@@ -21,7 +21,7 @@
 - Tag the build and push all:
 
   ```
-  git tag -a 'v1.0_(NUM)' -m 'TF-NUM'
+  git tag -a 'v2.0_(NUM)' -m 'TF-NUM'
   git push --all; and git push --tags
   ```
 
