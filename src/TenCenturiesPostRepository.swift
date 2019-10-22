@@ -312,7 +312,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
 
         guard let text = rawPinned as? String else { return nil }
 
-        let pins = ["pin.blue", "pin.red", "pin.green", "pin.orange", "pin.yellow"]
+        let pins = ["pin.blue", "pin.green", "pin.orange", "pin.red", "pin.yellow"]
         let colors: [Post.PinColor] = [.blue, .green, .orange, .red, .yellow]
         assert(pins.count == colors.count, "pins.count \(pins.count) != colors.count \(colors.count)")
         return pins.firstIndex(of: text).map { colors[$0] }
