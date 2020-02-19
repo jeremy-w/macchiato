@@ -48,6 +48,82 @@ class PostParsing: XCTestCase {
         }
     }
 
+    /*
+     meta =     {
+         source =         {
+             author = 0;
+             summary = 0;
+             title = "Cairo Throw";
+             url = "https://www.areaware.com/collections/susan-kare/products/cairo-throw-green-pink";
+         };
+     };
+     */
+    func testParsingQuotePostSource() {
+        do {
+            let examplePost = """
+{
+  "guid": "3f705a8f-5ab8-7723-1784-62256032d98a",
+  "type": "post.bookmark",
+  "privacy": "visibility.public",
+  "canonical_url": "https://axodys.10centuries.org/bookmark/3f705a8f-5ab8-7723-1784-62256032d98a",
+  "reply_to": false,
+  "title": false,
+  "content": "<blockquote>  <p>The original emoji, Cairo was a typeface designed by Susan Kare in 1984 for the first Macintosh operating system. Taking its name from the hieroglyphics of ancient Egypt, each symbol was drawn by hand using the bitmap grid. A few notable symbols lived on into later operating systems including the cursor and watch.</p>     <p>Kare designed this woven blanket for the Jacquard loom, an early example of computer-controlled machinery, operated with punched cards and invented by Joseph Jacquard in 1801.</p> </blockquote><p>I discovered this blanket in Stephen Hackett's Instagram stories and was immediately smitten. It would go great on the wall of my office, but at $135 it's well outside my decorating budget.</p>",
+  "text": "> The original emoji, Cairo was a typeface designed by Susan Kare in 1984 for the first Macintosh operating system. Taking its name from the hieroglyphics of ancient Egypt, each symbol was drawn by hand using the bitmap grid. A few notable symbols lived on into later operating systems including the cursor and watch.\\n\\n> Kare designed this woven blanket for the Jacquard loom, an early example of computer-controlled machinery, operated with punched cards and invented by Joseph Jacquard in 1801.\\n\\nI discovered this blanket in Stephen Hackett's Instagram stories and was immediately smitten. It would go great on the wall of my office, but at $135 it's well outside my decorating budget.",
+  "meta": {
+    "source": {
+      "url": "https://www.areaware.com/collections/susan-kare/products/cairo-throw-green-pink",
+      "title": "Cairo Throw",
+      "summary": false,
+      "author": false
+    }
+  },
+  "tags": false,
+  "mentions": false,
+  "persona": {
+    "guid": "17b05554-22e9-65f5-dd62-14b3c692ed53",
+    "as": "@axodys",
+    "name": "Jason",
+    "avatar": "https://axodys.10centuries.org/avatars/axodys.png",
+    "pin": "pin.none",
+    "you_follow": false,
+    "is_muted": false,
+    "is_starred": false,
+    "is_blocked": false,
+    "is_you": false,
+    "profile_url": "https://axodys.10centuries.org/17b05554-22e9-65f5-dd62-14b3c692ed53/profile"
+  },
+  "attributes": {
+    "pin": "pin.none",
+    "starred": true,
+    "muted": false,
+    "points": 0
+  },
+  "publish_at": "2020-02-11T05:47:00Z",
+  "publish_unix": 1581400020,
+  "expires_at": false,
+  "expires_unix": false,
+  "updated_at": "2020-02-11T05:54:15Z",
+  "updated_unix": 1581400455
+}
+"""
+            let asDict = try! unjson(string: examplePost) as! JSONDictionary
+
+            let post = try subject.parsePost(from: asDict)
+
+            XCTAssertNotNil(post.source)
+            guard let source = post.source else { return }
+
+            XCTAssertNil(source.author)
+            XCTAssertNil(source.summary)
+            XCTAssertEqual(source.title, "Cairo Throw")
+            XCTAssertEqual(source.urlString, "https://www.areaware.com/collections/susan-kare/products/cairo-throw-green-pink")
+            XCTAssertEqual(source.url, URL(string: "https://www.areaware.com/collections/susan-kare/products/cairo-throw-green-pink")!)
+        }  catch {
+            return XCTFail("failed: \(error)")
+        }
+    }
+
     func testParsingPostWithVisibilityNoneSkipsPost() {
         // (jeremy-w/2019-04-12)FIXME: Needs updating for v5
         guard let exampleHiddenPost = (try? unjson(string: "{\n"

@@ -48,6 +48,9 @@ struct Post {
     let geo: Geo?
     let title: String
 
+    /// From: meta.source
+    let source: Source?
+
     static func makeFake() -> Post {
         let now = Date()
         let text = Array(repeating: "This is some awesome text.", count: randomNumber(in: 1 ..< 50)).joined(separator: " ")
@@ -70,7 +73,8 @@ struct Post {
             stars: [],
             parent: nil,
             geo: nil,
-            title: "")
+            title: "",
+            source: nil)
     }
 
     static func displayingRawJSON(_ json: Any, errorMessage message: String) -> Post {
@@ -102,7 +106,8 @@ struct Post {
             stars: [],
             parent: nil,
             geo: nil,
-            title: "")
+            title: "",
+            source: nil)
     }
 }
 
@@ -139,7 +144,8 @@ extension Post {
             stars: stars,
             parent: originalPost,
             geo: geo,
-            title: title)
+            title: title,
+            source: source)
         return withUpdatedOriginalPost
     }
 
@@ -244,6 +250,14 @@ extension Post {
         let current: String
 
         let isYou: Bool
+    }
+
+    struct Source {
+        var author: String?
+        var summary: String?
+        var title: String?
+        var urlString: String?
+        var url: URL?
     }
 
     enum PinColor: CaseIterable {

@@ -149,6 +149,7 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         }
 
         let geo = parseGeo(from: post)
+        let source = parseSource(from: post)
         let title = (try? unpack(post, "title") as String) ?? ""
 
         let you = try parseYou(from: post, mentions: mentions)
@@ -232,7 +233,8 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
             stars: stars,
             parent: parent,
             geo: geo,
-            title: title)
+            title: title,
+            source: source)
     }
 
     func parseGeo(from post: JSONDictionary) -> Post.Geo? {
@@ -250,6 +252,24 @@ class TenCenturiesPostRepository: PostRepository, TenCenturiesService {
         let altitude: Double? = geo["altitude"] is Bool ? nil : try? unpack(geo, "altitude")
 
         return Post.Geo(name: name ?? "", latitude: lat, longitude: lng, altitude: altitude)
+    }
+
+    func parseSource(from post: JSONDictionary) -> Post.Source? {
+        guard let source = try? unpack(unpack(post, "meta"), "source") as JSONDictionary else {
+            return nil
+        }
+
+        func gimmeString(_ key: String) -> String? {
+            source[key] is Bool ? nil : try? unpack(source, key)
+        }
+
+        let author = gimmeString("author")
+        let summary = gimmeString("latitude")
+        let title = gimmeString("title")
+        let urlString = gimmeString("url")
+        let url = urlString.flatMap { URL(string: $0) }
+
+        return Post.Source(author: author, summary: summary, title: title, urlString: urlString, url: url)
     }
 
     func parseClientName(from post: JSONDictionary) throws -> String? {
