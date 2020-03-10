@@ -60,6 +60,11 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
             // Place any title last, so it's right by the post content.
             self.buildPostTitleLabel(showing: post).map { topBin.addArrangedSubview($0) }
 
+            if let url = post.source?.url {
+                let linkButton = makeLinkButton(url: url)
+                topBin.addArrangedSubview(linkButton)
+            }
+
             avatarToTopBin?.constant = topBin.arrangedSubviews.isEmpty ? 0 : 8
         }
 
@@ -264,21 +269,25 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
 
         let urls = links(in: text)
         for url in urls {
-            let button = UIButton(type: .system)
-
-            button.setTitle(url.absoluteString, for: .normal)
-            button.titleLabel?.textAlignment = .natural
-
-            button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
-            objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-
-            button.accessibilityTraits.remove(.button)
-            button.accessibilityTraits.insert(.link)
-
-            enableAutoContentSizeUpdates(for: button)
-
-            stack.addArrangedSubview(button)
+            let linkButton = makeLinkButton(url: url)
+            stack.addArrangedSubview(linkButton)
         }
+    }
+
+    func makeLinkButton(url: URL) -> UIButton {
+        let button = UIButton(type: .system)
+
+        button.setTitle(url.absoluteString, for: .normal)
+        button.titleLabel?.textAlignment = .natural
+
+        button.addTarget(self, action: #selector(linkButtonAction), for: .touchUpInside)
+        objc_setAssociatedObject(button, &PostCell.associatedURL, url, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+
+        button.accessibilityTraits.remove(.button)
+        button.accessibilityTraits.insert(.link)
+
+        enableAutoContentSizeUpdates(for: button)
+        return button
     }
 
     @IBAction func linkButtonAction(sender: UIButton) {
