@@ -34,5 +34,7 @@
 
   [asc-tf]: https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1195479159/testflight
 
-- Announce the release by posting to 10C.
+- Announce the release by [posting to 10C][post].
   (Only if it wasn't just a "keep TestFlight working" release.)
+
+  [post]: https://macchiato.10centuries.org/write
