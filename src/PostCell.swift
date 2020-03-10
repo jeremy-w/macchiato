@@ -58,7 +58,7 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
             headerView.map { topBin.addArrangedSubview($0) }
 
             // Place any title last, so it's right by the post content.
-            self.buildPostTitleLabel(showing: post.title).map { topBin.addArrangedSubview($0) }
+            self.buildPostTitleLabel(showing: post).map { topBin.addArrangedSubview($0) }
 
             avatarToTopBin?.constant = topBin.arrangedSubviews.isEmpty ? 0 : 8
         }
@@ -94,8 +94,25 @@ class PostCell: UITableViewCell, AvatarImageViewDelegate {
 
 
     // MARK: - Injects a title label above everything
-    func buildPostTitleLabel(showing title: String) -> UILabel? {
-        let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+    func buildPostTitleLabel(showing post: Post) -> UILabel? {
+        let quoteTitle: String
+        if let source = post.source {
+            if let author = source.author, let title = source.title {
+                quoteTitle = "“\(title)” (\(author))"
+            } else if let title = source.title {
+                quoteTitle = "“\(title)”"
+            } else if let author = source.author {
+                quoteTitle = "(\(author))"
+            } else {
+                quoteTitle = ""
+            }
+        } else {
+            quoteTitle = ""
+        }
+
+        let specifiedTitle = post.title.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let title = specifiedTitle.isEmpty ? quoteTitle : quoteTitle.isEmpty ? specifiedTitle : "\(specifiedTitle): \(quoteTitle)"
         guard !title.isEmpty else { return nil }
 
         let label = UILabel()
