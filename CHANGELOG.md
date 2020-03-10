@@ -3,7 +3,14 @@ Releases of Macchiato are documented below. Dates correspond to when the build
 was archived, not necessarily when it became available for download.
 
 ## TestFlight Releases
-### 2.0 (26) - ?
+### 2.0 (27) - ???
+
+
+### 2.0 (26) - 2020-03-10
+New:
+
+- Quote posts show any title, author, and link as part of the post title.
+
 Fixed:
 
 - Pin colors are no longer mis-reported.
