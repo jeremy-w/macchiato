@@ -39,8 +39,9 @@ class ProcessorCollectionViewController: UICollectionViewController {
     
     var processors: [(ImageProcessor, String)] = [
         (DefaultImageProcessor.default, "Default"),
-        (RoundCornerImageProcessor(cornerRadius: 20), "Round Corner"),
-        (RoundCornerImageProcessor(cornerRadius: 20, roundingCorners: [.topLeft, .bottomRight]), "Round Corner Partial"),
+        (ResizingImageProcessor(referenceSize: .zero), "Resizing"),
+        (RoundCornerImageProcessor(radius: .point(20)), "Round Corner"),
+        (RoundCornerImageProcessor(radius: .widthFraction(0.5), roundingCorners: [.topLeft, .bottomRight]), "Round Corner Partial"),
         (BlendImageProcessor(blendMode: .lighten, alpha: 1.0, backgroundColor: .red), "Blend"),
         (BlurImageProcessor(blurRadius: 5), "Blur"),
         (OverlayImageProcessor(overlay: .red, fraction: 0.5), "Overlay"),
@@ -49,7 +50,7 @@ class ProcessorCollectionViewController: UICollectionViewController {
         (BlackWhiteProcessor(), "B&W"),
         (CroppingImageProcessor(size: CGSize(width: 100, height: 100)), "Cropping"),
         (DownsamplingImageProcessor(size: CGSize(width: 25, height: 25)), "Downsampling"),
-        (BlurImageProcessor(blurRadius: 5) >> RoundCornerImageProcessor(cornerRadius: 20), "Blur + Round Corner")
+        (BlurImageProcessor(blurRadius: 5) |> RoundCornerImageProcessor(cornerRadius: 20), "Blur + Round Corner")
     ]
     
     override func viewDidLoad() {

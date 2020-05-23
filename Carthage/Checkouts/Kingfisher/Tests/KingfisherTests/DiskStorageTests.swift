@@ -96,7 +96,7 @@ class DiskStorageTests: XCTestCase {
         try! storage.store(value: "1", forKey: "1", expiration: .seconds(1))
 
         XCTAssertTrue(storage.isCached(forKey: "1", referenceDate: now))
-        XCTAssertFalse(storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(2)))
+        XCTAssertFalse(storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(5)))
     }
 
     func testConfigExpiration() {
@@ -106,7 +106,7 @@ class DiskStorageTests: XCTestCase {
         storage.config.expiration = .seconds(1)
         try! storage.store(value: "1", forKey: "1")
         XCTAssertTrue(storage.isCached(forKey: "1", referenceDate: now))
-        XCTAssertFalse(storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(2)))
+        XCTAssertFalse(storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(5)))
     }
 
     func testExtendExpirationByAccessing() {
@@ -115,7 +115,7 @@ class DiskStorageTests: XCTestCase {
         let now = Date()
         try! storage.store(value: "1", forKey: "1", expiration: .seconds(2))
         XCTAssertTrue(storage.isCached(forKey: "1"))
-        XCTAssertFalse(storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(3)))
+        XCTAssertFalse(storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(5)))
 
         delay(1) {
             let v = try! self.storage.value(forKey: "1")
@@ -123,6 +123,28 @@ class DiskStorageTests: XCTestCase {
             // The meta extending happens on its own queue.
             self.storage.metaChangingQueue.async {
                 XCTAssertTrue(self.storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(3)))
+                XCTAssertFalse(self.storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(10)))
+                exp.fulfill()
+            }
+        }
+
+        waitForExpectations(timeout: 2, handler: nil)
+    }
+
+    func testNotExtendExpirationByAccessing() {
+
+        let exp = expectation(description: #function)
+        let now = Date()
+        try! storage.store(value: "1", forKey: "1", expiration: .seconds(2))
+        XCTAssertTrue(storage.isCached(forKey: "1"))
+        XCTAssertFalse(storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(3)))
+
+        delay(1) {
+            let v = try! self.storage.value(forKey: "1", extendingExpiration: .none)
+            XCTAssertNotNil(v)
+            // The meta extending happens on its own queue.
+            self.storage.metaChangingQueue.async {
+                XCTAssertFalse(self.storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(3)))
                 XCTAssertFalse(self.storage.isCached(forKey: "1", referenceDate: now.addingTimeInterval(10)))
                 exp.fulfill()
             }

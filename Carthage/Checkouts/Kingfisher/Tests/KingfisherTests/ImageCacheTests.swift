@@ -237,7 +237,7 @@ class ImageCacheTests: XCTestCase {
   
     func testCachedImageIsFetchedSyncronouslyFromTheMemoryCache() {
         cache.store(testImage, forKey: testKeys[0], toDisk: false)
-        var foundImage: Image?
+        var foundImage: KFCrossPlatformImage?
         cache.retrieveImage(forKey: testKeys[0]) { result in
             foundImage = result.value?.image
         }
@@ -288,7 +288,7 @@ class ImageCacheTests: XCTestCase {
                 self.cache.cleanExpiredDiskCache()
             }
         }
-        waitForExpectations(timeout: 2, handler: nil)
+        waitForExpectations(timeout: 5, handler: nil)
     }
     
     func testCannotRetrieveCacheWithProcessorIdentifier() {

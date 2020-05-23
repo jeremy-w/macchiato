@@ -110,7 +110,7 @@ class ImagePrefetcherTests: XCTestCase {
 
     func testPrefetcherCouldSkipCachedImages() {
         let exp = expectation(description: #function)
-        KingfisherManager.shared.cache.store(Image(), forKey: testKeys[0])
+        KingfisherManager.shared.cache.store(KFCrossPlatformImage(), forKey: testKeys[0])
         
         testURLs.forEach { stub($0, data: testImageData) }
         let prefetcher = ImagePrefetcher(
@@ -132,7 +132,7 @@ class ImagePrefetcherTests: XCTestCase {
     
     func testPrefetcherForceRefreshDownloadImages() {
         let exp = expectation(description: #function)
-        KingfisherManager.shared.cache.store(Image(), forKey: testKeys[0])
+        KingfisherManager.shared.cache.store(KFCrossPlatformImage(), forKey: testKeys[0])
         
         testURLs.forEach { stub($0, data: testImageData) }
         let prefetcher = ImagePrefetcher(urls: testURLs, options: [.forceRefresh, .waitForCache]) {
@@ -219,7 +219,7 @@ class ImagePrefetcherTests: XCTestCase {
         let exp = expectation(description: #function)
         let cache = KingfisherManager.shared.cache
         let key = testKeys[0]
-        cache.store(Image(), forKey: key)
+        cache.store(KFCrossPlatformImage(), forKey: key)
         cache.store(testImage, forKey: key) { result in
             try! cache.memoryStorage.remove(forKey: key)
             
@@ -312,7 +312,7 @@ class ImagePrefetcherTests: XCTestCase {
             prefetcher.start()
         }
         group.notify(queue: .main) { exp.fulfill() }
-        waitForExpectations(timeout: 5, handler: nil)
+        waitForExpectations(timeout: 15, handler: nil)
     }
 
     func testPrefetchSources() {
