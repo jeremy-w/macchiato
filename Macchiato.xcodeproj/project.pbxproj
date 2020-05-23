@@ -51,6 +51,9 @@
 		3F6A07731E30682200A56072 /* EditingPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07721E30682200A56072 /* EditingPost.swift */; };
 		3F6A07751E30690400A56072 /* ComposePostAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07741E30690400A56072 /* ComposePostAction.swift */; };
 		3F6A07771E306A1200A56072 /* ComposePostActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */; };
+		3F6FEB1724799D3000DBC500 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6FEB1624799D3000DBC500 /* ShareViewController.swift */; };
+		3F6FEB1A24799D3000DBC500 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F6FEB1824799D3000DBC500 /* MainInterface.storyboard */; };
+		3F6FEB1E24799D3000DBC500 /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 3F6FEB1424799D2F00DBC500 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3F78B8461E6281A600B40B55 /* ImagePickerPhotoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8451E6281A600B40B55 /* ImagePickerPhotoProvider.swift */; };
 		3F78B8481E6281EF00B40B55 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8471E6281EF00B40B55 /* Photo.swift */; };
 		3F78B84A1E6281F800B40B55 /* PhotoUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8491E6281F800B40B55 /* PhotoUploader.swift */; };
@@ -90,7 +93,28 @@
 			remoteGlobalIDString = 3F2E28FD1DA9B9F200519C9E;
 			remoteInfo = Macchiato;
 		};
+		3F6FEB1C24799D3000DBC500 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F2E28F61DA9B9F200519C9E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3F6FEB1324799D2F00DBC500;
+			remoteInfo = Share;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3F6FEB1F24799D3000DBC500 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				3F6FEB1E24799D3000DBC500 /* Share.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3F03CA731E3B9FFA000A04B8 /* CurrentUserPropagationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUserPropagationTests.swift; sourceTree = "<group>"; };
@@ -141,6 +165,10 @@
 		3F6A07721E30682200A56072 /* EditingPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditingPost.swift; sourceTree = "<group>"; };
 		3F6A07741E30690400A56072 /* ComposePostAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostAction.swift; sourceTree = "<group>"; };
 		3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposePostActionTests.swift; sourceTree = "<group>"; };
+		3F6FEB1424799D2F00DBC500 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F6FEB1624799D3000DBC500 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		3F6FEB1924799D3000DBC500 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		3F6FEB1B24799D3000DBC500 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F78B8451E6281A600B40B55 /* ImagePickerPhotoProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerPhotoProvider.swift; sourceTree = "<group>"; };
 		3F78B8471E6281EF00B40B55 /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		3F78B8491E6281F800B40B55 /* PhotoUploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoUploader.swift; sourceTree = "<group>"; };
@@ -189,6 +217,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3F6FEB1124799D2F00DBC500 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -204,6 +239,7 @@
 			isa = PBXGroup;
 			children = (
 				3F8144FA1E331C0D001E25EC /* Playgrounds */,
+				3F6FEB1524799D2F00DBC500 /* Share */,
 				3F2E28FF1DA9B9F200519C9E /* Products */,
 				3F2E29171DA9B9F200519C9E /* tests */,
 				3F2E29001DA9B9F200519C9E /* src */,
@@ -216,6 +252,7 @@
 			children = (
 				3F2E28FE1DA9B9F200519C9E /* Macchiato.app */,
 				3F2E29141DA9B9F200519C9E /* MacchiatoTests.xctest */,
+				3F6FEB1424799D2F00DBC500 /* Share.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -340,6 +377,16 @@
 				3F6A07761E306A1200A56072 /* ComposePostActionTests.swift */,
 			);
 			name = "Composing Posts";
+			sourceTree = "<group>";
+		};
+		3F6FEB1524799D2F00DBC500 /* Share */ = {
+			isa = PBXGroup;
+			children = (
+				3F6FEB1624799D3000DBC500 /* ShareViewController.swift */,
+				3F6FEB1824799D3000DBC500 /* MainInterface.storyboard */,
+				3F6FEB1B24799D3000DBC500 /* Info.plist */,
+			);
+			path = Share;
 			sourceTree = "<group>";
 		};
 		3F78B84F1E62827B00B40B55 /* Photos */ = {
@@ -487,10 +534,12 @@
 				3F2E28FB1DA9B9F200519C9E /* Frameworks */,
 				3F2E28FC1DA9B9F200519C9E /* Resources */,
 				3F7D75801E3D37A000AB8C4A /* Copy Carthage Frameworks */,
+				3F6FEB1F24799D3000DBC500 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				3F6FEB1D24799D3000DBC500 /* PBXTargetDependency */,
 			);
 			name = Macchiato;
 			productName = Macchiato;
@@ -515,13 +564,30 @@
 			productReference = 3F2E29141DA9B9F200519C9E /* MacchiatoTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		3F6FEB1324799D2F00DBC500 /* Share */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3F6FEB2224799D3000DBC500 /* Build configuration list for PBXNativeTarget "Share" */;
+			buildPhases = (
+				3F6FEB1024799D2F00DBC500 /* Sources */,
+				3F6FEB1124799D2F00DBC500 /* Frameworks */,
+				3F6FEB1224799D2F00DBC500 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Share;
+			productName = Share;
+			productReference = 3F6FEB1424799D2F00DBC500 /* Share.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		3F2E28F61DA9B9F200519C9E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0800;
+				LastSwiftUpdateCheck = 1140;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Jeremy W. Sherman";
 				TargetAttributes = {
@@ -537,6 +603,9 @@
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3F2E28FD1DA9B9F200519C9E;
+					};
+					3F6FEB1324799D2F00DBC500 = {
+						CreatedOnToolsVersion = 11.4.1;
 					};
 				};
 			};
@@ -555,6 +624,7 @@
 			targets = (
 				3F2E28FD1DA9B9F200519C9E /* Macchiato */,
 				3F2E29131DA9B9F200519C9E /* MacchiatoTests */,
+				3F6FEB1324799D2F00DBC500 /* Share */,
 			);
 		};
 /* End PBXProject section */
@@ -580,6 +650,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3F6FEB1224799D2F00DBC500 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F6FEB1A24799D3000DBC500 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -682,6 +760,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3F6FEB1024799D2F00DBC500 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F6FEB1724799D3000DBC500 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -689,6 +775,11 @@
 			isa = PBXTargetDependency;
 			target = 3F2E28FD1DA9B9F200519C9E /* Macchiato */;
 			targetProxy = 3F2E29151DA9B9F200519C9E /* PBXContainerItemProxy */;
+		};
+		3F6FEB1D24799D3000DBC500 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3F6FEB1324799D2F00DBC500 /* Share */;
+			targetProxy = 3F6FEB1C24799D3000DBC500 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -709,6 +800,14 @@
 			);
 			name = LaunchScreen.storyboard;
 			path = .;
+			sourceTree = "<group>";
+		};
+		3F6FEB1824799D3000DBC500 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3F6FEB1924799D3000DBC500 /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -835,6 +934,7 @@
 		3F2E291E1DA9B9F200519C9E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 6ZA93RH52B;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -856,6 +956,7 @@
 		3F2E291F1DA9B9F200519C9E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 6ZA93RH52B;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -912,6 +1013,59 @@
 			};
 			name = Release;
 		};
+		3F6FEB2024799D3000DBC500 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6ZA93RH52B;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = Share/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.Macchiato.Share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3F6FEB2124799D3000DBC500 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6ZA93RH52B;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = Share/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jeremywsherman.Macchiato.Share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -938,6 +1092,15 @@
 			buildConfigurations = (
 				3F2E29211DA9B9F200519C9E /* Debug */,
 				3F2E29221DA9B9F200519C9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3F6FEB2224799D3000DBC500 /* Build configuration list for PBXNativeTarget "Share" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3F6FEB2024799D3000DBC500 /* Debug */,
+				3F6FEB2124799D3000DBC500 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
