@@ -8,6 +8,7 @@
 
 import UIKit
 import Social
+import MobileCoreServices  // UTType*
 
 /**
  System extension point for sharing.
@@ -15,6 +16,43 @@ import Social
  See: https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/Share.html
  */
 class ShareViewController: SLComposeServiceViewController {
+
+    override func presentationAnimationDidFinish() {
+        logExtensionItems()
+    }
+
+    private func logExtensionItems() {
+        guard let ctx = extensionContext else { return }
+        guard let items = ctx.inputItems as? [NSExtensionItem] else { return }
+        print("inputItems.count=\(items.count)")
+        var i = 0
+        for item in items {
+            i += 1
+            print("\(i): \(item)")
+            print("\(i): attributed content text: \(item.attributedContentText?.string ?? "(nil)")")
+
+            if let attachments = item.attachments {
+                for attachment in attachments {
+                    print("\(i): provides types: \(attachment.registeredTypeIdentifiers)")
+                    for (desc, type) in [("URL", kUTTypeURL as String), ("text", kUTTypeText as String)] {
+                        if attachment.hasItemConformingToTypeIdentifier(type) {
+                            attachment.loadItem(forTypeIdentifier: type, options: nil) { [i = i] (value, error) in
+                                guard error == nil else {
+                                    print("\(i): Error loading \(desc): \(error!)")
+                                    return
+                                }
+                                guard let value = value else {
+                                    print("\(i): No error, but \(desc) was nil. :-(")
+                                    return
+                                }
+                                print("\(i): Attached \(desc) is: \(value), of type: \(Swift.type(of: value))")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     override func isContentValid() -> Bool {
         // Do validation of contentText and/or NSExtensionContext attachments here
