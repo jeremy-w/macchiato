@@ -21,12 +21,9 @@
 - Tag the build and push all:
 
   ```
-  git tag -a 'v2.0_(NUM)' -m 'TF-NUM'
-  git push --all; and git push --tags
+  NUM=X git tag -a "v2.0_($NUM)" -m "TF-$NUM"
+  git push --follow-tags
   ```
-
-  NOTE: You can't combine `--all` and `--tags`,
-  and `--all` doesn't include tags. Fun, that.
 
 - [Visit App Store Connect][asc-tf] once the build goes through,
   drop in the changelog entry in the "what to test" bit,
