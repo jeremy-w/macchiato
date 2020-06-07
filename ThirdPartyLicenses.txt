@@ -1,4 +1,4 @@
-# Kingfisher v5.3.1
+# Kingfisher v5.14.0
 
 Provides easy network image loading and caching.
 
