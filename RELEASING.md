@@ -21,8 +21,7 @@
 - Tag the build and push all:
 
   ```
-  NUM=X git tag -a "v2.0_($NUM)" -m "TF-$NUM"
-  git push --follow-tags
+  NUM=X git tag -a "v2.0_($NUM)" -m "TF-$NUM" && git push --follow-tags
   ```
 
 - [Visit App Store Connect][asc-tf] once the build goes through,
