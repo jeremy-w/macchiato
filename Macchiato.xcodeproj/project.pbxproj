@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -60,7 +60,6 @@
 		3F78B85B1E77222600B40B55 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F78B8591E77222600B40B55 /* AccountViewController.swift */; };
 		3F78B85C1E77222600B40B55 /* AccountViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F78B85A1E77222600B40B55 /* AccountViewController.xib */; };
 		3F7D757C1E3D1ECA00AB8C4A /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D757B1E3D1ECA00AB8C4A /* Identity.swift */; };
-		3F7D757F1E3D377800AB8C4A /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */; };
 		3F7FAF4D1E871958006D1FDB /* AppDelegate+AccountAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7FAF4C1E871958006D1FDB /* AppDelegate+AccountAction.swift */; };
 		3F8144EC1E31C17F001E25EC /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144EB1E31C17F001E25EC /* AccountRepository.swift */; };
 		3F8144F11E31C515001E25EC /* TenCenturiesAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8144F01E31C515001E25EC /* TenCenturiesAccountRepository.swift */; };
@@ -76,6 +75,8 @@
 		3F9CE5E31DBC4A6E00E176F4 /* InsertionPointSwiper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */; };
 		3F9CE5E71DBD7C5200E176F4 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CE5E61DBD7C5200E176F4 /* Account.swift */; };
 		3FB501B41E3F972600DC0642 /* ThirdPartyLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */; };
+		3FBA9FF426FE0A6000D9AED8 /* Kingfisher.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FBA9FF326FE0A6000D9AED8 /* Kingfisher.xcframework */; };
+		3FBA9FF526FE0A6000D9AED8 /* Kingfisher.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3FBA9FF326FE0A6000D9AED8 /* Kingfisher.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3FFC01E52271612000A33BE5 /* AuthenticatedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFC01E42271612000A33BE5 /* AuthenticatedAccount.swift */; };
 /* End PBXBuildFile section */
 
@@ -88,6 +89,20 @@
 			remoteInfo = Macchiato;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3FBA9FF626FE0A6000D9AED8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3FBA9FF526FE0A6000D9AED8 /* Kingfisher.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3F03CA731E3B9FFA000A04B8 /* CurrentUserPropagationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentUserPropagationTests.swift; sourceTree = "<group>"; };
@@ -164,6 +179,7 @@
 		3F9CE5E21DBC4A6E00E176F4 /* InsertionPointSwiper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertionPointSwiper.swift; sourceTree = "<group>"; };
 		3F9CE5E61DBD7C5200E176F4 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		3FB501B31E3F972600DC0642 /* ThirdPartyLicenses.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ThirdPartyLicenses.txt; sourceTree = SOURCE_ROOT; };
+		3FBA9FF326FE0A6000D9AED8 /* Kingfisher.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Kingfisher.xcframework; path = Carthage/Build/Kingfisher.xcframework; sourceTree = "<group>"; };
 		3FFC01E42271612000A33BE5 /* AuthenticatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatedAccount.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -172,7 +188,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F7D757F1E3D377800AB8C4A /* Kingfisher.framework in Frameworks */,
+				3FBA9FF426FE0A6000D9AED8 /* Kingfisher.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +373,7 @@
 		3F7D757D1E3D377800AB8C4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3FBA9FF326FE0A6000D9AED8 /* Kingfisher.xcframework */,
 				3F7D757E1E3D377800AB8C4A /* Kingfisher.framework */,
 			);
 			name = Frameworks;
@@ -477,7 +494,7 @@
 				3F2E28FA1DA9B9F200519C9E /* Sources */,
 				3F2E28FB1DA9B9F200519C9E /* Frameworks */,
 				3F2E28FC1DA9B9F200519C9E /* Resources */,
-				3F7D75801E3D37A000AB8C4A /* Copy Carthage Frameworks */,
+				3FBA9FF626FE0A6000D9AED8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -574,25 +591,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		3F7D75801E3D37A000AB8C4A /* Copy Carthage Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework",
-			);
-			name = "Copy Carthage Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3F2E28FA1DA9B9F200519C9E /* Sources */ = {
@@ -829,7 +827,7 @@
 				DEVELOPMENT_TEAM = 6ZA93RH52B;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build",
 				);
 				INFOPLIST_FILE = src/Info.plist;
 				INFOPLIST_PREPROCESS = YES;
@@ -850,7 +848,7 @@
 				DEVELOPMENT_TEAM = 6ZA93RH52B;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build",
 				);
 				INFOPLIST_FILE = src/Info.plist;
 				INFOPLIST_PREPROCESS = YES;
